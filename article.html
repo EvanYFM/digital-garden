@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>利率、汇率与情绪 — 小马</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f4ee; --paper-soft:#efece4; --ink:#1c1c1a; --charcoal:#2b2b28;
+  --gray:#8a877d; --line:rgba(28,28,26,.16); --line-strong:rgba(28,28,26,.4);
+  --cinnabar:#b3402a;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --paper:#141412; --paper-soft:#1b1b18; --ink:#e9e6de; --charcoal:#d6d3ca;
+  --gray:#7d7a71; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
+  --cinnabar:#c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;
+  letter-spacing:.02em;transition:background .9s var(--ease),color .9s var(--ease);
+  -webkit-font-smoothing:antialiased}
+::selection{background:var(--ink);color:var(--paper)}
+
+header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;
+  justify-content:space-between;align-items:center;padding:28px 48px;
+  background:color-mix(in srgb,var(--paper) 86%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
+  justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
+nav{display:flex;align-items:center;gap:34px}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  position:relative;padding:4px 0;opacity:.75;transition:opacity .4s}
+nav a:hover,nav a.cur{opacity:1}
+nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
+nav a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+  background:var(--ink);transition:width .5s var(--ease)}
+nav a:hover::after,nav a.cur::after{width:100%}
+
+/* 太极日夜钮 */
+.taiji{width:24px;height:24px;border:none;background:transparent;cursor:pointer;
+  padding:0;flex:none;color:var(--ink)}
+.taiji svg{display:block;width:100%;height:100%;overflow:visible}
+.taiji .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.55;transition:opacity .5s}
+.taiji:hover .ring{opacity:1}
+.taiji .disc{transform-origin:12px 12px;transition:transform 1.1s var(--ease)}
+html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
+.taiji .half{fill:currentColor;opacity:0;transform-origin:12px 12px;transform:rotate(-100deg);
+  transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.taiji:hover .half{opacity:1;transform:rotate(0deg)}
+.taiji .d1,.taiji .d2{opacity:0;transition:opacity .7s var(--ease) .1s}
+.taiji:hover .d1,.taiji:hover .d2{opacity:1}
+.taiji .d1{fill:var(--paper)}
+.taiji .d2{fill:currentColor}
+.taiji .still{fill:currentColor;transition:opacity .5s}
+.taiji:hover .still{opacity:0}
+
+/* ---------- 布局：左目录 / 右正文 ---------- */
+.layout{
+  max-width:1180px;margin:0 auto;padding:0 48px;
+  display:grid;grid-template-columns:200px minmax(0,1fr);gap:96px;
+}
+
+/* ---------- 左侧 sticky 目录 ---------- */
+.toc{padding-top:280px}
+.toc-inner{position:sticky;top:160px}
+.toc a{
+  display:flex;align-items:baseline;gap:12px;
+  padding:11px 0 11px 20px;position:relative;
+  text-decoration:none;color:var(--gray);
+  font-size:12.5px;letter-spacing:.1em;line-height:1.7;
+  transition:color .5s var(--ease);
+}
+.toc a .no{font-family:var(--serif);font-size:11px;flex:none}
+/* 目录左侧：一条静止的细线 + 一粒随阅读位置游走的墨点 */
+.toc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--line)}
+.toc-inner{position:sticky;top:160px}
+.toc a::before{
+  content:"";position:absolute;left:-2.5px;top:50%;width:6px;height:6px;border-radius:50%;
+  background:var(--ink);transform:translateY(-50%) scale(0);
+  transition:transform .45s var(--ease);
+}
+.toc a.on{color:var(--ink)}
+.toc a.on::before{transform:translateY(-50%) scale(1)}
+.toc a:hover{color:var(--ink)}
+.toc{position:relative}
+.toc-back{
+  display:inline-flex;align-items:center;gap:12px;margin-top:56px;
+  font-size:11px;letter-spacing:.24em;color:var(--gray);text-decoration:none;
+  transition:color .4s;
+}
+.toc-back:hover{color:var(--ink)}
+.toc-back .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
+
+/* ---------- 正文 ---------- */
+.article{padding:200px 0 40px;max-width:660px}
+.crumb{font-size:11px;letter-spacing:.3em;color:var(--gray);margin-bottom:44px;
+  text-transform:uppercase}
+.crumb b{font-weight:400;color:var(--cinnabar)}
+.article h1{
+  font-family:var(--serif);font-size:clamp(28px,3.6vw,40px);font-weight:600;
+  letter-spacing:.05em;line-height:1.6;margin-bottom:30px;
+}
+.art-meta{
+  display:flex;flex-wrap:wrap;gap:0;font-size:11px;color:var(--gray);
+  letter-spacing:.16em;padding:20px 0;border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);margin-bottom:72px;
+}
+.art-meta span+i, .art-meta i{font-style:normal;color:var(--cinnabar);margin:0 12px}
+.article h2{
+  font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:.1em;
+  margin:88px 0 32px;display:flex;align-items:baseline;gap:18px;
+  scroll-margin-top:120px;
+}
+.article h2 .no{font-size:13px;color:var(--cinnabar);font-weight:400}
+.article p{
+  font-size:15px;line-height:2.3;color:var(--charcoal);
+  margin-bottom:28px;letter-spacing:.04em;text-align:justify;
+}
+.article p b{font-weight:500;color:var(--ink)}
+/* 引文块：竖线 + 衬线大字 */
+.pull{
+  margin:56px 0;padding:8px 0 8px 36px;border-left:1px solid var(--ink);
+  font-family:var(--serif);font-size:19px;line-height:2.2;letter-spacing:.08em;
+  color:var(--ink);
+}
+.pull small{display:block;margin-top:16px;font-family:var(--sans);font-size:11px;
+  color:var(--gray);letter-spacing:.2em}
+/* 边注 */
+.sidenote{
+  margin:40px 0;padding:24px 28px;background:var(--paper-soft);
+  font-size:12.5px;line-height:2.1;color:var(--gray);letter-spacing:.05em;
+  transition:background .9s var(--ease);
+}
+.sidenote b{display:block;font-weight:500;color:var(--charcoal);font-size:11px;
+  letter-spacing:.3em;margin-bottom:12px}
+/* 篇末印记 */
+.endmark{display:flex;align-items:center;gap:18px;margin:96px 0 0}
+.endmark .ln{flex:1;height:1px;background:var(--line)}
+.endmark .sq{width:9px;height:9px;border:1px solid var(--cinnabar);border-radius:50%}
+
+/* ---------- 上一篇 / 下一篇 ---------- */
+.pn{
+  max-width:660px;margin:0 0 40px;padding:0;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;
+}
+.pn a{
+  padding:36px 0;text-decoration:none;color:var(--ink);display:block;
+}
+.pn a+a{border-left:1px solid var(--line);padding-left:36px;text-align:right}
+.pn .dir{font-size:10px;letter-spacing:.34em;color:var(--gray);text-transform:uppercase;
+  display:block;margin-bottom:14px}
+.pn .t{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.05em;
+  transition:transform .5s var(--ease);display:inline-block}
+.pn a:hover .t{transform:translateX(6px)}
+.pn a+a:hover .t{transform:translateX(-6px)}
+
+footer{border-top:1px solid var(--line)}
+.foot-inner{max-width:1180px;margin:0 auto;padding:64px 48px 48px;display:flex;
+  justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.foot-motto{font-family:var(--serif);font-size:15px;letter-spacing:.34em;color:var(--charcoal)}
+.foot-note{font-size:11px;color:var(--gray);letter-spacing:.16em;line-height:2.2;text-align:right}
+.foot-note .en{display:block;letter-spacing:.28em;text-transform:uppercase}
+
+.rv{opacity:0;transform:translateY(26px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+
+@media (max-width:960px){
+  .layout{grid-template-columns:1fr;gap:0}
+  .toc{display:none}
+  .article{padding-top:160px}
+}
+@media (max-width:760px){
+  header{padding:20px 22px}
+  nav{gap:16px}
+  nav a .en{display:none}
+  .layout{padding:0 22px}
+  .pn{grid-template-columns:1fr}
+  .pn a+a{border-left:none;border-top:1px solid var(--line);padding-left:0;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="seal">马</span>
+    <span class="brand-name">小马</span>
+  </a>
+  <nav>
+    <a class="cur" href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
+    <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="about.html">关于<span class="en">ABOUT</span></a>
+    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <g class="disc">
+          <path class="half" d="M12,2 a10,10 0 0 1 0,20 a5,5 0 0 1 0,-10 a5,5 0 0 0 0,-10 z"/>
+          <circle class="d1" cx="12" cy="7" r="1.7"/>
+          <circle class="d2" cx="12" cy="17" r="1.7"/>
+        </g>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+
+  <!-- 左侧 sticky 目录：墨点随阅读游走 -->
+  <aside class="toc">
+    <div class="toc-inner" id="tocBox"></div>
+  </aside>
+
+  <!-- 正文 / 上一篇下一篇：由 JS 根据 ?id= 渲染 -->
+  <div>
+    <article class="article" id="articleBox"></article>
+    <nav class="pn" id="pnBox"></nav>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <p class="foot-motto">克制 · 清明 · 长期主义</p>
+    <p class="foot-note">
+      © 2026 小马 · 手工打磨，持续修正
+      <span class="en">Designed &amp; built with restraint</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+/* 日夜切换 */
+(function(){
+  var saved=localStorage.getItem('theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',cur);
+    localStorage.setItem('theme',cur);
+  });
+})();
+/* 入场动效 */
+(function(){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.1});
+  document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+})();
+/* ===== 文章数据 ===== */
+var ARTICLES={
+a0:{title:"利率、汇率与情绪：<br>一个交易员候选人的宏观笔记",en:"Macro, FX &amp; Sentiment — A Trader-Candidate's Notes",cat:"宏观研究",date:"2026 · 06 · 12",read:"约 18 分钟",ver:"第 3 次修订",
+ intro:"宏观不是预测的游戏，而是识别主要矛盾的游戏。这篇笔记记录我如何搭建自己的观察框架：先确认数据口径，再区分事实与推断，最后写下会让我改变看法的反例——写下来，是为了让未来的自己可以审查。",
+ chapters:[
+  {no:"一",zh:"先问主要矛盾",en:"Identify the Main Contradiction First",
+   body:["刚开始看宏观的时候，我犯过一个典型的错误：试图同时跟踪所有变量。PMI、社融、美债收益率、美元指数、北向资金、商品库存……信息越多，判断越模糊。后来我意识到，宏观分析的第一步不是收集，而是<b>取舍</b>——在任何一个时间截面上，真正驱动定价的矛盾通常只有一个，至多两个。",
+         "找到它的方法不是更聪明，而是更诚实：把所有候选矛盾列出来，逐个追问——如果这个变量反向运动，市场叙事会不会被根本动摇？经不起这一问的，都不是主要矛盾，只是噪音。"],
+   pull:{text:"宏观不是预测的游戏，而是识别主要矛盾的游戏。",small:"本文的出发点，也是我需要反复提醒自己的地方"}},
+  {no:"二",zh:"数据的口径",en:"The Calendar &amp; the Spec",
+   body:["第二个教训关于数据本身。同一个「北向资金」，盘中实时估算和收盘后的官方口径可能相差甚远；同一段「利率下行」，看的是政策利率、市场利率还是信用利差，结论完全不同。<b>先确认数据的日期与口径，再输出结论</b>——这条纪律听起来琐碎，却是大多数宏观错误的源头。",
+         "我给自己定了几条规矩：估算数据必须标注截止时间和合约范围；不可用的数据留空，不前填、不替邻近日、不换近似基准；给区间而不是点预测。空值不是零——一个诚实的空白，好过一个看似精确的谎言。"],
+   side:{zh:"边注 · SIDENOTE",text:"这条原则后来被我从研究迁移到了生活：说不清楚的事，先承认说不清楚。「我不知道」是一种合法的、有时甚至是最好的答案。"}},
+  {no:"三",zh:"事实、推断与反例",en:"Fact, Inference &amp; Falsification",
+   body:["现在我的每篇宏观笔记都用同一套标签写完：<b>事实 / 推断 / 触发条件 / 反例 / 风险 / 下一步验证</b>。事实是可以被第三方复核的；推断是我下注的逻辑；而反例——会让我承认自己错了的证据——必须在下笔时就写好，而不是等到亏损之后才追认。",
+         "这个结构的价值不在写作时显现，而在三个月后的复核中显现。市场会奖励那些有勇气提前写下「什么情况证明我错了」的人，因为只有他们能在证据到来时真的改变看法，而不是把新证据扭曲成旧观点的注脚。"]},
+  {no:"四",zh:"写下来，接受审查",en:"Write It Down, Submit to Review",
+   body:["为什么要把这些公开发表？因为私下的想法没有成本。写在纸上、标上日期、留在原地，未来的我就无法假装自己「当时不是这么想的」。<b>写作是最便宜的诚实机制</b>。",
+         "这个网站的定位也由此而来：不是观点的陈列架，而是思考的工地。每一篇都可能被未来的我修订，修订记录本身就是内容的一部分。如果你发现某篇的观点已经过时，那很可能不是疏忽，而是证据来了，我改了。"],
+   pull:{text:"我保留修正自己的权利，并把它写在每一页的顶部。",small:"本站所有文章的使用条款"}}
+ ]},
+
+a1:{title:"止损的纪律，与承认错误的自由",en:"The Discipline of Stop-Loss, and the Freedom of Admitting Wrong",cat:"交易日志",date:"2026 · 08 · 02",read:"约 12 分钟",ver:"第 2 次修订",
+ intro:"一次坏判断不等于「我不行」。把止损当作系统修正的数据，而非对自我的审判——纪律反而带来自由。",
+ chapters:[
+  {no:"一",zh:"为什么浮亏不止损",en:"Why Float-Loss Refuses to Stop",
+   body:["止损的真正难点不是技术，而是心理。浮亏一旦扩大，我身体里那个声音会说：只要没止损，这笔就还没亏。这是一种「延迟确认」的保护机制——我无法接受「我错了」这件事被正式写下来。",
+         "但这种保护是有代价的：它在情绪上保护我免于「错」的痛苦，却在系统上让我的下一次交易还是基于一个失效的判断。亏的是钱，被保护的是「我应该不会错」这个叙事。"]},
+  {no:"二",zh:"把止损从道德事件变成数据事件",en:"From Moral Event to Data Event",
+   body:["我现在的交易计划只有四件事：仓位、止损位、预计止盈位、品种失效条件。把止损放进计划里，它就是出发前就同意的事——执行它不再是承认我错，而是<b>在执行出发前就已经决定的事</b>。",
+         "这就把它从「道德事件」（我错了）降级成「数据事件」（市场走到了我的失效条件）。前者刺伤自我，后者只触发流程。后者才是交易员需要的回路。"]},
+  {no:"三",zh:"判断错了以后，不崩塌",en:"After the Wrong Call, Don't Collapse",
+   body:["一次坏判断 ≠ 我这个人不行。只要这两者被绑定，反馈就会变得过于痛苦；反馈太痛苦，人就会逃避反馈；逃避反馈，就没有修正——我的整个操作系统就停转了。",
+         "训练的方向不是「永远判断对」，而是<b>判断错了以后不崩塌、不逃避、不自我否定，继续修正</b>。这是交易能给我的最值钱的东西，比任何一次盈利都值钱。"]}
+ ]},
+
+a2:{title:"过度准备，是一种体面的逃避",en:"Over-Preparation Is a Respectable Form of Escape",cat:"自我观察",date:"2026 · 07 · 18",read:"约 10 分钟",ver:"第 1 次修订",
+ intro:"准备让人感觉安全，因为它推迟了被反馈审判的时刻。识别「准备循环」与「行动循环」的边界。",
+ chapters:[
+  {no:"一",zh:"准备循环的形状",en:"The Shape of the Preparation Loop",
+   body:["我发现自己的循环常常长这样：形成理想自我 → 设定很高的人生期待 → 害怕方向错误和低效努力 → 追求完美准备 → 延迟真实行动 → 终于行动时又带着很高心理负荷 → 遇到失败反馈 → 不愿确认失败 → 情绪化逃避或切换方法 → 重新开始准备。",
+         "它不是懒惰，而是一种保护机制——保护的是「我可能不行」这个核心能力信念。我没有不行动；我把「准备好之前的行动」当作还没真正开始，于是保留了「也许我还没失败」的退路。"]},
+  {no:"二",zh:"怎么打破它：最小可验证动作",en:"How to Break It: The Smallest Verifiable Action",
+   body:["我现在每准备一个领域，会先问一个动作：什么是我可以在今天就做出来、并且能在三天内收到真实反馈的最短动作？不是读完所有书，是先做一件事，先拿到反馈。",
+         "反馈越短、越小、越频繁，循环越难自我保护。我宁可完成一件粗糙的事，也不愿完成一次完美的准备。"]},
+  {no:"三",zh:"行动循环与准备循环的边界",en:"The Boundary Between Action and Preparation",
+   body:["判断一个动作属于哪一边，有一条很简单的线：<b>它会不会让我今天产生真实反馈？</b>如果不会，它就是准备——无论它多像在做事。",
+         "这条线比听起来残忍，但它是把「准备循环」和「行动循环」劈开的最稳的刀。备着是好的，假装在动却不在动，是系统最大的一块静默漏损。"]}
+ ]},
+
+a3:{title:"把 AI 用成外脑，而不是拐杖",en:"Use AI as an Exocortex, Not a Crutch",cat:"工具方法论",date:"2026 · 06 · 30",read:"约 9 分钟",ver:"第 2 次修订",
+ intro:"工具放大的是已有的思考结构。没有假设的人从 AI 那里得到的是答案，有假设的人得到的是验证。",
+ chapters:[
+  {no:"一",zh:"AI 不是答案机，是验证器",en:"AI Is Not an Answer Machine, It's a Verifier",
+   body:["第一次认真用 AI 写交易逻辑的时候，我给了一个模糊的问题，得到了一个看似完整的答案。看起来很顺，但其实我做的是：把判断外包出去，然后假装我懂了。",
+         "我后来意识到：AI 真正有用的不是「给我答案」，是「给我提问的能力」。我带着一个具体的假设过去，它帮我检证、帮我列出反例、帮我看见我看不见的盲点——但<b>我必须先有假设</b>。"]},
+  {no:"二",zh:"使用姿势：先写后问",en:"How I Use It: Write First, Ask After",
+   body:["我现在的固定动作是：<b>先自己写出哪怕粗糙的判断，再让 AI 来反驳、补充、补充反例</b>。这样我保留了思考的主体性，AI 提供的只是「我看不见的维度」。",
+         "如果反过来：先问 AI，再去改一改，就容易落进「给 AI 的答案调参」的陷阱——那不是思考，那是在打补丁。"]},
+  {no:"三",zh:"AI 帮我做的三件事",en:"Three Things AI Actually Does for Me",
+   body:["目前最高频的三件事是：一，<b>沉淀可复用的技能</b>（把一个流程写下来，下次不必从头来）；二，<b>加速数据管道</b>（爬数据、清洗、对齐格式，节省小时级时间）；三，<b>扮演对手盘</b>（让一个反方立场攻击我的判断，把论据逼到清晰）。",
+         "这三件事有一个共同点：AI 做的不是「替我思考」，是「把我的思考变快、变稳、变可审计」。这是我认定的健康分工。"]}
+ ]},
+
+a4:{title:"一次坏判断 ≠ 我不行：复盘的基本功",en:"One Bad Call ≠ I'm Not Good Enough",cat:"复盘",date:"2026 · 05 · 28",read:"约 11 分钟",ver:"第 2 次修订",
+ intro:"只要「一次判断错误」与「我这个人不行」被绑定，反馈就会变得过于痛苦；而没有反馈，就没有修正。",
+ chapters:[
+  {no:"一",zh:"我曾经把亏损解读为能力判决",en:"I Once Read a Loss as a Verdict on My Ability",
+   body:["刚全职做交易的时候，每次止损我都难受超过合理范围。后来我意识到：我难受的不是「亏钱」，而是「我又错了」——而「我又错」被我自动升级成「我可能不行」。一次判断错误被悄悄传译成了对自我的判决。",
+         "这种传译一旦被接受，我就在用「避免错误」替代「积累正确」做决策。我开始怕开仓，怕下结论，怕把判断说出口——因为怕又错。"]},
+  {no:"二",zh:"把判断和人格切开",en:"Separating the Call from the Self",
+   body:["我现在做的一步很小的动作是：每次复盘都先问「这次判断错在哪里」——<b>不是「我错在哪里」</b>。",
+         "前者关注判断的可证伪性、可改进性；后者把整件事变成对人的攻击。一旦习惯前者，错就只是一个学习输入；习惯后者，错就等于在玻璃上写字。"]},
+  {no:"三",zh:"复盘的最小可用结构",en:"The Smallest Useful Structure for Review",
+   body:["我现在的复盘只写五件事：事实、推断、触发条件、反例、下一步验证。<b>反例必须先写</b>——下笔前就要想好「什么证据出现就推翻我」。",
+         "这套结构的好处是：复盘不再是安慰自己或谴责自己，而是「对一次判断的最小可审计检查」。下次市场再走到我曾错过的位置，我能更早认出来。"]}
+ ]},
+
+a5:{title:"自由不是保留所有选项",en:"Freedom Is Not Keeping Every Option Open",cat:"长期主义",date:"2026 · 05 · 09",read:"约 9 分钟",ver:"第 1 次修订",
+ intro:"真正的可塑性不是「什么都不选」，而是「选一条路，投入足够长时间，获得真实反馈，然后修正」。",
+ chapters:[
+  {no:"一",zh:"选项太多的代价",en:"The Cost of Too Many Options",
+   body:["有一段时间，我对「别的可能性」上瘾。每次开始一条路，就开始想另一条；每次投入，就感觉失去了一片未知。这种感觉是自由的，但其实我保住的不是自由——是「还没被检验过的想象空间」。",
+         "今年我正式把 ACCA、GMAT、MBA 这几条线全部放下来。一开始觉得「是不是关掉了一扇门」，后来发现，门关掉以后空气反而流进来了——能投入的事情变多了，能深下去的时间变长了。"]},
+  {no:"二",zh:"自由是能在规则内长期生存",en:"Freedom Is Surviving Long Inside a Rule",
+   body:["交易教会我这件事：你以为你在追求「随时可以选择」，但市场很快会让你为「每一次都重新选择」付出昂贵的成本。",
+         "真正的自由不是「想走就走」，是「能在规则内持续」。这要求你承受反反复复的小不适，放弃今天的好心情换明天的可重复。这是结构换自由，不是限制。"]},
+  {no:"三",zh:"可塑性才是底气",en:"Plasticity Is the Real Safety Net",
+   body:["我真正想守住的不是某个具体身份，是「我还能重新开始」的能力。安全感不来自确定性，来自可逆性——只要保留学习、判断、重新选择的勇气，我就没有彻底失败。",
+         "所以「放下来」不是放弃，是把稀缺的时间资源收回能复利的地方。某些选项我放下了，但「我还能再选一次」这件事并没有丢。它是更高的优先级。"]}
+ ]},
+
+a6:{title:"我的每日仪表盘：让数据自己说话",en:"My Daily Dashboard: Let the Data Speak",cat:"工具方法论",date:"2026 · 04 · 20",read:"约 8 分钟",ver:"第 1 次修订",
+ intro:"目的不是预测，而是让每天收盘后，数据的结构自己浮现。",
+ chapters:[
+  {no:"一",zh:"从行情看图，到数据读数",en:"From Reading Charts to Reading Data",
+   body:["开始全职做交易以后，我花了很多时间盯盘。我后来发现这件事有一个上限——再怎么看，眼睛也只能同时容纳有限的几件事。",
+         "我开始把每天的盘面数据化：行业涨跌幅、北向资金、风格轮动、期货资金潮汐……让它们自己出现在一张仪表盘上。一段时间以后，我开始能看见一些我盯盘看不见的模式。"]},
+  {no:"二",zh:"仪表盘不是预测器，是镜子",en:"A Dashboard Is a Mirror, Not a Crystal Ball",
+   body:["我的仪表盘设计原则是「让数据自己说话」：不给结论，只给事实。今天的板块风格、强弱品种、风格切换、波动率，全部是观察对象。",
+         "它不做任何「明天会怎样」的事——这反而是它最大的价值：把「解释数据」和「预测未来」分开。我在用它观察自己的行为模式，也在用它等待「会让我改变看法的反例」。"]},
+  {no:"三",zh:"设计的三条纪律",en:"Three Rules in Designing It",
+   body:["第一，单页、纸面审美、不花哨——我要的是安静读数，不是炫技。第二，每一个指标只在一个地方被分析，避免「同一个数据多观点」造成的混乱。第三，空值就是空值——不替近、不前填、不换基准。",
+         "这三条加在一起，让它成为一面真实而克制的镜子。它不会让我「更有把握」，但它能让我更清楚地看见自己当下的位置。"]}
+ ]},
+
+a7:{title:"为什么把网站做成一座安静的园子",en:"Why This Site Became a Quiet Garden",cat:"关于本站",date:"2026 · 04 · 01",read:"约 7 分钟",ver:"第 1 次修订",
+ intro:"不是作品集、不是 SaaS 落地页、不是新中式装饰——是一份可以回来居住的精神空间。",
+ chapters:[
+  {no:"一",zh:"先想清楚它不是什么",en:"First, What It Is Not",
+   body:["做这个网站之前，我列了三个明确不要：不要作品集（我不卖自己），不要 SaaS 落地页（我不在卖产品），不要新中式装饰（我不想要水墨和祥云的视觉感）。",
+         "我想要的是：克制、留白、长期主义、可以长期回来居住。一个交易员候选人在屏幕前的时间已经够嘈杂了，回到自己这个角落，应该能慢下来。"]},
+  {no:"二",zh:"现代东方极简主义的方法",en:"A Method: Modern Oriental Minimalism",
+   body:["70% 的东方性不通过具象元素实现——不要水墨、不要山水、不要祥云。东方感只能通过留白、虚实、疏密、方圆、空间呼吸来表达。30% 的现代主义给结构：网格、字距、组件化。",
+         "几何上做了两件克制的事：禁用圆角卡片，禁用阴影——只留方、圆、点、线本身。颜色用纸白、墨黑、少量朱砂作印章。唯一可动的太极元素退到导航栏那枚 24px 的日夜切换按钮里——以小见大。"]},
+  {no:"三",zh:"它要陪我走很多年",en:"It Has to Walk with Me for a Long Time",
+   body:["我给自己定的标准是：三年后、十年后，这个站还能让我回来找到当时的自己。视觉要够耐看，内容要够可修订，结构要够灵活。",
+         "所以每一页的页脚都标着「保留修正自己的权利」。每一篇都有日期和版本号。我允许自己改观念、改措辞、改结构——但不允许自己装成熟、装完成、装没有困惑。园子之所以是园子，是因为它一直在长。"]}
+ ]}
+};
+
+var ORDER=['a0','a1','a2','a3','a4','a5','a6','a7'];
+
+function getId(){
+  /* 路由：#a2 锚点优先（file:// 与任何静态服务都兼容），?id=a2 作后备；#s1 等章节锚点不参与路由 */
+  var m=/^#(a\d+)$/i.exec(location.hash);
+  if(m&&ARTICLES[m[1]])return m[1];
+  m=/[?&]id=([a-z0-9]+)/i.exec(location.search);
+  if(m&&ARTICLES[m[1]])return m[1];
+  return 'a0';
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(){
+  var id=getId(),a=ARTICLES[id],idx=ORDER.indexOf(id);
+  var prev=ORDER[idx-1],next=ORDER[idx+1];
+  document.title=(a.title.replace(/<br>/g,' '))+' — 小马';
+
+  /* 目录 */
+  var toc=document.getElementById('tocBox');
+  var tocHTML='';
+  a.chapters.forEach(function(c,i){
+    tocHTML+='<a href="#s'+(i+1)+'" data-spy="s'+(i+1)+'"><span class="no">'+c.no+'</span>'+esc(c.zh)+'</a>';
+  });
+  tocHTML+='<a class="toc-back" href="notes.html"><span class="sq"></span>返回思考</a>';
+  toc.innerHTML=tocHTML;
+
+  /* 正文 */
+  var box=document.getElementById('articleBox');
+  var html='';
+  html+='<p class="crumb rv">思考 NOTES <b>/</b> '+esc(a.cat)+'</p>';
+  html+='<h1 class="rv d1">'+a.title+'</h1>';
+  html+='<div class="art-meta rv d2">'
+      +'<span>'+esc(a.cat)+'</span><i>·</i>'
+      +'<span>'+esc(a.date)+'</span><i>·</i>'
+      +'<span>'+esc(a.read)+'</span><i>·</i>'
+      +'<span>'+esc(a.ver)+'</span></div>';
+  a.chapters.forEach(function(c,i){
+    html+='<h2 id="s'+(i+1)+'" class="rv"><span class="no">'+c.no+'</span>'+esc(c.zh)+'</h2>';
+    c.body.forEach(function(p){
+      html+='<p class="rv">'+p+'</p>';
+    });
+    if(c.pull)html+='<blockquote class="pull rv">'+esc(c.pull.text)+'<small>'+esc(c.pull.small)+'</small></blockquote>';
+    if(c.side)html+='<aside class="sidenote rv"><b>'+esc(c.side.zh)+'</b>'+esc(c.side.text)+'</aside>';
+  });
+  html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
+  box.innerHTML=html;
+
+  /* 上一篇 / 下一篇 */
+  var pn=document.getElementById('pnBox');
+  if(prev||next){
+    var pnHTML='<a href="article.html#'+(prev||'')+'"'+(prev?'':' style="visibility:hidden"')+'>'
+      +'<span class="dir">← 上一篇 · Prev</span>'
+      +'<span class="t">'+esc(ARTICLES[prev]?ARTICLES[prev].title.replace(/<br>/g,' '):'')+'</span></a>';
+    pnHTML+='<a href="article.html#'+(next||'')+'"'+(next?'':' style="visibility:hidden"')+'>'
+      +'<span class="dir">下一篇 · Next →</span>'
+      +'<span class="t">'+esc(ARTICLES[next]?ARTICLES[next].title.replace(/<br>/g,' '):'')+'</span></a>';
+    pn.className='pn rv';
+    pn.innerHTML=pnHTML;
+  }else{pn.innerHTML='';}
+
+  /* 入场动效：观察新插入的 .rv；并加保底（io 不可用/未触发时直接显示首屏） */
+  reveal();
+  /* 目录滚动高亮 */
+  spy();
+}
+
+function reveal(){
+  var els=document.querySelectorAll('.rv');
+  function show(el){el.classList.add('in');}
+  if(!('IntersectionObserver' in window)){
+    els.forEach(show);return;
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){show(e.target);io.unobserve(e.target);}});
+  },{threshold:.1});
+  els.forEach(function(el){io.observe(el);});
+  /* 保底：1.6s 后，凡在首屏内仍未显示的直接显示，防止 io 异常导致白屏 */
+  setTimeout(function(){
+    els.forEach(function(el){
+      if(el.classList.contains('in'))return;
+      var r=el.getBoundingClientRect();
+      if(r.top<window.innerHeight&&r.bottom>0)show(el);
+    });
+  },1600);
+}
+
+function spy(){
+  var links={};
+  document.querySelectorAll('.toc a[data-spy]').forEach(function(a){
+    links[a.getAttribute('data-spy')]=a;
+  });
+  var heads=Object.keys(links).map(function(i){return document.getElementById(i);});
+  var current=null;
+  function update(){
+    var pos=window.scrollY+window.innerHeight*0.28;
+    var active=heads[0];
+    heads.forEach(function(h){if(h&&h.offsetTop<=pos)active=h;});
+    if(active!==current){
+      current=active;
+      Object.keys(links).forEach(function(id){
+        links[id].classList.toggle('on',document.getElementById(id)===active);
+      });
+    }
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  update();
+}
+
+/* 渲染：出错时降级显示默认文章，绝不留白 */
+try{
+  render();
+  window.addEventListener('hashchange',function(){
+    /* 只有 #a数字 形式的锚点才切换文章；#s1 等章节锚点交给浏览器滚动 */
+    if(/^#a\d+$/i.test(location.hash)){
+      render();
+      window.scrollTo(0,0);
+    }
+  });
+}catch(err){
+  document.getElementById('articleBox').innerHTML=
+    '<h1>利率、汇率与情绪</h1><p>页面渲染遇到问题，请返回 <a href="notes.html">思考</a> 列表。</p>';
+  document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in');});
+}
+</script>
+</body>
+</html>

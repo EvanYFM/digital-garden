@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>此刻 — 小马</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f4ee; --ink:#1c1c1a; --charcoal:#2b2b28;
+  --gray:#8a877d; --line:rgba(28,28,26,.16); --line-strong:rgba(28,28,26,.4);
+  --cinnabar:#b3402a;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --paper:#141412; --ink:#e9e6de; --charcoal:#d6d3ca;
+  --gray:#7d7a71; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
+  --cinnabar:#c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;
+  letter-spacing:.02em;transition:background .9s var(--ease),color .9s var(--ease);
+  min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+::selection{background:var(--ink);color:var(--paper)}
+header{display:flex;justify-content:space-between;align-items:center;padding:28px 48px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
+  justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
+nav{display:flex;align-items:center;gap:34px}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  padding:4px 0;opacity:.75;transition:opacity .4s}
+nav a:hover{opacity:1}
+nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
+.taiji{width:24px;height:24px;border:none;background:transparent;cursor:pointer;
+  padding:0;flex:none;color:var(--ink)}
+.taiji svg{display:block;width:100%;height:100%;overflow:visible}
+.taiji .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.55}
+.taiji .still{fill:currentColor}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:0 24px 20vh}
+.mark{width:96px;height:96px;margin-bottom:64px}
+.mark .m-ring{fill:none;stroke:var(--ink);stroke-width:1;opacity:.5}
+.mark .m-dot{fill:var(--ink)}
+.mark .m-still{fill:var(--cinnabar)}
+.mark .breath{transform-origin:48px 48px;animation:breath 13s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+main h1{font-family:var(--serif);font-size:clamp(26px,4vw,36px);font-weight:600;
+  letter-spacing:.24em;margin-bottom:30px}
+main p{font-family:var(--serif);font-size:15px;line-height:2.6;color:var(--charcoal);
+  letter-spacing:.12em;max-width:32em}
+main p em{font-style:normal;color:var(--cinnabar)}
+main small{display:block;margin-top:36px;font-family:var(--sans);font-size:10px;
+  letter-spacing:.34em;color:var(--gray);text-transform:uppercase}
+footer{padding:40px 48px;font-size:11px;color:var(--gray);letter-spacing:.16em;
+  text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="seal">马</span>
+    <span class="brand-name">小马</span>
+  </a>
+  <nav>
+    <a href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
+    <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="about.html">关于<span class="en">ABOUT</span></a>
+    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<main>
+  <svg class="mark" viewBox="0 0 96 96" aria-hidden="true">
+    <g class="breath">
+      <circle class="m-ring" cx="48" cy="48" r="34"/>
+      <circle class="m-dot" cx="48" cy="14" r="2.6"/>
+      <circle class="m-still" cx="48" cy="48" r="1.6"/>
+    </g>
+  </svg>
+  <h1>此 刻</h1>
+  <p>
+    每日的记录，只保存在<em>本地</em>——<br>
+    它们属于写下的那一刻，不参与公开。<br>
+    这里留一个安静的位置，提醒自己：今天唯一需要推进的事，是什么。
+  </p>
+  <small>Records stay local · This page is a placeholder</small>
+</main>
+
+<footer>克制 · 清明 · 长期主义</footer>
+
+<script>
+(function(){
+  var saved=localStorage.getItem('theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',cur);
+    localStorage.setItem('theme',cur);
+  });
+})();
+</script>
+</body>
+</html>

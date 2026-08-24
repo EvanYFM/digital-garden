@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小马 — 克制 · 清明 · 长期主义</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   现代东方极简主义 · 第二版
+   原则：东方哲学内敛于交互与留白，不显性陈列
+   太极退入一枚 22px 的日夜按钮；封面只余字与息
+   ============================================================ */
+:root{
+  --paper:      #f6f4ee;
+  --paper-soft: #efece4;
+  --ink:        #1c1c1a;
+  --charcoal:   #2b2b28;
+  --gray:       #8a877d;
+  --line:       rgba(28,28,26,.16);
+  --line-strong:rgba(28,28,26,.4);
+  --cinnabar:   #b3402a;
+  --serif: "Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:  "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --paper:      #141412;
+  --paper-soft: #1b1b18;
+  --ink:        #e9e6de;
+  --charcoal:   #d6d3ca;
+  --gray:       #7d7a71;
+  --line:       rgba(233,230,222,.16);
+  --line-strong:rgba(233,230,222,.42);
+  --cinnabar:   #c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:300;letter-spacing:.02em;
+  transition:background .9s var(--ease),color .9s var(--ease);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--ink);color:var(--paper)}
+
+/* ---------- 导航 ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:28px 48px;
+}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.seal{
+  width:24px;height:24px;background:var(--cinnabar);
+  display:flex;align-items:center;justify-content:center;
+  color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600;flex:none;
+}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
+nav{display:flex;align-items:center;gap:34px}
+nav a{
+  color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  position:relative;padding:4px 0;opacity:.75;transition:opacity .4s;
+}
+nav a:hover{opacity:1}
+nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
+nav a::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+  background:var(--ink);transition:width .5s var(--ease);
+}
+nav a:hover::after{width:100%}
+
+/* ---------- 太极日夜钮 · 以小见大 ----------
+   常态：一枚单环，日中一点 / 夜中一点
+   悬停：S 形分界缓缓显现，阴阳两仪浮现
+   点击：内盘旋转 180°，黑白互根，昼夜交替          */
+.taiji{
+  width:24px;height:24px;border:none;background:transparent;
+  cursor:pointer;padding:0;flex:none;color:var(--ink);
+}
+.taiji svg{display:block;width:100%;height:100%;overflow:visible}
+.taiji .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.55;transition:opacity .5s}
+.taiji:hover .ring{opacity:1}
+.taiji .disc{transform-origin:12px 12px;transition:transform 1.1s var(--ease)}
+html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
+.taiji .half{
+  fill:currentColor;opacity:0;transform-origin:12px 12px;
+  transform:rotate(-100deg);
+  transition:opacity .7s var(--ease),transform .9s var(--ease);
+}
+.taiji:hover .half{opacity:1;transform:rotate(0deg)}
+.taiji .d1,.taiji .d2{opacity:0;transition:opacity .7s var(--ease) .1s}
+.taiji:hover .d1,.taiji:hover .d2{opacity:1}
+.taiji .d1{fill:var(--paper)}
+.taiji .d2{fill:currentColor}
+/* 常态静点：阳中一点（亮）/ 阴中一点（暗） */
+.taiji .still{fill:currentColor;transition:opacity .5s}
+.taiji:hover .still{opacity:0}
+
+/* ---------- Hero · 封面 ---------- */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:120px 24px 60px;position:relative;
+}
+.hero-kicker{
+  font-size:11px;letter-spacing:.5em;color:var(--gray);
+  text-transform:uppercase;margin-bottom:72px;
+}
+/* 封面唯一图形：一环一点，点循周行 —— 时间、周期、不息 */
+.mark{width:96px;height:96px;margin-bottom:72px}
+.mark .orbit{transform-origin:48px 48px;animation:orbit 48s linear infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.mark .m-ring{fill:none;stroke:var(--ink);stroke-width:1;opacity:.5;transition:stroke .9s}
+.mark .m-dot{fill:var(--ink);transition:fill .9s}
+.mark .m-still{fill:var(--cinnabar)}
+.mark .breath{transform-origin:48px 48px;animation:breath 9s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.hero h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(30px,4.4vw,44px);letter-spacing:.28em;
+  margin-bottom:30px;text-indent:.28em;
+}
+.hero .statement{
+  font-family:var(--serif);font-size:15px;line-height:2.6;
+  color:var(--charcoal);letter-spacing:.14em;max-width:34em;
+}
+.hero .statement em{font-style:normal;color:var(--cinnabar)}
+.hero-en{
+  margin-top:26px;font-size:10px;letter-spacing:.34em;color:var(--gray);
+  text-transform:uppercase;
+}
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  color:var(--gray);font-size:10px;letter-spacing:.4em;
+}
+.scroll-hint .vline{width:1px;height:44px;background:var(--line-strong);overflow:hidden;position:relative}
+.scroll-hint .vline::after{
+  content:"";position:absolute;left:0;top:-100%;width:100%;height:100%;
+  background:var(--ink);animation:drop 2.8s var(--ease) infinite;
+}
+@keyframes drop{0%{top:-100%}55%{top:0}100%{top:100%}}
+
+/* ---------- 通用版式 ---------- */
+main{max-width:1080px;margin:0 auto;padding:0 48px}
+section{padding:120px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:26px;margin-bottom:72px}
+.sec-num{font-family:var(--serif);font-size:13px;color:var(--cinnabar);letter-spacing:.1em}
+.sec-title{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:.2em}
+.sec-en{font-size:10px;letter-spacing:.32em;color:var(--gray);text-transform:uppercase}
+.sec-line{flex:1;height:1px;background:var(--line);transform-origin:left;transform:scaleX(0);transition:transform 1.4s var(--ease)}
+.in .sec-line{transform:scaleX(1)}
+
+/* ---------- 精选思考 ---------- */
+.entry{
+  display:grid;grid-template-columns:64px 1fr 130px;gap:32px;align-items:baseline;
+  padding:34px 0;border-bottom:1px solid var(--line);
+  text-decoration:none;color:var(--ink);position:relative;
+}
+.entry .idx{font-family:var(--serif);font-size:14px;color:var(--gray)}
+.entry .dot{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--ink);margin-right:14px;vertical-align:2px;
+  transform:scale(0);transition:transform .5s var(--ease);
+}
+.entry:hover .dot{transform:scale(1)}
+.entry h3{
+  font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:.06em;
+  margin-bottom:10px;transition:transform .6s var(--ease);
+}
+.entry:hover h3{transform:translateX(10px)}
+.entry .desc{font-size:13px;color:var(--gray);line-height:1.9;max-width:46em}
+.entry .meta{text-align:right;font-size:11px;color:var(--gray);letter-spacing:.12em;line-height:2}
+.entry .meta .cat{color:var(--charcoal)}
+.more-link{
+  display:inline-flex;align-items:center;gap:16px;margin-top:48px;
+  font-size:12px;letter-spacing:.3em;color:var(--ink);text-decoration:none;
+}
+.more-link .sq{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%;transition:background .4s}
+.more-link:hover .sq{background:var(--ink)}
+
+/* ---------- 关注方向 ---------- */
+.focus-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line)}
+.focus{padding:48px 44px;position:relative;transition:background .6s var(--ease)}
+.focus:nth-child(odd){border-right:1px solid var(--line)}
+.focus:nth-child(-n+2){border-bottom:1px solid var(--line)}
+.focus:hover{background:var(--paper-soft)}
+.focus .ring{
+  position:absolute;top:44px;right:44px;width:12px;height:12px;
+  border:1px solid var(--line-strong);border-radius:50%;
+  transition:background .5s,border-color .5s;
+}
+.focus:hover .ring{background:var(--cinnabar);border-color:var(--cinnabar)}
+.focus h4{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.1em;margin-bottom:6px}
+.focus .en{font-size:10px;letter-spacing:.26em;color:var(--gray);text-transform:uppercase}
+.focus p{margin-top:20px;font-size:13px;line-height:2.1;color:var(--charcoal);max-width:26em}
+
+/* ---------- 页脚 ---------- */
+footer{border-top:1px solid var(--line);margin-top:40px}
+.foot-inner{
+  max-width:1080px;margin:0 auto;padding:64px 48px 48px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+}
+.foot-motto{font-family:var(--serif);font-size:15px;letter-spacing:.34em;color:var(--charcoal)}
+.foot-note{font-size:11px;color:var(--gray);letter-spacing:.16em;line-height:2.2;text-align:right}
+.foot-note .en{display:block;letter-spacing:.28em;text-transform:uppercase}
+
+/* ---------- 入场动效 ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+
+@media (max-width:760px){
+  header{padding:20px 22px}
+  nav{gap:18px}
+  nav a .en{display:none}
+  main{padding:0 22px}
+  .entry{grid-template-columns:1fr;gap:10px}
+  .entry .meta{text-align:left}
+  .focus-grid{grid-template-columns:1fr}
+  .focus:nth-child(odd){border-right:none}
+  .focus:nth-child(-n+3){border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="seal">马</span>
+    <span class="brand-name">小马</span>
+  </a>
+  <nav>
+    <a href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
+    <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="about.html">关于<span class="en">ABOUT</span></a>
+    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <g class="disc">
+          <path class="half" d="M12,2 a10,10 0 0 1 0,20 a5,5 0 0 1 0,-10 a5,5 0 0 0 0,-10 z"/>
+          <circle class="d1" cx="12" cy="7" r="1.7"/>
+          <circle class="d2" cx="12" cy="17" r="1.7"/>
+        </g>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<!-- 第一屏 · 封面 -->
+<section class="hero" style="border-top:none;padding-top:120px">
+  <p class="hero-kicker rv">A Quiet Space for Long-Term Thinking</p>
+
+  <!-- 一环一点，点循周行：时间、周期、不息 -->
+  <svg class="mark rv d1" viewBox="0 0 96 96" aria-hidden="true">
+    <g class="breath">
+      <circle class="m-ring" cx="48" cy="48" r="34"/>
+      <g class="orbit">
+        <circle class="m-dot" cx="48" cy="14" r="2.6"/>
+      </g>
+      <circle class="m-still" cx="48" cy="48" r="1.6"/>
+    </g>
+  </svg>
+
+  <h1 class="rv d2">小 马</h1>
+  <p class="statement rv d2">
+    以<em>长期主义</em>为尺，观察宏观与市场；<br>
+    以清醒的自我观察为镜，修炼交易与生活。<br>
+    这里记录思考的过程，而非结论的陈列。
+  </p>
+  <p class="hero-en rv d3">Observe · Verify · Iterate — Notes on Markets, Tools &amp; the Self</p>
+
+  <div class="scroll-hint rv d3">
+    <span>向下</span>
+    <span class="vline"></span>
+  </div>
+</section>
+
+<main>
+  <!-- 第二屏 · 精选思考 -->
+  <section>
+    <div class="sec-head rv">
+      <span class="sec-num">一</span>
+      <h2 class="sec-title">精选思考</h2>
+      <span class="sec-en">Selected Notes</span>
+      <span class="sec-line"></span>
+    </div>
+
+    <a class="entry rv" href="article.html#a1">
+      <span class="idx">一</span>
+      <div>
+        <h3><span class="dot"></span>止损的纪律，与承认错误的自由</h3>
+        <p class="desc">一次坏判断不等于「我不行」。把止损当作系统修正的数据，而非对自我的审判——纪律反而带来自由。</p>
+      </div>
+      <div class="meta"><span class="cat">交易日志</span><br>2026 · 08 · 02</div>
+    </a>
+
+    <a class="entry rv d1" href="article.html#a2">
+      <span class="idx">二</span>
+      <div>
+        <h3><span class="dot"></span>过度准备，是一种体面的逃避</h3>
+        <p class="desc">准备让人感觉安全，因为它推迟了被反馈审判的时刻。识别「准备循环」与「行动循环」的边界。</p>
+      </div>
+      <div class="meta"><span class="cat">自我观察</span><br>2026 · 07 · 18</div>
+    </a>
+
+    <a class="entry rv d2" href="article.html#a3">
+      <span class="idx">三</span>
+      <div>
+        <h3><span class="dot"></span>把 AI 用成外脑，而不是拐杖</h3>
+        <p class="desc">工具放大的是已有的思考结构。没有假设的人得到的是答案，有假设的人得到的是验证。</p>
+      </div>
+      <div class="meta"><span class="cat">工具方法论</span><br>2026 · 06 · 30</div>
+    </a>
+
+    <a class="more-link rv d3" href="notes.html">
+      <span class="sq"></span>全部思考 · ALL NOTES
+    </a>
+  </section>
+
+  <!-- 关注方向 -->
+  <section>
+    <div class="sec-head rv">
+      <span class="sec-num">二</span>
+      <h2 class="sec-title">关注方向</h2>
+      <span class="sec-en">Areas of Focus</span>
+      <span class="sec-line"></span>
+    </div>
+
+    <div class="focus-grid rv d1">
+      <div class="focus">
+        <span class="ring"></span>
+        <h4>宏观与市场研究</h4>
+        <span class="en">Macro &amp; Markets</span>
+        <p>利率、汇率与情绪的结构性观察。先识别主要矛盾，用可证伪的证据说话，输出区间而非点预测。</p>
+      </div>
+      <div class="focus">
+        <span class="ring"></span>
+        <h4>交易系统的修炼</h4>
+        <span class="en">Trading Practice</span>
+        <p>风控、止损纪律与可审查的假设。流程验证优先于结果评价，研究输出不构成投资建议。</p>
+      </div>
+      <div class="focus">
+        <span class="ring"></span>
+        <h4>AI 工具与工作流</h4>
+        <span class="en">AI as Leverage</span>
+        <p>用机器扩展思考的边界：自动化的数据管道、可复用的技能沉淀，以及人机协作的分工原则。</p>
+      </div>
+      <div class="focus">
+        <span class="ring"></span>
+        <h4>长期主义与自我观察</h4>
+        <span class="en">The Long Game</span>
+        <p>复盘、习惯与内在秩序。把自由理解为可重建的能力，而非保留所有选项。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <p class="foot-motto">克制 · 清明 · 长期主义</p>
+    <p class="foot-note">
+      © 2026 小马 · 手工打磨，持续修正
+      <span class="en">Designed &amp; built with restraint</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var saved=localStorage.getItem('theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',cur);
+    localStorage.setItem('theme',cur);
+  });
+})();
+(function(){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.rv,.sec-head').forEach(function(el){io.observe(el);});
+})();
+</script>
+</body>
+</html>

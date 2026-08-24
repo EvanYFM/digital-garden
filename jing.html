@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>观 — 小马</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   观 · 体验区 —— 此心即宇宙
+   一环 · 一点 · 一日
+   中心朱砂之日：明暗呼吸，如日升日落（本心自足）
+   外环一黑点：万物之一，绕心而行
+   鼠标静止时字才浮现，追逐则退去。
+   ============================================================ */
+:root{
+  --paper:#f6f4ee; --ink:#1c1c1a; --charcoal:#2b2b28;
+  --gray:#8a877d; --line:rgba(28,28,26,.16); --cinnabar:#b3402a;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --paper:#141412; --ink:#e9e6de; --charcoal:#d6d3ca;
+  --gray:#7d7a71; --line:rgba(233,230,222,.16); --cinnabar:#c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--serif);font-weight:400;
+  transition:background 1.2s var(--ease);
+  overflow:hidden;height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:28px 48px;
+}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
+  justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
+nav{display:flex;align-items:center;gap:34px}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  padding:4px 0;opacity:.4;transition:opacity .6s}
+nav a:hover{opacity:.85}
+nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
+.taiji{width:24px;height:24px;border:none;background:transparent;cursor:pointer;
+  padding:0;flex:none;color:var(--ink);opacity:.5;transition:opacity .6s}
+.taiji:hover{opacity:1}
+.taiji svg{display:block;width:100%;height:100%;overflow:visible}
+.taiji .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.55}
+.taiji .disc{transform-origin:12px 12px;transition:transform 1.1s var(--ease)}
+html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
+.taiji .half{fill:currentColor;opacity:0;transform-origin:12px 12px;
+  transition:opacity .7s var(--ease)}
+.taiji:hover .half{opacity:1}
+.taiji .d1,.taiji .d2{opacity:0;transition:opacity .7s var(--ease) .1s}
+.taiji:hover .d1,.taiji:hover .d2{opacity:1}
+.taiji .d1{fill:var(--paper)}
+.taiji .d2{fill:currentColor}
+.taiji .still{fill:currentColor}
+
+/* ---------- 舞台：上宇宙，下语录，底部留白 ----------
+   顶部预留导航高度，内容在导航以下的区域内居中，圆环永不被遮挡 */
+.stage{
+  height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:96px 32px 24vh;text-align:center;
+}
+
+/* 宇宙：一环一点一日的极简结构 */
+.cosmos{width:190px;height:190px;margin-bottom:52px;position:relative;
+  transition:opacity 1.1s var(--ease)}
+.cosmos .ring{fill:none;stroke:var(--ink);stroke-width:1;opacity:.32;
+  transition:stroke 1.2s var(--ease)}
+.cosmos .breath{transform-origin:95px 95px;animation:breath 13s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+/* 中心之日：明暗呼吸 + 极缓脉动 —— 日升日落，本心自足 */
+.cosmos .sun{fill:var(--cinnabar);transform-origin:95px 95px;
+  animation:sunCycle 26s ease-in-out infinite;transition:fill 1.2s var(--ease)}
+@keyframes sunCycle{
+  0%  {transform:scale(1);   opacity:.55}
+  50% {transform:scale(1.14);opacity:1}
+  100%{transform:scale(1);   opacity:.55}
+}
+/* 万物之一：绕心而行 */
+.cosmos .orbit{transform-origin:95px 95px;animation:orbit 150s linear infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.cosmos .dot{fill:var(--ink);opacity:.78;transition:fill 1.2s var(--ease)}
+
+/* 语与注：占圆下主区，固定高度防跳动 */
+.quote{max-width:760px;height:280px;opacity:0;
+  transition:opacity 2.8s var(--ease);pointer-events:none;
+  display:flex;flex-direction:column;justify-content:center}
+.quote.on{opacity:1}
+.quote .q{
+  font-size:clamp(21px,3vw,30px);letter-spacing:.22em;line-height:1.9;
+  color:var(--ink);
+}
+.quote .src{
+  font-family:var(--sans);font-size:12px;letter-spacing:.34em;color:var(--gray);
+  margin-top:20px;
+}
+.quote .a{
+  font-family:var(--sans);font-weight:300;font-size:15px;letter-spacing:.08em;
+  line-height:2.2;color:var(--gray);margin-top:24px;
+}
+.quote .a b{font-weight:400;color:var(--charcoal)}
+
+/* 追逐即退去 */
+body.moving .quote{opacity:0!important;transition:opacity 1.1s var(--ease)}
+body.moving .cosmos{opacity:.45}
+
+/* 一次性提示：静止之后永久消失 */
+.hint{
+  position:fixed;bottom:44px;left:50%;transform:translateX(-50%);
+  font-family:var(--sans);font-size:10px;letter-spacing:.44em;text-indent:.44em;
+  color:var(--gray);opacity:.75;transition:opacity 2s var(--ease);
+  white-space:nowrap;
+}
+.hint.gone{opacity:0}
+
+/* ---------- 短视口：圆环与语录同步收缩，保证完整可见 ---------- */
+@media (max-height:820px){
+  .stage{padding:88px 32px 16vh}
+  .cosmos{width:150px;height:150px;margin-bottom:38px}
+  .quote{height:220px}
+  .quote .q{font-size:clamp(18px,2.4vw,24px)}
+  .quote .a{font-size:14px;margin-top:18px}
+}
+@media (max-height:640px){
+  .stage{padding:76px 32px 10vh}
+  .cosmos{width:110px;height:110px;margin-bottom:26px}
+  .quote{height:180px}
+  .quote .q{font-size:16px;letter-spacing:.16em}
+  .quote .src{margin-top:12px}
+  .quote .a{font-size:12.5px;line-height:1.9;margin-top:12px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="seal">马</span>
+    <span class="brand-name">小马</span>
+  </a>
+  <nav>
+    <a href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
+    <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="about.html">关于<span class="en">ABOUT</span></a>
+    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <g class="disc">
+          <path class="half" d="M12,2 a10,10 0 0 1 0,20 a5,5 0 0 1 0,-10 a5,5 0 0 0 0,-10 z"/>
+          <circle class="d1" cx="12" cy="7" r="1.7"/>
+          <circle class="d2" cx="12" cy="17" r="1.7"/>
+        </g>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<div class="stage">
+  <!-- 宇宙：一环 · 一日 · 一点 -->
+  <svg class="cosmos" viewBox="0 0 190 190" aria-hidden="true">
+    <g class="breath">
+      <!-- 环：天地 -->
+      <circle class="ring" cx="95" cy="95" r="78"/>
+      <!-- 日：中心之心，明暗呼吸 -->
+      <circle class="sun" cx="95" cy="95" r="10"/>
+      <!-- 物：万物之一，绕心而行 -->
+      <g class="orbit"><circle class="dot" cx="95" cy="17" r="2.8"/></g>
+    </g>
+  </svg>
+
+  <!-- 语录与注释：静止时轮转 -->
+  <div class="quote" id="quote">
+    <p class="q" id="qText"></p>
+    <p class="src" id="qSrc"></p>
+    <p class="a" id="qNote"></p>
+  </div>
+</div>
+
+<p class="hint" id="hint">让手静止，字才会来</p>
+
+<script>
+/* 日夜切换（全站一致） */
+(function(){
+  var saved=localStorage.getItem('theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',cur);
+    localStorage.setItem('theme',cur);
+  });
+})();
+
+/* 语录五十条：道德经 · 庄子 · 论语 · 孟子 · 周易 · 列子 · 菜根谭 · 坛经 · 传习录 · 大学中庸 */
+var QUOTES=[
+/* —— 道德经 —— */
+{q:"道可道，非常道。",src:"道德经 · 第一章",
+ a:"能被说出来的道，就不是那个恒常的道。<b>语言指向真理，但语言不是真理本身</b>——所以经典只肯指月，不肯给你月亮。"},
+{q:"上善若水。水善利万物而不争。",src:"道德经 · 第八章",
+ a:"最高的善像水：滋养万物，却总往低处流。<b>力量在柔处，不在硬处</b>；不争，反而没有任何东西能与你争。"},
+{q:"知人者智，自知者明。",src:"道德经 · 第三十三章",
+ a:"看懂别人只是聪明，看清自己才是真正的清明。<b>向外的观察可以很多，向内的那一次才是关键</b>。"},
+{q:"大直若屈，大巧若拙，大辩若讷。",src:"道德经 · 第四十五章",
+ a:"最直的东西看似弯曲，最高明的手艺看似笨拙，最能言的人看似迟钝。<b>真正的深度不显山露水</b>——展示出来的巧，往往只到巧的表面。"},
+{q:"为学日益，为道日损。",src:"道德经 · 第四十八章",
+ a:"求知识，靠每天增加；求道，靠每天减少——<b>减去执念、成见与多余的聪明</b>。加法让你更能干，减法让你更自由。"},
+{q:"祸兮福之所倚，福兮祸之所伏。",src:"道德经 · 第五十八章",
+ a:"祸与福互相依存、互相转化。<b>顺境不必得意，逆境不必绝望</b>——此刻的结果，不是终点，只是循环中的一个位置。"},
+{q:"天下难事，必作于易；天下大事，必作于细。",src:"道德经 · 第六十三章",
+ a:"所有难事都从简单处入手，所有大事都从细微处起步。<b>觉得无从下手，往往只是不肯从最小的地方开始</b>。"},
+{q:"合抱之木，生于毫末；九层之台，起于累土。",src:"道德经 · 第六十四章",
+ a:"抱不过来的大树，从一粒种子长起；九层高台，是一筐土一筐土堆的。<b>长期主义不是信念，是算术</b>。"},
+{q:"知足者富，强行者有志。",src:"道德经 · 第三十三章",
+ a:"知道够在哪里的人，才是真正富有；坚持在正路上走的人，才算真有志气。<b>富不在多，在知止；志不在言，在持续</b>。"},
+{q:"见素抱朴，少私寡欲。",src:"道德经 · 第十九章",
+ a:"保持素净的面目，抱住朴实的内心，私心少一点，欲望低一点。<b>这不是清苦，是降噪</b>——噪音少了，本来的声音才听得见。"},
+{q:"夫唯不争，故天下莫能与之争。",src:"道德经 · 第二十二章",
+ a:"正因为不与人争，天下反而没有人能与他争。<b>不争不是退缩，是换了一个别人进不来的维度</b>。"},
+{q:"知止可以不殆。",src:"道德经 · 第三十二章",
+ a:"知道停在哪里，就不会有危险。<b>边界不是限制，是安全带的另一种说法</b>——交易如此，人生也如此。"},
+{q:"大器晚成。",src:"道德经 · 第四十一章",
+ a:"最大的器物，最晚成型。<b>慢不是落后，是大东西的必要工艺</b>——急出来的，都是小件。"},
+{q:"圣人不积，既以为人己愈有。",src:"道德经 · 第八十一章",
+ a:"有道的人不囤积：尽力给予别人，自己反而更充裕。<b>给出去的思考、教学与善意，才是真正留在你身上的</b>。"},
+/* —— 庄子 —— */
+{q:"吾生也有涯，而知也无涯。",src:"庄子 · 养生主",
+ a:"生命有限，知识无限；用有限去追无限，会把自己耗尽。<b>学，但不必穷尽</b>——知道边界在哪里，本身就是一种知。"},
+{q:"至人无己，神人无功，圣人无名。",src:"庄子 · 逍遥游",
+ a:"最高境界的人忘掉自我、不求功业、不慕名声。<b>负担最重的三样东西，恰恰是我、功、名</b>。"},
+{q:"相濡以沫，不如相忘于江湖。",src:"庄子 · 大宗师",
+ a:"泉水干涸时，鱼用唾沫互相湿润；不如各自回到江湖，彼此相忘。<b>最深的爱不是互相抢救，是让对方回到能畅游的水里</b>。"},
+{q:"人皆知有用之用，而莫知无用之用也。",src:"庄子 · 人间世",
+ a:"人都知道「有用」的用处，却不知道「无用」的用处。<b>留白、发呆、散步、无所事事——那正是系统重写自己的时候</b>。"},
+{q:"夏虫不可以语冰。",src:"庄子 · 秋水",
+ a:"活不到冬天的虫子，无法理解冰。<b>你没见过的东西，不代表不存在；你笃信的道理，可能只是你的季节</b>。"},
+{q:"井蛙不可以语于海。",src:"庄子 · 秋水",
+ a:"井底的青蛙无法谈论大海——它不是笨，是它的世界只有井口那么大。<b>每个人都在某口井里，包括正在读这句话的你</b>。"},
+{q:"虚室生白，吉祥止止。",src:"庄子 · 人间世",
+ a:"空出来的房间，才会亮；心空出来，光才进得来。<b>塞得太满的头脑，产生不了真正的洞察</b>。"},
+{q:"水静犹明，而况精神。",src:"庄子 · 天道",
+ a:"静止的水尚且能照见万物，何况人的精神。<b>静不是目的，是照见的前提</b>——水面不平时，看到的都是扭曲的。"},
+/* —— 论语 —— */
+{q:"学而不思则罔，思而不学则殆。",src:"论语 · 为政",
+ a:"只学不想，会迷惘；只想不学，会危险。<b>输入和思考互为验证，缺一边，另一边就开始变形</b>。"},
+{q:"知之为知之，不知为不知，是知也。",src:"论语 · 为政",
+ a:"知道就说知道，不知道就承认不知道——这才是真正的智慧。<b>诚实的无知，好过自信的错误</b>。"},
+{q:"君子和而不同，小人同而不和。",src:"论语 · 子路",
+ a:"君子能与人和谐，但保持自己的不同；小人表面附和，内心并不和睦。<b>真正的合作不需要你放弃判断</b>。"},
+{q:"不怨天，不尤人。",src:"论语 · 宪问",
+ a:"不怪天，不怪人。<b>把归因收回自己手里，才把选择权也收了回来</b>。"},
+{q:"己所不欲，勿施于人。",src:"论语 · 颜渊",
+ a:"自己不想要的，不要强加给别人。<b>这条规则之所以流传两千年，是因为它一次就能完成视角切换</b>。"},
+{q:"岁寒，然后知松柏之后凋也。",src:"论语 · 子罕",
+ a:"天冷了，才知道松柏是最后凋零的。<b>顺境里人人都好；品质，只在压力来临时显形</b>。"},
+{q:"逝者如斯夫，不舍昼夜。",src:"论语 · 子罕",
+ a:"时间像这河水，昼夜不停地流走。<b>孔子没有哀叹，只是看见了——看见流逝本身，就是珍惜的开始</b>。"},
+/* —— 孟子 —— */
+{q:"虽千万人，吾往矣。",src:"孟子 · 公孙丑上",
+ a:"哪怕千万人反对，我也去。<b>这不是莽撞，是主体性完整时自然生出的定力</b>——方向由我认定，代价由我承担。"},
+{q:"行有不得，反求诸己。",src:"孟子 · 离娄上",
+ a:"事情做不成，先回头在自己身上找原因。<b>反求诸己不是自责，是把解决问题的入口放回自己手里</b>。"},
+{q:"我善养吾浩然之气。",src:"孟子 · 公孙丑上",
+ a:"我擅长养护我的浩然之气——它由日复一日的正直积累而成。<b>气不是激出来的，是养出来的</b>。"},
+/* —— 周易 —— */
+{q:"天行健，君子以自强不息。",src:"周易 · 乾卦",
+ a:"天体运行刚健不止，人也当如此。但注意——自强是<b>持续</b>，不是用力：像天一样，是不停，不是拼命。"},
+{q:"地势坤，君子以厚德载物。",src:"周易 · 坤卦",
+ a:"大地宽厚，承载万物，不挑不拣。<b>容得下，才载得起</b>——厚不是软弱，是能承受的总量。"},
+{q:"穷则变，变则通，通则久。",src:"周易 · 系辞下",
+ a:"走到尽头就变化，变化就能通达，通达就能长久。<b>困住你的往往不是路，是不肯变</b>。"},
+/* —— 列子 —— */
+{q:"大道以多歧亡羊，学者以多方丧生。",src:"列子 · 说符",
+ a:"岔路太多，羊就丢了；方向太多，人就废了。<b>选择权太多而不行使，等于没有选择</b>。"},
+{q:"天地无全功，圣人无全能，万物无全用。",src:"列子 · 天瑞",
+ a:"天地也有做不到的事，圣人也有不会的事，万物没有全能的。<b>追求完美之前，先接受残缺是万物的默认设置</b>。"},
+/* —— 菜根谭 —— */
+{q:"风来疏竹，风过而竹不留声；雁度寒潭，雁去而潭不留影。",src:"菜根谭",
+ a:"风吹过竹林，竹不留声音；雁飞过寒潭，潭不留倒影。<b>事情来时全心应对，事情去时不留残余</b>——这是对内耗最好的解药。"},
+{q:"交友须带三分侠气，做人要存一点素心。",src:"菜根谭",
+ a:"交朋友要有一点侠气，做人要留一份素心。<b>对人有义，对己有素——热在外，清在内</b>。"},
+{q:"心不可不虚，虚则义理来居。",src:"菜根谭",
+ a:"心必须留出虚空，道理才住得进来。<b>以为自己全懂的那一刻，就是开始装不进新东西的一刻</b>。"},
+{q:"径路窄处，留一步与人行；滋味浓时，减三分让人尝。",src:"菜根谭",
+ a:"窄路上留一步给别人走，浓味里减三分给别人尝。<b>这不是吃亏，是给自己留出转身的空间</b>。"},
+{q:"宠辱不惊，闲看庭前花开花落。",src:"菜根谭",
+ a:"受宠受辱都不动心，闲看院里花开花落。<b>情绪的稳定不靠压抑，靠把评价权从别人手里拿回来</b>。"},
+/* —— 坛经 —— */
+{q:"菩提本无树，明镜亦非台。本来无一物，何处惹尘埃。",src:"六祖坛经",
+ a:"觉悟本不是一棵树，心也不是一面镜子——本来什么都没有，尘埃落在哪？<b>很多负担，来自先假设了一个需要打扫的自己</b>。"},
+{q:"不是风动，不是幡动，仁者心动。",src:"六祖坛经",
+ a:"不是风在动，不是幡在动，是你的心在动。<b>市场没变、事情没变、世界没变——先动的，常常是解读</b>。"},
+{q:"迷时师度，悟了自度。",src:"六祖坛经",
+ a:"迷惑时需要老师渡你，觉悟之后，自己渡自己。<b>所有外力最终都要换成内在结构，否则一撤走，就退回原样</b>。"},
+/* —— 传习录 · 王阳明 —— */
+{q:"心外无物，心外无理。",src:"传习录",
+ a:"离开心，没有真正被体验的物；离开心，没有被领会的理。<b>世界呈现为什么样，取决于用怎样的一颗心去照它</b>。"},
+{q:"破山中贼易，破心中贼难。",src:"王阳明 · 与杨仕德薛尚谦书",
+ a:"打败山里的贼容易，打败心里的贼难。<b>恐惧、贪婪、自我欺骗——这些贼不用攻城，它们就住在指挥部里</b>。"},
+{q:"知是行之始，行是知之成。",src:"传习录",
+ a:"知是行动的开始，行动是知的完成。<b>没有落地的「知道」，只是听说</b>——知与行本是一件事的两端。"},
+/* —— 大学 · 中庸 —— */
+{q:"知止而后有定，定而后能静。",src:"大学",
+ a:"知道终点在哪里，心才能定；心定了，才能静。<b>焦虑常常不是因为难，是因为不知道边界在哪</b>。"},
+{q:"万物并育而不相害，道并行而不相悖。",src:"中庸",
+ a:"万物一同生长而互不伤害，大道并行而互不冲突。<b>真正的秩序不是统一，是让不同各得其所</b>。"}
+];
+
+/* 静止检测：追逐即退去，静止则显 */
+(function(){
+  var timer=null,hint=document.getElementById('hint'),hinted=false;
+  function moving(){
+    document.body.classList.add('moving');
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      document.body.classList.remove('moving');
+      if(!hinted){hinted=true;setTimeout(function(){hint.classList.add('gone');},4000);}
+    },1400);
+  }
+  document.addEventListener('mousemove',moving);
+  document.addEventListener('wheel',moving);
+  document.addEventListener('keydown',moving);
+  moving();
+})();
+
+/* 语录轮转：不快，不催促 */
+(function(){
+  var box=document.getElementById('quote'),
+      qT=document.getElementById('qText'),
+      qS=document.getElementById('qSrc'),
+      qN=document.getElementById('qNote');
+  var i=0,FADE=2600,HOLD=9500;
+  function show(){
+    var it=QUOTES[i%QUOTES.length];
+    qT.textContent=it.q;
+    qS.textContent=it.src;
+    qN.innerHTML=it.a;
+    box.classList.add('on');
+  }
+  function hide(cb){
+    box.classList.remove('on');
+    setTimeout(cb,1600);
+  }
+  function cycle(){
+    hide(function(){
+      i++;
+      show();
+      setTimeout(cycle,FADE+HOLD);
+    });
+  }
+  setTimeout(function(){show();setTimeout(cycle,FADE+HOLD);},900);
+})();
+</script>
+</body>
+</html>
