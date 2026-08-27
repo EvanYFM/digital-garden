@@ -275,6 +275,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   </div>
 </footer>
 
+<script src="garden-data.js"></script>
 <script>
 (function(){
   var saved=localStorage.getItem('theme');
@@ -291,7 +292,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   },{threshold:.12});
   document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
 })();
-/* ===== 每日此刻索引：读取 now 页的本机记录 ===== */
+/* ===== 每日此刻索引：本机记录 + 云端同步（若有 Token） ===== */
 (function(){
   var KEY='nowEntries';
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
@@ -316,34 +317,47 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(!t)t='已记录状态与方向，未写具体事项';
     return t.length>42?t.slice(0,42)+'…':t;
   }
-  var entries={};
-  try{entries=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
-  var today=todayStr();
-  var saved=Object.keys(entries).sort();
-  var start=saved.length&&saved[0]<today?saved[0]:today;
-  /* 从今天向前列到最早记录日，最多 60 天 */
-  var days=[],d=today;
-  while(d>=start&&days.length<60){days.push(d);d=shift(d,-1);}
-
-  if(!saved.length){
-    list.innerHTML='<p class="nl-empty">还没有任何记录。<a href="now.html">从今天的第一条「此刻」开始 →</a></p>';
-    return;
+  function build(){
+    list.innerHTML='';
+    var entries={};
+    try{entries=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+    var today=todayStr();
+    var saved=Object.keys(entries).sort();
+    var start=saved.length&&saved[0]<today?saved[0]:today;
+    var days=[],d=today;
+    while(d>=start&&days.length<60){days.push(d);d=shift(d,-1);}
+    if(!saved.length){
+      list.innerHTML='<p class="nl-empty">还没有任何记录。<a href="now.html">从今天的第一条「此刻」开始 →</a></p>';
+      return;
+    }
+    var frag=document.createDocumentFragment();
+    days.forEach(function(d){
+      var rec=entries[d];
+      var filled=hasContent(rec);
+      var isToday=(d===today);
+      var p=d.split('-');
+      var wd=WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()];
+      var a=document.createElement('a');
+      a.className='nl'+(isToday?' today':(filled?' sealed':''));
+      a.href='now.html?date='+d;
+      var status=isToday?'今天 · 可修改':(filled?'已封存':'当日未记录');
+      a.innerHTML='<span class="d">'+p[0]+' · '+p[1]+' · '+p[2]+'<span class="wd">'+wd+'</span></span>'
+        +'<span class="x'+(filled?'':' empty')+'">'+(filled?excerpt(rec):(isToday?'今天还未记录，此刻去写':'当日未记录'))+'</span>'
+        +'<span class="stt"><i></i>'+status+'</span>';
+      frag.appendChild(a);
+    });
+    list.appendChild(frag);
   }
-  days.forEach(function(d){
-    var rec=entries[d];
-    var filled=hasContent(rec);
-    var isToday=(d===today);
-    var p=d.split('-');
-    var wd=WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()];
-    var a=document.createElement('a');
-    a.className='nl'+(isToday?' today':(filled?' sealed':''));
-    a.href='now.html?date='+d;
-    var status=isToday?'今天 · 可修改':(filled?'已封存':'当日未记录');
-    a.innerHTML='<span class="d">'+p[0]+' · '+p[1]+' · '+p[2]+'<span class="wd">'+wd+'</span></span>'
-      +'<span class="x'+(filled?'':' empty')+'">'+(filled?excerpt(rec):(isToday?'今天还未记录，此刻去写':'当日未记录'))+'</span>'
-      +'<span class="stt"><i></i>'+status+'</span>';
-    list.appendChild(a);
-  });
+  build();
+  /* 云端有记录时（Token 已在本机设置），拉取合并后重建索引 */
+  GD.pull('now.json').then(function(r){
+    if(!r||!Object.keys(r.data).length)return;
+    var local={};
+    try{local=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+    var merged=GD.mergeNow(local,r.data,todayStr());
+    localStorage.setItem(KEY,JSON.stringify(merged));
+    build();
+  }).catch(function(){});
 })();
 </script>
 </body>

@@ -342,6 +342,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   </div>
 </footer>
 
+<script src="garden-data.js"></script>
 <script>
 (function(){
   var saved=localStorage.getItem('theme');
@@ -358,7 +359,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   },{threshold:.12});
   document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
 })();
-/* ===== 随记：碎片捕捉，存本机 ===== */
+/* ===== 随记：碎片捕捉（本机 + 云端同步） ===== */
 (function(){
   var KEY='fragments';
   var input=document.getElementById('fragInput'),
@@ -375,9 +376,15 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     return d.getFullYear()+' · '+String(d.getMonth()+1).padStart(2,'0')+' · '+String(d.getDate()).padStart(2,'0')
       +'　'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }
+  function syncFrag(arr){
+    return GD.sync('fragments.json',arr,GD.mergeFragments).then(function(r){
+      persist(r.data);render();return r;
+    });
+  }
   function render(){
     var arr=load();
-    count.textContent=arr.length?('共 '+arr.length+' 条 · 灵感先落地，再长成文章'):'灵感先落地，再长成文章';
+    var tip=GD.hasToken()?' · 已开启跨设备同步':' · 存于本机（此刻页可开启同步）';
+    count.textContent=arr.length?('共 '+arr.length+' 条 · 灵感先落地，再长成文章'+tip):('灵感先落地，再长成文章'+tip);
     if(!arr.length){
       list.innerHTML='<p class="frag-empty">还没有随记。闪过的念头别放走——它未必重要，但落地了才有资格被判断。</p>';
       return;
@@ -392,8 +399,9 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     list.querySelectorAll('.fdel').forEach(function(btn){
       btn.addEventListener('click',function(){
         var id=+btn.getAttribute('data-id');
-        persist(load().filter(function(f){return f.t!==id;}));
-        render();
+        var arr=load().filter(function(f){return f.t!==id;});
+        persist(arr);render();
+        if(GD.hasToken())syncFrag(arr).catch(function(){});
       });
     });
   }
@@ -405,11 +413,18 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     persist(arr);
     input.value='';
     render();
+    if(GD.hasToken())syncFrag(arr).catch(function(){});
   });
   input.addEventListener('keydown',function(e){
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){save.click();}
   });
   render();
+  /* 打开页面：静默拉取云端随记并合并 */
+  GD.pull('fragments.json').then(function(r){
+    if(!r)return;
+    var merged=GD.mergeFragments(load(),r.data);
+    persist(merged);render();
+  }).catch(function(){});
 })();
 </script>
 </body>
