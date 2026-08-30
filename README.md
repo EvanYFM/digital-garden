@@ -13,12 +13,13 @@
 | `article.html` | 文章详情（数据驱动，`#a0`~`#a7` 锚点路由） |
 | `research.html` | 研究：四条准则 + 宏观/期货/AI 三主线 |
 | `projects.html` | 项目：宏观工作台 / 期货工作站 / A股仪表盘 |
-| `review.html` | 复盘：循环示意 + 每日此刻索引 + 复盘记录 |
+| `review.html` | 复盘：循环示意 + 每日此刻索引（私密区块，仅本人设备可见）+ 复盘记录 |
 | `about.html` | 关于：一份持续修订的个人操作系统 |
 | `jing.html` | 观：体验区，静止时字才会来 |
-| `now.html` | 此刻：每日记录，支持跨设备同步（见下） |
+| `now.html` | 此刻：每日记录，跨设备同步 + 密码锁（私密页） |
+| `garden-data.js` | 共享数据层：本地优先 + 私有仓库同步（pull/sync/合并，409 重试） |
 
-设计系统见 `DESIGN.md`。
+项目规则与交接入口见 `AGENTS.md`，设计系统见 `DESIGN.md`。
 
 ## 日常更新
 
@@ -42,6 +43,14 @@
 1. GitHub → Settings → Developer settings → Fine-grained tokens → Generate
 2. Repository access：仅 `digital-garden-data`；Permissions：Contents → Read and write
 3. 打开线上「此刻」页 → 底部「同步 · SYNC」→ 粘贴 Token → 保存
+
+## 私密锁（分享给朋友时）
+
+- 「此刻」页受 6 位密码保护；未解锁时整页为锁屏，看不到任何界面
+- 复盘页「每日此刻」区块默认隐藏，仅在已设置同步 Token 的设备上出现
+- 记录本体在私有仓库，无 Token 匿名访问返回 404
+
+安全边界说清楚：前端密码锁**可被懂技术者绕过**（查看源码），但绕过后只能看到一个空表单——真正的数据安全由私有仓库 + Token 保证，密码只是门面，不要把它用在其他重要场合。
 
 ## 本地版与线上版
 
