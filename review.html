@@ -205,11 +205,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <p class="back">修正之后，回到思考 —— 循环上升，而非原地打转</p>
   </div>
 
-  <!-- 每日此刻：来自 now 页的本机记录，当天可改，次日封存 -->
-  <div class="nowlog">
+  <!-- 每日此刻：私密区块，仅已设置同步 Token 的设备可见 -->
+  <div class="nowlog" id="nowlogSec" hidden>
     <div class="index-head rv">
       <h3>每日此刻</h3>
-      <span class="count">当天可修改 · 次日封存 · 未记录亦留痕</span>
+      <span class="count">当天可修改 · 次日封存 · 未记录亦留痕 · 私密区块</span>
     </div>
     <div id="nowlogList"></div>
   </div>
@@ -298,7 +298,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
   var FIELDS=['energy','focusState','feeling','direction','dailyFocus','nextAction','aliveMoment','oldPattern','tomorrowChange'];
   var list=document.getElementById('nowlogList');
-  if(!list)return;
+  var sec=document.getElementById('nowlogSec');
+  if(!list||!sec)return;
+  /* 私密区块：仅已设置同步 Token 的设备显示（朋友设备上整块不可见） */
+  if(!GD.hasToken())return;
+  sec.hidden=false;
   function todayStr(){
     var d=new Date();
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
