@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23b3402a'/%3E%3Ctext x='12' y='17.5' font-family='serif' font-size='14' font-weight='700' fill='%23f6f4ee' text-anchor='middle'%3E%E9%A9%AC%3C/text%3E%3C/svg%3E">
-<meta name="description" content="研究——宏观六变量框架、期货三方持仓与保证金流向、AI 工具与工作流。框架先于观点。">
+<meta name="description" content="研究——宏观六变量框架、期货三方持仓与保证金流向、AI 工具与工作流，以及一棵自下而上生长的横断知识树。框架先于观点。">
 <meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
@@ -114,15 +114,28 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .tags span:last-child{border-right:none}
 .tags span:hover{background:var(--paper-soft)}
 
-/* 探索领域 */
+/* 知识树 */
 .explore{padding:88px 0;border-top:1px solid var(--line)}
-.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:56px 48px;margin-top:56px}
-.exp .er{width:11px;height:11px;border:1px solid var(--gray);border-radius:50%;
-  margin-bottom:20px;transition:border-color .5s}
-.exp:hover .er{border-color:var(--cinnabar)}
-.exp h5{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.1em;margin-bottom:4px}
-.exp .een{font-size:9.5px;letter-spacing:.24em;color:var(--gray);text-transform:uppercase}
-.exp p{margin-top:14px;font-size:12.5px;line-height:2.1;color:var(--gray)}
+.kt-root{border:1px solid var(--line);background:var(--paper-soft);
+  padding:26px 32px;max-width:860px}
+.kt-root .lab{display:block;font-size:10px;letter-spacing:.3em;color:var(--gray);
+  text-transform:uppercase;margin-bottom:12px}
+.kt-root p{font-family:var(--serif);font-size:15px;line-height:2.2;
+  letter-spacing:.06em;color:var(--ink)}
+.kt-list{position:relative;max-width:860px;margin:44px 0 0;padding-left:34px}
+.kt-list::before{content:"";position:absolute;left:3px;top:12px;bottom:12px;
+  width:1px;background:var(--line)}
+.kt-row{position:relative;padding-bottom:40px}
+.kt-row:last-child{padding-bottom:0}
+.kt-row::before{content:"";position:absolute;left:-34px;top:8px;width:7px;height:7px;
+  border:1px solid var(--ink);border-radius:50%;background:var(--paper);
+  transition:background .5s}
+.kt-row:hover::before{background:var(--ink)}
+.kt-row .kh{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.kt-row .kn{font-family:var(--serif);font-size:12px;color:var(--gray);letter-spacing:.1em}
+.kt-row h5{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.1em}
+.kt-row .ken{font-size:9.5px;letter-spacing:.24em;color:var(--gray);text-transform:uppercase}
+.kt-row p{margin-top:12px;font-size:12.5px;line-height:2.1;color:var(--gray);max-width:40em}
 .exp-note{margin-top:48px;font-size:11px;letter-spacing:.2em;color:var(--gray)}
 .exp-note b{font-weight:400;color:var(--cinnabar)}
 
@@ -144,7 +157,6 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   .var:nth-child(odd){border-right:1px solid var(--line)}
   .var:nth-last-child(-n+3){border-bottom:1px solid var(--line)}
   .var:nth-last-child(-n+2){border-bottom:none}
-  .exp-grid{grid-template-columns:1fr 1fr}
 }
 @media (max-width:760px){
   .page-head{padding:150px 0 64px}
@@ -152,10 +164,14 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   nav{gap:16px}
   nav a .en{display:none}
   main{padding:0 22px}
-  .principles,.vars,.exp-grid{grid-template-columns:1fr}
+  .principles,.vars{grid-template-columns:1fr}
   .pr{border-left:none;padding-left:0}
   .var{border-right:none!important;border-bottom:1px solid var(--line)!important}
   .var:last-child{border-bottom:none!important}
+  .kt-root{padding:22px 24px}
+  .kt-list{padding-left:26px}
+  .kt-row::before{left:-26px}
+  .kt-row p{max-width:none}
 }
 
 /* 尊重系统「减少动态效果」设置：动效停，内容全显 */
@@ -283,23 +299,74 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     </div>
   </section>
 
-  <!-- 初步探索 -->
+  <!-- 知识树 -->
   <section class="explore">
     <div class="line-head rv">
       <span class="line-num">四</span>
-      <h2>初步探索</h2>
-      <span class="en">Early Explorations</span>
+      <h2>知识树</h2>
+      <span class="en">The Knowledge Tree</span>
       <span class="ln"></span>
     </div>
-    <div class="exp-grid rv d1">
-      <div class="exp"><div class="er"></div><h5>认知科学</h5><span class="een">Cognitive Science</span><p>判断与决策的机制——直接服务于交易与研究</p></div>
-      <div class="exp"><div class="er"></div><h5>心理学</h5><span class="een">Psychology</span><p>行为偏差与自我叙事——理解自己的保护机制</p></div>
-      <div class="exp"><div class="er"></div><h5>哲学</h5><span class="een">Philosophy</span><p>存在主义与主体性——清醒地活的理论资源</p></div>
-      <div class="exp"><div class="er"></div><h5>人类学</h5><span class="een">Anthropology</span><p>他者的眼光——跳出自身叙事看自身</p></div>
-      <div class="exp"><div class="er"></div><h5>社会学</h5><span class="een">Sociology</span><p>结构与路径依赖——"既定路径"何以成为路径</p></div>
-      <div class="exp"><div class="er"></div><h5>脑神经科学</h5><span class="een">Neuroscience</span><p>情绪与决策的生理基础——止损为何这么难</p></div>
+    <p class="line-intro rv">
+      一棵<b>横断知识树</b>，自下而上生长：哲学提供底层问题，数学与科学方法提供语言，
+      系统与信息提供横断工具，认知科学研究所「人」，经济金融研究群体决策，AI 是新的认知系统——
+      最终回到「人、世界、决策」三个元问题。不为收藏学科，只为<b>认识自我与世界</b>。
+    </p>
+
+    <div class="kt-root rv d1">
+      <span class="lab">根目录 · Three Root Questions</span>
+      <p>世界由什么构成（本体论）　·　我凭什么认为自己知道（认识论）　·　我应当如何行动（决策论）</p>
     </div>
-    <p class="exp-note rv d2"><b>注</b>　以上领域尚在初步探索阶段，不作输出承诺；有进展会更新于此。</p>
+
+    <div class="kt-list rv d2">
+      <div class="kt-row">
+        <div class="kh"><span class="kn">一</span><h5>哲学</h5><span class="ken">Philosophy</span></div>
+        <p>本体论 · 认识论 · 心灵哲学 · 科学哲学——一切学科的根：世界是什么，我为什么相信自己知道。
+          「可证伪」的纪律，由科学哲学给出边界。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">二</span><h5>形式语言</h5><span class="ken">Formal Language</span></div>
+        <p>数学与概率 · 统计与因果 · 计算与算法——把直觉翻译成可计算、可反驳的命题；
+          能被形式化的判断，才能被干净地验证或丢弃。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">三</span><h5>系统与信息</h5><span class="ken">Systems &amp; Information</span></div>
+        <p>反馈 · 控制 · 熵 · 信号与噪声——第一组横断工具：任何学科的对象，
+          都可以重述为「元素—关系—反馈—系统行为」。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">四</span><h5>复杂性</h5><span class="ken">Complexity</span></div>
+        <p>涌现 · 自组织 · 网络 · 演化——树的主干：为什么简单的微观规则能产生复杂的宏观现象。
+          理解涌现之后，「宏观行为没有宏观指挥者」不再是口号。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">五</span><h5>生命与认知</h5><span class="ken">Life &amp; Mind</span></div>
+        <p>神经科学 · 认知科学 · 心灵哲学——开始研究「人」：预测加工的大脑、被构造的世界模型、
+          双系统与奖励回路，以及自我欺骗的生理基础。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">六</span><h5>决策科学</h5><span class="ken">Decision Science</span></div>
+        <p>博弈论 · 行为经济学 · 神经经济学——人与市场之间的桥：为什么短期效用压倒长期效用、
+          为什么止损这么难。交易在这里获得第二重定义。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">七</span><h5>社会与市场</h5><span class="ken">Society &amp; Markets</span></div>
+        <p>经济系统 · 金融市场 · 反身性——由无数决策者构成的复杂适应系统：参与者会学习，
+          价格会反过来改变基本面，市场因此永远不是完全有效。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">八</span><h5>AI</h5><span class="ken">Artificial Intelligence</span></div>
+        <p>机器学习 · LLM · Agents——新的认知系统：前六层的镜子与放大器，
+          以新的方式重新连接每一根主干。研究与工作台，本身就是这条枝干的实验。</p>
+      </div>
+      <div class="kt-row">
+        <div class="kh"><span class="kn">九</span><h5>回到哲学</h5><span class="ken">Return</span></div>
+        <p>意识 · 自由意志 · 理性——树梢与树根相遇：我是谁、我如何知道、我如何行动。
+          学习最后收敛的问题，正是发芽时提出的那些。</p>
+      </div>
+    </div>
+
+    <p class="exp-note rv d3"><b>注</b>　学习自下而上：先打通「认识论、系统、涌现」三个节点——认识世界、组织世界、理解复杂世界；其余按需生长，不作求全承诺。</p>
   </section>
 </main>
 

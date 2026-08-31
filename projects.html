@@ -100,6 +100,9 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   background:var(--cinnabar);margin-right:10px;vertical-align:1px}
 .proj .status .st{font-size:11px;letter-spacing:.2em;color:var(--charcoal)}
 .proj .status .where{display:block;margin-top:12px;font-size:10px;letter-spacing:.16em;color:var(--gray)}
+.proj .status a.where{color:var(--charcoal);text-decoration:underline;
+  text-decoration-color:var(--line-strong);text-underline-offset:5px;transition:color .4s}
+.proj .status a.where:hover{color:var(--ink)}
 .proj::after{content:"";position:absolute;left:0;top:0;width:0;height:1px;
   background:var(--ink);transition:width .8s var(--ease)}
 .proj:hover::after{width:100%}
@@ -192,7 +195,7 @@ footer{border-top:1px solid var(--line)}
     </div>
     <div class="status">
       <span class="dot"></span><span class="st">运行中</span>
-      <span class="where">本地 · localhost:3006</span>
+      <a class="where" href="https://macro-market-workbench.myfpanda.chatgpt.site/" target="_blank" rel="noopener">线上 · macro-market-workbench ↗</a>
     </div>
   </div>
 
@@ -214,7 +217,7 @@ footer{border-top:1px solid var(--line)}
     </div>
     <div class="status">
       <span class="dot"></span><span class="st">运行中</span>
-      <span class="where">本地 · 127.0.0.1:8788</span>
+      <a class="where" href="https://futures-research-workstation.myfpanda.chatgpt.site/" target="_blank" rel="noopener">线上 · futures-research-workstation ↗</a>
     </div>
   </div>
 
@@ -240,7 +243,7 @@ footer{border-top:1px solid var(--line)}
     </div>
   </div>
 
-  <p class="tail rv d3"><b>注</b>　前两个工作台目前在本机运行，未公开部署；它们的方法论会在「研究」与「思考」栏目中展开。</p>
+  <p class="tail rv d3"><b>注</b>　前两个工作台已部署上线；它们的方法论会在「研究」与「思考」栏目中展开。</p>
 </main>
 
 <footer>
