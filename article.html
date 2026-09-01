@@ -531,6 +531,16 @@ function renderUser(id,a){
       +'<span>'+fmtDate(a.created)+'</span><i>·</i>'
       +'<span>第 '+(a.rev||1)+' 次修订</span></div>';
   html+='<div class="md-body rv d2">'+MD.render(a.body)+'</div>';
+  /* 种子区块：孕育本文的随记（编辑器挂载，链回随记锚点） */
+  if(a.seeds&&a.seeds.length){
+    html+='<div class="seeds rv"><div class="lab">种子 <b>/</b> SEEDS — 本文由这些随记长成</div>';
+    a.seeds.forEach(function(s){
+      var href=s.href||(s.ts?'notes.html#f'+s.ts:'notes.html#frags');
+      html+='<a class="seed" href="'+href+'">'
+        +'<span class="d">'+esc(s.d||'')+'</span><span class="t">'+esc(s.t||'')+'</span></a>';
+    });
+    html+='</div>';
+  }
   html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
   box.innerHTML=html;
 

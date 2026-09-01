@@ -146,6 +146,33 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
 .acts .danger:hover{color:var(--cinnabar);opacity:1}
 .acts .hint{font-size:11px;letter-spacing:.14em;color:var(--gray)}
 
+/* 随记 · 种子 */
+.seedsec{margin-top:34px;padding-top:6px}
+.seed-head{display:flex;align-items:baseline;gap:14px;font-size:10px;letter-spacing:.3em;
+  color:var(--gray);text-transform:uppercase;padding-bottom:14px;border-bottom:1px solid var(--line);
+  flex-wrap:wrap}
+.seed-head b{font-weight:400;color:var(--cinnabar)}
+.seed-head em{font-style:normal;letter-spacing:.12em;text-transform:none;flex:1;min-width:200px}
+.seed-chips{display:flex;gap:12px;flex-wrap:wrap;padding:16px 0 2px}
+.seed-chips .noseed{font-size:11px;letter-spacing:.14em;color:var(--gray);opacity:.7}
+.chip{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-size:12px;
+  letter-spacing:.04em;color:var(--charcoal);border:1px solid var(--line);border-radius:2px;
+  padding:6px 12px;background:var(--paper-soft)}
+.chip button{background:none;border:none;cursor:pointer;color:var(--gray);font-size:14px;
+  line-height:1;padding:0;transition:color .4s}
+.chip button:hover{color:var(--cinnabar)}
+.frag-pick{padding:10px 0 0}
+.fp{display:flex;align-items:baseline;gap:18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.fp .fd{font-family:var(--serif);font-size:11px;color:var(--gray);flex:none;width:96px;letter-spacing:.06em}
+.fp .ft{flex:1;font-family:var(--serif);font-size:13.5px;line-height:1.9;color:var(--charcoal)}
+.fp button{background:none;border:1px solid var(--line);border-radius:2px;cursor:pointer;
+  font-family:var(--sans);font-size:11px;letter-spacing:.16em;color:var(--gray);
+  padding:5px 14px;flex:none;transition:color .4s,border-color .4s}
+.fp button:hover{color:var(--cinnabar);border-color:var(--cinnabar)}
+.fp.picked{opacity:.45}
+.fp.picked button{color:var(--ink);border-color:var(--ink)}
+.fpempty{padding:16px 0;font-size:11px;letter-spacing:.14em;color:var(--gray)}
+
 /* 生长状态圆点：与思考页一致 */
 .gd{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:0}
 .gd-ever{background:var(--ink)}
@@ -262,6 +289,12 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       <button id="delBtn" type="button" class="danger">删除</button>
       <span class="hint" id="actHint"></span>
     </div>
+
+    <div class="seedsec">
+      <div class="seed-head">随记 · 种子 <b>/</b> SEEDS<em>挂上孕育这篇文章的随记，发布后在篇末生成「种子」区块，链回原处</em></div>
+      <div id="seedChips" class="seed-chips"></div>
+      <div id="fragPick" class="frag-pick"></div>
+    </div>
   </div>
 
   <div class="works">
@@ -336,6 +369,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     stateSel.value=a?(a.state||'seed'):'seed';
     bodyTa.value=a?a.body||'':'';
     metaUpdate();
+    renderSeeds();
   }
   function renderWorks(){
     var ids=Object.keys(all).sort(function(x,y){return (all[y].updated||0)-(all[x].updated||0);});
@@ -413,12 +447,12 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     if(!GD.hasToken()){hint('未设置同步 Token——请先在「此刻」页设置，再回来发布');return;}
     var a=doSave(true);
     if(a.pub&&a.pub.rev>=a.rev){hint('当前修订已发布过，内容未变');return;}
-    a.pub={rev:a.rev,updated:a.updated,title:a.title,cat:a.cat,state:a.state,body:a.body};
+    a.pub={rev:a.rev,updated:a.updated,title:a.title,cat:a.cat,state:a.state,body:a.body,seeds:a.seeds||[]};
     var file={generated:Date.now(),articles:Object.keys(all)
       .filter(function(k){return all[k].pub;})
       .map(function(k){var x=all[k],p=x.pub;
         return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
-          updated:p.updated,rev:p.rev,body:p.body};})};
+          updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};})};
     syncHint.classList.remove('ok');
     syncText.textContent='发布中…';
     GD.pushPublic('user-articles.json',file).then(function(){
@@ -432,6 +466,74 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       hint('发布失败：'+e.message);
     });
   });
+
+  /* ---------- 随记 · 种子 ---------- */
+  var FRAGS=[];
+  var seedChips=$('seedChips'),fragPick=$('fragPick');
+  function fmtDT(t){
+    var d=new Date(t),p=function(n){return String(n).padStart(2,'0');};
+    return d.getFullYear()+' · '+p(d.getMonth()+1)+' · '+p(d.getDate());
+  }
+  function loadFrags(){
+    try{FRAGS=JSON.parse(localStorage.getItem('fragments'))||[];}catch(e){FRAGS=[];}
+    if(GD.hasToken()){
+      GD.pull('fragments.json').then(function(r){
+        if(!r)return;
+        FRAGS=GD.mergeFragments(FRAGS,r.data);
+        try{localStorage.setItem('fragments',JSON.stringify(FRAGS));}catch(e){}
+        renderFragPick();
+      }).catch(function(){});
+    }
+  }
+  function curSeeds(){
+    return (editing&&all[editing]&&all[editing].seeds)||[];
+  }
+  function renderSeeds(){
+    var s=curSeeds();
+    seedChips.innerHTML=s.length?s.map(function(x,i){
+      return '<span class="chip">种子 · '+MD.esc(String(x.t).slice(0,20))+(String(x.t).length>20?'…':'')
+        +'<button data-i="'+i+'" type="button" title="移除">×</button></span>';
+    }).join(''):'<span class="noseed">尚未挂随记种子——从下方列表挑几条孕育这篇文章的念头</span>';
+    seedChips.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var a=all[editing];if(!a)return;
+        a.seeds.splice(+b.getAttribute('data-i'),1);
+        persist();renderSeeds();renderFragPick();
+        hint('已移除种子 · 保存草稿后生效到云端');
+        syncPrivate();
+      });
+    });
+  }
+  function renderFragPick(){
+    var arr=FRAGS.slice().sort(function(x,y){return y.t-x.t;}).slice(0,12);
+    if(!arr.length){
+      fragPick.innerHTML='<p class="fpempty">本机暂无随记——去思考页种下念头，或设置同步后自动拉取。</p>';
+      return;
+    }
+    fragPick.innerHTML=arr.map(function(f){
+      return '<div class="fp" data-ts="'+f.t+'"><span class="fd">'+fmtDT(f.t)+'</span>'
+        +'<span class="ft">'+MD.esc(String(f.text).slice(0,48))+(String(f.text).length>48?'…':'')+'</span>'
+        +'<button type="button">挂为种子</button></div>';
+    }).join('');
+    fragPick.querySelectorAll('.fp').forEach(function(el){
+      var ts=+el.getAttribute('data-ts');
+      el.classList.toggle('picked',curSeeds().some(function(x){return x.ts===ts;}));
+      el.querySelector('button').addEventListener('click',function(){
+        if(!editing||!all[editing]){hint('先保存草稿，再挂种子');return;}
+        var f=FRAGS.filter(function(x){return x.t===ts;})[0];
+        if(!f)return;
+        var a=all[editing];
+        a.seeds=a.seeds||[];
+        if(a.seeds.some(function(x){return x.ts===ts;})){hint('这条已在种子列表');return;}
+        a.seeds.push({ts:ts,d:fmtDT(ts),t:f.text});
+        persist();renderSeeds();renderFragPick();
+        hint('已挂为种子——记得保存草稿');
+      });
+    });
+  }
+  loadFrags();
+  renderFragPick();
+  renderSeeds();
 
   /* ---------- 页签 ---------- */
   tabEdit.addEventListener('click',function(){setMode(false);});
