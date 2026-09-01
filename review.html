@@ -159,6 +159,15 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .pager button:disabled{opacity:.3;cursor:default}
 .pager span{font-family:var(--serif);font-size:12px;color:var(--gray);letter-spacing:.14em}
 
+/* 未记录的日子：折叠块 */
+.unrec{padding:32px 0 0}
+.unrec #unrecToggle{padding:0;letter-spacing:.2em}
+.unrec-body{margin-top:18px;padding:20px 0;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:10px 24px;line-height:2}
+.unrec-body span{font-family:var(--serif);font-size:11px;color:var(--gray);
+  letter-spacing:.1em;white-space:nowrap}
+.unrec-body .wd{margin-left:6px;color:var(--ink);font-size:10px}
+
 
 footer{border-top:1px solid var(--line);margin-top:60px}
 .foot-inner{max-width:1080px;margin:0 auto;padding:64px 48px 48px;display:flex;
@@ -255,9 +264,17 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   <div class="nowlog" id="nowlogSec" hidden>
     <div class="index-head rv">
       <h3>每日此刻</h3>
-      <span class="count">当天可修改 · 次日封存 · 未记录亦留痕 · 私密区块</span>
+      <span class="count" id="nowCount">已记录 · 当前页 1</span>
+      <button class="sortbtn" id="nowSortBtn" type="button">时间 · 近→远</button>
     </div>
     <div id="nowlogList"></div>
+    <div class="pager" id="nowPager"></div>
+    <div class="unrec" id="unrec">
+      <button class="sortbtn" id="unrecToggle" type="button">
+        未记录的日子 · <span id="unrecCount">0</span> 天
+      </button>
+      <div class="unrec-body" id="unrecBody" hidden></div>
+    </div>
   </div>
 
   <div class="index">
@@ -346,6 +363,12 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   var FIELDS=['energy','focusState','feeling','dailyFocus','notesLife','notesInvest','notesThink','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
   var list=document.getElementById('nowlogList');
   var sec=document.getElementById('nowlogSec');
+  var countEl=document.getElementById('nowCount');
+  var pagerEl=document.getElementById('nowPager');
+  var sortBtn=document.getElementById('nowSortBtn');
+  var unrecBtn=document.getElementById('unrecToggle');
+  var unrecCount=document.getElementById('unrecCount');
+  var unrecBody=document.getElementById('unrecBody');
   if(!list||!sec)return;
   /* 私密区块：仅已设置同步 Token 的设备显示（朋友设备上整块不可见） */
   if(!GD.hasToken())return;
@@ -370,37 +393,87 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(!t)t='已记录状态与方向，未写具体事项';
     return t.length>42?t.slice(0,42)+'…':t;
   }
+  var dir=1, PAGE=10, page=0;  /* dir: 1=近→远(desc), -1=远→近(asc) */
   function build(){
     list.innerHTML='';
     var entries={};
     try{entries=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
     var today=todayStr();
-    var saved=Object.keys(entries).sort();
-    var start=saved.length&&saved[0]<today?saved[0]:today;
-    var days=[],d=today;
-    while(d>=start&&days.length<60){days.push(d);d=shift(d,-1);}
-    if(!saved.length){
+
+    /* 拆分已记录 / 未记录 */
+    var recorded=Object.keys(entries).filter(function(d){return hasContent(entries[d]);});
+    if(!recorded.length){
       list.innerHTML='<p class="nl-empty">还没有任何记录。<a href="now.html">从今天的第一条「此刻」开始 →</a></p>';
+      countEl.textContent='已记录 0 天';
+      pagerEl.innerHTML='';
+      renderUnrecorded(entries,today,[]);
       return;
     }
+    recorded.sort(dir===1?function(a,b){return a<b?1:a>b?-1:0;}:function(a,b){return a>b?1:a<b?-1:0;});
+    var pages=Math.max(1,Math.ceil(recorded.length/PAGE));
+    if(page>=pages)page=pages-1;
+    if(page<0)page=0;
+    var slice=recorded.slice(page*PAGE,page*PAGE+PAGE);
+
     var frag=document.createDocumentFragment();
-    days.forEach(function(d){
+    slice.forEach(function(d){
       var rec=entries[d];
-      var filled=hasContent(rec);
       var isToday=(d===today);
       var p=d.split('-');
       var wd=WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()];
       var a=document.createElement('a');
-      a.className='nl'+(isToday?' today':(filled?' sealed':''));
+      a.className='nl'+(isToday?' today':' sealed');
       a.href='now.html?date='+d;
-      var status=isToday?'今天 · 可修改':(filled?'已封存':'当日未记录');
+      var status=isToday?'今天 · 可修改':'已封存';
       a.innerHTML='<span class="d">'+p[0]+' · '+p[1]+' · '+p[2]+'<span class="wd">'+wd+'</span></span>'
-        +'<span class="x'+(filled?'':' empty')+'">'+(filled?excerpt(rec):(isToday?'今天还未记录，此刻去写':'当日未记录'))+'</span>'
+        +'<span class="x">'+excerpt(rec)+'</span>'
         +'<span class="stt"><i></i>'+status+'</span>';
       frag.appendChild(a);
     });
     list.appendChild(frag);
+
+    countEl.textContent='已记录 '+recorded.length+' 天 · 第 '+(page+1)+' / '+pages+' 页';
+    renderPager(pages);
+    renderUnrecorded(entries,today,recorded);
   }
+  function renderPager(pages){
+    if(pages<=1){pagerEl.innerHTML='';return;}
+    pagerEl.innerHTML='<button id="nowPgPrev" type="button"'+(page<=0?' disabled':'')+'>← 上一页</button>'
+      +'<span>'+ (page+1) +' / '+pages+'</span>'
+      +'<button id="nowPgNext" type="button"'+(page>=pages-1?' disabled':'')+'>下一页 →</button>';
+    var p=document.getElementById('nowPgPrev'),n=document.getElementById('nowPgNext');
+    if(p)p.onclick=function(){if(page>0){page--;build();}};
+    if(n)n.onclick=function(){if(page<pages-1){page++;build();}};
+  }
+  function renderUnrecorded(entries,today,recorded){
+    /* 范围 [earliestSaved .. today]，未在 recorded 也不在 entries 的天即为未记录 */
+    var saved=Object.keys(entries);
+    var earliest=saved.length?saved.slice().sort()[0]:today;
+    var unrec=[];
+    var d=today;
+    while(d>=earliest){
+      var filled=saved.indexOf(d)>=0&&hasContent(entries[d]);
+      if(!filled)unrec.push(d);
+      d=shift(d,-1);
+    }
+    unrecCount.textContent=unrec.length;
+    if(!unrec.length){unrecBody.innerHTML='';unrecBody.hidden=true;return;}
+    unrecBody.innerHTML=unrec.map(function(x){
+      var p=x.split('-'),wd=WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()];
+      return '<span>'+p[0]+' · '+p[1]+' · '+p[2]+'<span class="wd">'+wd+'</span></span>';
+    }).join('');
+  }
+  sortBtn.addEventListener('click',function(){
+    dir=-dir;
+    sortBtn.textContent='时间 · '+(dir===1?'近→远':'远→近');
+    page=0;
+build();
+  });
+  unrecBtn.addEventListener('click',function(){
+    var hidden=unrecBody.hidden;
+    unrecBody.hidden=!hidden;
+    unrecBtn.firstChild.textContent=hidden?'未记录的日子 · 隐藏':'未记录的日子 · ';
+  });
   build();
   /* 云端有记录时（Token 已在本机设置），拉取合并后重建索引 */
   GD.pull('now.json').then(function(r){
