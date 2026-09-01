@@ -174,6 +174,12 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .frag:hover .fdel{opacity:1}
 .frag .fdel:hover{color:var(--cinnabar)}
 .frag-empty{padding:30px 0;font-size:12px;letter-spacing:.14em;color:var(--gray)}
+.frag{scroll-margin-top:120px}
+/* 已长成文章：随记侧的回链 */
+.frag .fgrow{display:block;margin-top:14px;font-family:var(--sans);font-size:11px;
+  letter-spacing:.16em;color:var(--cinnabar);text-decoration:none;width:max-content;
+  border-bottom:1px solid rgba(179,64,42,.32);padding-bottom:3px;transition:opacity .4s}
+.frag .fgrow:hover{opacity:.65}
 
 footer{border-top:1px solid var(--line);margin-top:60px}
 .foot-inner{max-width:1080px;margin:0 auto;padding:64px 48px 48px;display:flex;
@@ -332,7 +338,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   </div>
 
   <!-- 随记 · 数字花园的捕捉层 -->
-  <div class="frag-section">
+  <div class="frag-section" id="frags">
     <div class="index-head rv">
       <h3>随记</h3>
       <span class="count" id="fragCount">灵感先落地，再长成文章</span>
@@ -375,6 +381,10 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 /* ===== 随记：碎片捕捉（本机 + 云端同步） ===== */
 (function(){
   var KEY='fragments';
+  /* 已长成文章的随记登记处：{ 随记时间戳 : {href:'article.html#a1', title:'文章标题'} }
+     某条随记被移植成文章后在此加一行，随记流里即出现「已长成」回链 */
+  var FRAG_GROWN={
+  };
   var input=document.getElementById('fragInput'),
       save=document.getElementById('fragSave'),
       list=document.getElementById('fragList'),
@@ -404,8 +414,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     }
     var html='';
     arr.slice().reverse().forEach(function(f){
-      html+='<div class="frag"><span class="fno">'+fmt(f.t)+'</span>'
-        +'<span class="ftext">'+esc(f.text)+'</span>'
+      var grow=FRAG_GROWN[f.t];
+      html+='<div class="frag" id="f'+f.t+'"><span class="fno">'+fmt(f.t)+'</span>'
+        +'<span class="ftext">'+esc(f.text)
+        +(grow?'<a class="fgrow" href="'+grow.href+'">已长成 · '+esc(grow.title)+' →</a>':'')
+        +'</span>'
         +'<button class="fdel" data-id="'+f.t+'" type="button">移除</button></div>';
     });
     list.innerHTML=html;

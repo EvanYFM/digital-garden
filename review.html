@@ -95,6 +95,18 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .loop .back{font-size:10px;letter-spacing:.3em;color:var(--gray);text-transform:uppercase;
   margin-top:22px;width:100%;text-align:center}
 
+/* ---------- 决策与交易 · 工作站外链 ---------- */
+.ext-strip{display:flex;align-items:center;gap:22px;padding:30px 0;
+  border-top:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.ext-strip .nr{width:10px;height:10px;border:1px solid var(--cinnabar);border-radius:50%;
+  flex:none;transition:background .5s}
+.ext-strip:hover .nr{background:var(--cinnabar)}
+.ext-strip .nt{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.14em;flex:none}
+.ext-strip .nd{font-size:12px;color:var(--gray);letter-spacing:.08em;flex:1;line-height:1.9}
+.ext-strip .na{font-size:11px;letter-spacing:.24em;color:var(--gray);flex:none;
+  transition:color .4s,transform .5s var(--ease)}
+.ext-strip:hover .na{color:var(--ink);transform:translateX(4px)}
+
 /* ---------- 每日此刻 ---------- */
 .nowlog{padding:24px 0 40px;border-top:1px solid var(--line)}
 .nl{display:grid;grid-template-columns:170px 1fr 130px;gap:28px;align-items:baseline;
@@ -158,6 +170,8 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   .row .date{text-align:left}
   .nl{grid-template-columns:1fr;gap:6px}
   .nl .stt{justify-content:flex-start}
+  .ext-strip{flex-wrap:wrap;gap:12px 16px}
+  .ext-strip .nd{flex-basis:100%}
 }
 
 /* 尊重系统「减少动态效果」设置：动效停，内容全显 */
@@ -217,6 +231,14 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <div class="node"><i></i><span>修正</span></div>
     <p class="back">修正之后，回到思考 —— 循环上升，而非原地打转</p>
   </div>
+
+  <!-- 决策与交易：期货工作站入口（数据在站，结论回园） -->
+  <a class="ext-strip rv" href="https://futures-research-workstation.myfpanda.chatgpt.site/" target="_blank" rel="noopener">
+    <span class="nr"></span>
+    <span class="nt">决策与交易</span>
+    <span class="nd">每笔决策的快照、人工确认、退出结果与五日归因 —— 数据在期货工作站，复盘的结论回到这里</span>
+    <span class="na">前往工作站 ↗</span>
+  </a>
 
   <!-- 每日此刻：私密区块，仅已设置同步 Token 的设备可见 -->
   <div class="nowlog" id="nowlogSec" hidden>

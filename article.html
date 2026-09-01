@@ -150,6 +150,18 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 .endmark .ln{flex:1;height:1px;background:var(--line)}
 .endmark .sq{width:9px;height:9px;border:1px solid var(--cinnabar);border-radius:50%}
 
+/* ---------- 种子 · 本文由哪些随记长成 ---------- */
+.seeds{margin:80px 0 0;padding-top:28px;border-top:1px solid var(--line)}
+.seeds .lab{font-size:10px;letter-spacing:.34em;color:var(--gray);text-transform:uppercase;
+  margin-bottom:10px}
+.seeds .lab b{font-weight:400;color:var(--cinnabar)}
+.seed{display:flex;gap:22px;align-items:baseline;padding:14px 0}
+.seed .d{font-family:var(--serif);font-size:12px;color:var(--gray);flex:none;width:104px;
+  letter-spacing:.08em}
+.seed .t{flex:1;font-family:var(--serif);font-size:14px;line-height:2.1;color:var(--charcoal);
+  letter-spacing:.04em;text-decoration:none;transition:color .4s}
+a.seed .t:hover{color:var(--ink)}
+
 /* ---------- 上一篇 / 下一篇 ---------- */
 .pn{
   max-width:660px;margin:0 0 40px;padding:0;border-top:1px solid var(--line);
@@ -189,6 +201,7 @@ footer{border-top:1px solid var(--line)}
   .layout{padding:0 22px}
   .pn{grid-template-columns:1fr}
   .pn a+a{border-left:none;border-top:1px solid var(--line);padding-left:0;text-align:left}
+  .seed{flex-wrap:wrap;gap:6px 22px}
 }
 
 /* 尊重系统「减少动态效果」设置：动效停，内容全显 */
@@ -435,6 +448,15 @@ function render(){
     if(c.pull)html+='<blockquote class="pull rv">'+esc(c.pull.text)+'<small>'+esc(c.pull.small)+'</small></blockquote>';
     if(c.side)html+='<aside class="sidenote rv"><b>'+esc(c.side.zh)+'</b>'+esc(c.side.text)+'</aside>';
   });
+  /* 种子区块：本文由哪些随记长成（文章数据加 seeds:[{d:'日期',t:'随记原文',href:'notes.html#f时间戳'}] 即渲染） */
+  if(a.seeds&&a.seeds.length){
+    html+='<div class="seeds rv"><div class="lab">种子 <b>/</b> SEEDS — 本文由这些随记长成</div>';
+    a.seeds.forEach(function(s){
+      html+='<a class="seed" href="'+(s.href||'notes.html#frags')+'">'
+        +'<span class="d">'+esc(s.d)+'</span><span class="t">'+esc(s.t)+'</span></a>';
+    });
+    html+='</div>';
+  }
   html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
   box.innerHTML=html;
 
