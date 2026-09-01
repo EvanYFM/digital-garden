@@ -186,6 +186,15 @@ a.seed .t:hover{color:var(--ink)}
 .md-body a:hover{opacity:.65}
 .md-body strong{font-weight:600;color:var(--ink)}
 
+/* 用户文章 · 本人操作条 */
+.uacts{display:flex;align-items:center;gap:20px;margin-top:56px;padding-top:22px;
+  border-top:1px solid var(--line)}
+.uacts a,.uacts button{font-size:11px;letter-spacing:.22em;color:var(--gray);
+  text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--sans);
+  padding:0;transition:color .4s}
+.uacts a:hover,.uacts button:hover{color:var(--cinnabar)}
+.uacts i{width:1px;height:12px;background:var(--line)}
+
 /* ---------- 上一篇 / 下一篇 ---------- */
 .pn{
   max-width:660px;margin:0 0 40px;padding:0;border-top:1px solid var(--line);
@@ -531,6 +540,14 @@ function renderUser(id,a){
       +'<span>'+fmtDate(a.created)+'</span><i>·</i>'
       +'<span>第 '+(a.rev||1)+' 次修订</span></div>';
   html+='<div class="md-body rv d2">'+MD.render(a.body)+'</div>';
+  /* 本人设备：编辑 / 删除入口（草稿在本机或已设同步时显示） */
+  var own=false;
+  try{own=!!(JSON.parse(localStorage.getItem('userArticles')||'{}')[id])||GD.hasToken();}catch(e){}
+  if(own){
+    html+='<div class="uacts rv"><a href="write.html#'+id+'">✎ 编辑此文</a><i></i>'
+      +'<button id="delArt" type="button">删除</button><i></i>'
+      +'<a href="write.html">写作台 →</a></div>';
+  }
   /* 种子区块：孕育本文的随记（编辑器挂载，链回随记锚点） */
   if(a.seeds&&a.seeds.length){
     html+='<div class="seeds rv"><div class="lab">种子 <b>/</b> SEEDS — 本文由这些随记长成</div>';
@@ -555,6 +572,27 @@ function renderUser(id,a){
   toc.innerHTML=tocHTML;
   document.getElementById('pnBox').innerHTML='';
   reveal();
+  /* 删除：墓碑标记（tombstone）随同步传播，渲染层一律跳过 */
+  var del=document.getElementById('delArt');
+  if(del)del.addEventListener('click',function(){
+    if(!confirm('删除《'+(a.title||'无题')+'》？草稿将同时从云端移除。'))return;
+    var A={};try{A=JSON.parse(localStorage.getItem('userArticles'))||{};}catch(e){}
+    var hadPub=A[id]&&A[id].pub;
+    A[id]={id:id,deleted:true,updated:Date.now()};
+    try{localStorage.setItem('userArticles',JSON.stringify(A));}catch(e){}
+    delete USER[id];
+    if(GD.hasToken()){
+      GD.sync('articles.json',A,GD.mergeArticles).catch(function(){});
+      if(hadPub){
+        var arts=Object.keys(A).filter(function(k){return !A[k].deleted&&A[k].pub;})
+          .map(function(k){var x=A[k],p=x.pub;
+            return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
+              updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};});
+        GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts}).catch(function(){});
+      }
+    }
+    location.href='notes.html';
+  });
 }
 
 function reveal(){
@@ -609,9 +647,10 @@ try{
       window.scrollTo(0,0);
     }
   });
-  /* 用户文章到达后，若当前正处于其锚点，重渲染 */
+  /* 用户文章到达后，若当前正处于其锚点，重渲染（墓碑条目不对外展示） */
   GD.loadUserArticles(function(all){
     USER=all;
+    Object.keys(USER).forEach(function(k){if(USER[k].deleted)delete USER[k];});
     if(/^#[u]\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search)){render();window.scrollTo(0,0);}
   });
 }catch(err){

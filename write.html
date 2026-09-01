@@ -182,9 +182,21 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
 
 /* 我的作品 */
 .works{padding:44px 0 0;margin-top:26px;border-top:1px solid var(--line)}
+.works-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px}
 .works h3{font-size:10px;letter-spacing:.34em;color:var(--gray);text-transform:uppercase;
   margin-bottom:8px}
 .works h3 b{font-weight:400;color:var(--cinnabar)}
+
+/* 排序 / 分页 */
+.sortbtn{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
+  letter-spacing:.2em;color:var(--gray);padding:0;flex:none;transition:color .4s}
+.sortbtn:hover{color:var(--ink)}
+.pager{display:flex;align-items:center;justify-content:center;gap:28px;padding:34px 0 10px}
+.pager button{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
+  letter-spacing:.22em;color:var(--gray);padding:0;transition:color .4s}
+.pager button:hover:not(:disabled){color:var(--cinnabar)}
+.pager button:disabled{opacity:.3;cursor:default}
+.pager span{font-family:var(--serif);font-size:12px;color:var(--gray);letter-spacing:.14em}
 .work{display:flex;align-items:baseline;gap:22px;padding:20px 0;cursor:pointer;
   border-bottom:1px solid var(--line)}
 .work:hover .wt{transform:translateX(6px)}
@@ -298,8 +310,16 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   </div>
 
   <div class="works">
-    <h3>我的作品 <b>/</b> WORKS</h3>
+    <div class="works-head">
+      <h3>我的作品 <b>/</b> WORKS</h3>
+      <button class="sortbtn" id="workSort" type="button">时间 · 近→远</button>
+    </div>
     <div id="workList"></div>
+    <div class="pager" id="workPager" style="display:none">
+      <button id="wkPrev" type="button">← 上一页</button>
+      <span id="wkInfo"></span>
+      <button id="wkNext" type="button">下一页 →</button>
+    </div>
   </div>
 </main>
 
@@ -371,26 +391,45 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     metaUpdate();
     renderSeeds();
   }
+  var wkDir=1,wkPage=0;
   function renderWorks(){
-    var ids=Object.keys(all).sort(function(x,y){return (all[y].updated||0)-(all[x].updated||0);});
-    if(!ids.length){workList.innerHTML='<p class="empty">还没有作品。写完第一段，按「保存草稿」。</p>';return;}
-    var html='';
-    ids.forEach(function(id){
-      var a=all[id];
-      html+='<div class="work" data-id="'+id+'">'
-        +'<span class="wt">'+MD.esc(a.title||'无题')+'</span>'
-        +'<span class="wm"><span class="gd '+stateDot(a.state)+'"></span> '
-        +MD.esc(a.cat||'')+' · 第 '+(a.rev||1)+' 次修订</span>'
-        +'<span class="pub'+(a.pub?'':' no')+'">'+(a.pub?'已发布 · v'+a.pub.rev:'草稿')+'</span>'
-        +'<span class="wm">'+fmtT(a.updated||0)+'</span></div>';
-    });
-    workList.innerHTML=html;
-    workList.querySelectorAll('.work').forEach(function(w){
-      w.addEventListener('click',function(){openArticle(w.getAttribute('data-id'));});
-    });
+    var ids=Object.keys(all).filter(function(k){return !all[k].deleted;})
+      .sort(function(x,y){return wkDir*((all[y].updated||0)-(all[x].updated||0));});
+    var pages=Math.max(1,Math.ceil(ids.length/10));
+    if(wkPage>=pages)wkPage=pages-1;
+    var slice=ids.slice(wkPage*10,wkPage*10+10);
+    if(!slice.length){workList.innerHTML='<p class="empty">还没有作品。写完第一段，按「保存草稿」。</p>';}
+    else{
+      var html='';
+      slice.forEach(function(id){
+        var a=all[id];
+        html+='<div class="work" data-id="'+id+'">'
+          +'<span class="wt">'+MD.esc(a.title||'无题')+'</span>'
+          +'<span class="wm"><span class="gd '+stateDot(a.state)+'"></span> '
+          +MD.esc(a.cat||'')+' · 第 '+(a.rev||1)+' 次修订</span>'
+          +'<span class="pub'+(a.pub?'':' no')+'">'+(a.pub?'已发布 · v'+a.pub.rev:'草稿')+'</span>'
+          +'<span class="wm">'+fmtT(a.updated||0)+'</span></div>';
+      });
+      workList.innerHTML=html;
+      workList.querySelectorAll('.work').forEach(function(w){
+        w.addEventListener('click',function(){openArticle(w.getAttribute('data-id'));});
+      });
+    }
+    var pg=document.getElementById('workPager');
+    pg.style.display=pages>1?'flex':'none';
+    document.getElementById('wkInfo').textContent=(wkPage+1)+' / '+pages;
+    document.getElementById('wkPrev').disabled=wkPage===0;
+    document.getElementById('wkNext').disabled=wkPage>=pages-1;
   }
+  document.getElementById('workSort').addEventListener('click',function(){
+    wkDir=-wkDir;
+    this.textContent=wkDir===1?'时间 · 近→远':'时间 · 远→近';
+    wkPage=0;renderWorks();
+  });
+  document.getElementById('wkPrev').addEventListener('click',function(){if(wkPage>0){wkPage--;renderWorks();}});
+  document.getElementById('wkNext').addEventListener('click',function(){if(wkPage<99){wkPage++;renderWorks();}});
   function openArticle(id){
-    if(!all[id])return;
+    if(!all[id]||all[id].deleted)return;
     editing=id;fillForm(all[id]);
     if(pvMode)renderPv();
     hint('已打开《'+(all[id].title||'无题')+'》');
@@ -438,10 +477,20 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   });
   $('delBtn').addEventListener('click',function(){
     if(!editing||!all[editing]){hint('当前没有已保存的草稿');return;}
-    if(!confirm('删除《'+(all[editing].title||'无题')+'》？此操作不可撤销。'))return;
-    delete all[editing];editing=null;fillForm(null);
+    if(!confirm('删除《'+(all[editing].title||'无题')+'》？草稿将同时从云端移除。'))return;
+    var hadPub=all[editing].pub;
+    all[editing]={id:editing,deleted:true,updated:Date.now()};
+    editing=null;fillForm(null);
     persist();renderWorks();hint('已删除');
     syncPrivate();
+    /* 已发布过的：同步更新公开列表，从站点撤下 */
+    if(hadPub&&GD.hasToken()){
+      var arts=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].pub;})
+        .map(function(k){var x=all[k],p=x.pub;
+          return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
+            updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};});
+      GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts}).catch(function(){});
+    }
   });
   $('pubBtn').addEventListener('click',function(){
     if(!GD.hasToken()){hint('未设置同步 Token——请先在「此刻」页设置，再回来发布');return;}

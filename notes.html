@@ -125,10 +125,9 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .index-head .wnew{font-size:11px;letter-spacing:.2em;color:var(--cinnabar);text-decoration:none;
   border-bottom:1px solid rgba(179,64,42,.35);padding-bottom:2px;flex:none;transition:opacity .4s}
 .index-head .wnew:hover{opacity:.65}
-.row{display:grid;grid-template-columns:56px 1fr 150px 110px;gap:28px;align-items:baseline;
+.row{display:grid;grid-template-columns:1fr 150px 110px;gap:28px;align-items:baseline;
   padding:26px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);
   position:relative}
-.row .no{font-family:var(--serif);font-size:13px;color:var(--gray)}
 .row h4{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.05em;
   transition:transform .5s var(--ease)}
 .row:hover h4{transform:translateX(8px)}
@@ -138,6 +137,18 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   border-radius:50%;background:var(--ink);transform:translateY(-50%) scale(0);
   transition:transform .4s var(--ease)}
 .row:hover::before{transform:translateY(-50%) scale(1)}
+
+/* 排序 / 分页 */
+.sortbtn{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
+  letter-spacing:.2em;color:var(--gray);padding:0;flex:none;transition:color .4s}
+.sortbtn:hover{color:var(--ink)}
+.pager{display:flex;align-items:center;justify-content:center;gap:28px;padding:34px 0 10px}
+.pager button{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
+  letter-spacing:.22em;color:var(--gray);padding:0;transition:color .4s}
+.pager button:hover:not(:disabled){color:var(--cinnabar)}
+.pager button:disabled{opacity:.3;cursor:default}
+.pager span{font-family:var(--serif);font-size:12px;color:var(--gray);letter-spacing:.14em}
+
 
 /* ---------- 生长状态圆点：种子 / 生长 / 常青 ---------- */
 .gd{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:0;
@@ -294,51 +305,52 @@ footer{border-top:1px solid var(--line);margin-top:60px}
         <i class="gd gd-grow"></i> 生长 · 修订中　
         <i class="gd gd-seed"></i> 种子 · 初想法
       </span>
+      <button class="sortbtn" id="sortBtn" type="button">时间 · 近→远</button>
       <a class="wnew" href="write.html">✎ 写作台</a>
     </div>
 
+    <div id="rowBox">
     <a class="row rv" href="article.html#a1">
-      <span class="no">七</span>
       <h4>止损的纪律，与承认错误的自由</h4>
       <span class="cat"><i class="gd gd-ever"></i>交易日志</span>
       <span class="date">2026 · 08 · 02</span>
     </a>
     <a class="row rv" href="article.html#a2">
-      <span class="no">六</span>
       <h4>过度准备，是一种体面的逃避</h4>
       <span class="cat"><i class="gd gd-grow"></i>自我观察</span>
       <span class="date">2026 · 07 · 18</span>
     </a>
     <a class="row rv" href="article.html#a3">
-      <span class="no">五</span>
       <h4>把 AI 用成外脑，而不是拐杖</h4>
       <span class="cat"><i class="gd gd-ever"></i>工具方法论</span>
       <span class="date">2026 · 06 · 30</span>
     </a>
     <a class="row rv" href="article.html#a4">
-      <span class="no">四</span>
       <h4>一次坏判断 ≠ 我不行：复盘的基本功</h4>
       <span class="cat"><i class="gd gd-grow"></i>复盘</span>
       <span class="date">2026 · 05 · 28</span>
     </a>
     <a class="row rv" href="article.html#a5">
-      <span class="no">三</span>
       <h4>自由不是保留所有选项</h4>
       <span class="cat"><i class="gd gd-grow"></i>长期主义</span>
       <span class="date">2026 · 05 · 09</span>
     </a>
     <a class="row rv" href="article.html#a6">
-      <span class="no">二</span>
       <h4>我的每日仪表盘：让数据自己说话</h4>
       <span class="cat"><i class="gd gd-seed"></i>工具方法论</span>
       <span class="date">2026 · 04 · 20</span>
     </a>
     <a class="row rv" href="article.html#a7">
-      <span class="no">一</span>
       <h4>为什么把网站做成一座安静的园子</h4>
       <span class="cat"><i class="gd gd-seed"></i>关于本站</span>
       <span class="date">2026 · 04 · 01</span>
     </a>
+    </div>
+    <div class="pager" id="pager" style="display:none">
+      <button id="pgPrev" type="button">← 上一页</button>
+      <span id="pgInfo"></span>
+      <button id="pgNext" type="button">下一页 →</button>
+    </div>
   </div>
 
   <!-- 随记 · 数字花园的捕捉层 -->
@@ -458,29 +470,65 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   }).catch(function(){});
 })();
 
-/* ===== 用户文章：追加进条目索引（本地草稿 + 已发布） ===== */
+/* ===== 条目索引：无序号 · 时间流 · 排序切换 · 每 10 篇分页（静态文章 + 我的文章） ===== */
 (function(){
-  var CN=['九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
-          '二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九','三十'];
+  function esc2(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   var list=document.querySelector('.index');
   if(!list)return;
-  GD.loadUserArticles(function(all){
-    var ids=Object.keys(all).sort(function(x,y){return (all[y].updated||0)-(all[x].updated||0);});
-    if(!ids.length)return;
-    ids.forEach(function(id,i){
-      var a=all[id];
-      var cls=a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed';
-      var d=String(a.created||'').split('-');
-      var row=document.createElement('a');
-      row.className='row rv in';
-      row.href='article.html#'+id;
-      row.innerHTML='<span class="no">'+(CN[i]||'·')+'</span>'
-        +'<h4>'+MD.esc(a.title||'无题')+'</h4>'
-        +'<span class="cat"><i class="gd '+cls+'"></i>'+MD.esc(a.cat||'随想')+'</span>'
-        +'<span class="date">'+(d.length===3?d[0]+' · '+d[1]+' · '+d[2]:'')+'</span>';
-      list.appendChild(row);
-    });
+  var box=document.getElementById('rowBox'),pagerEl=document.getElementById('pager'),
+      info=document.getElementById('pgInfo'),
+      prevB=document.getElementById('pgPrev'),nextB=document.getElementById('pgNext');
+  var dir=1,PAGE=10,page=0,pages=1,statics=[],userMap={};
+  function parseD(s){
+    var p=String(s).trim().split(' · ');
+    return p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0;
+  }
+  function fmt(ts){
+    if(!ts)return '';
+    var d=new Date(ts),p=function(n){return String(n).padStart(2,'0');};
+    return d.getFullYear()+' · '+p(d.getMonth()+1)+' · '+p(d.getDate());
+  }
+  /* 静态行一次性收编 */
+  list.querySelectorAll('#rowBox .row').forEach(function(r){
+    var ic=r.querySelector('.cat i');
+    statics.push({href:r.getAttribute('href')||'article.html',
+      title:r.querySelector('h4').textContent.trim(),
+      cat:r.querySelector('.cat').textContent.trim(),
+      cls:ic?ic.className:'',ts:parseD(r.querySelector('.date').textContent)});
   });
+  function userItems(){
+    return Object.keys(userMap).filter(function(id){return !userMap[id].deleted;})
+      .map(function(id){
+        var a=userMap[id],d=String(a.created||'').split('-');
+        return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+          cls:a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed',
+          ts:d.length===3?new Date(+d[0],+d[1]-1,+d[2]).getTime():(a.updated||0)};
+      });
+  }
+  function render(){
+    var items=statics.concat(userItems());
+    items.sort(function(x,y){return dir*(y.ts-x.ts);});
+    pages=Math.max(1,Math.ceil(items.length/PAGE));
+    if(page>=pages)page=pages-1;
+    box.innerHTML=items.slice(page*PAGE,page*PAGE+PAGE).map(function(it){
+      return '<a class="row rv in" href="'+it.href+'"><h4>'+esc2(it.title)+'</h4>'
+        +'<span class="cat">'+(it.cls?'<i class="'+it.cls+'"></i>':'')+esc2(it.cat)+'</span>'
+        +'<span class="date">'+fmt(it.ts)+'</span></a>';
+    }).join('');
+    pagerEl.style.display=pages>1?'flex':'none';
+    info.textContent=(page+1)+' / '+pages;
+    prevB.disabled=page===0;
+    nextB.disabled=page>=pages-1;
+  }
+  document.getElementById('sortBtn').addEventListener('click',function(){
+    dir=-dir;
+    this.textContent=dir===1?'时间 · 近→远':'时间 · 远→近';
+    page=0;render();
+  });
+  prevB.addEventListener('click',function(){if(page>0){page--;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
+  nextB.addEventListener('click',function(){if(page<pages-1){page++;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
+  render();
+  GD.loadUserArticles(function(m){userMap=m;render();});
 })();
 </script>
 </body>
