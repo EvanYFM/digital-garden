@@ -119,6 +119,8 @@ body.ro .st input{border-bottom-color:transparent;cursor:default}
 /* 字段 */
 .fields{padding:24px 0 8px}
 .field{padding:34px 0;border-bottom:1px solid var(--line)}
+.field.legacy{display:none}
+.field.legacy.show{display:block}
 .field label{display:flex;align-items:baseline;gap:16px;font-size:10.5px;
   letter-spacing:.3em;color:var(--gray);text-transform:uppercase;margin-bottom:18px}
 .field label .zh{font-size:12px;letter-spacing:.24em;color:var(--charcoal)}
@@ -131,6 +133,14 @@ body.ro .st input{border-bottom-color:transparent;cursor:default}
   font-weight:400}
 .field.big textarea{font-size:19px;line-height:2.1;font-weight:600}
 body.ro .field input,body.ro .field textarea{cursor:default}
+
+/* 随感小节头 */
+.fields-head{display:flex;align-items:center;gap:16px;padding:48px 0 2px;
+  font-size:10px;letter-spacing:.3em;color:var(--gray);text-transform:uppercase}
+.fields-head .zh{font-family:var(--serif);font-size:14px;font-weight:600;
+  letter-spacing:.24em;color:var(--charcoal)}
+.fields-head em{font-style:normal;letter-spacing:.14em}
+.fields-head::after{content:"";flex:1;height:1px;background:var(--line)}
 
 /* 保存 / 备份 */
 .save-row{display:flex;align-items:center;gap:24px;padding:48px 0 24px;flex-wrap:wrap}
@@ -291,7 +301,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <p class="en-title rv d2">Now — The Only Thing That Matters Today</p>
     <p class="lede rv d3">
       不被信息碎片与外界情绪裹挟。<br>
-      每天只回答一个问题：今天唯一需要推进的事，是什么。
+      每天只回答一个问题：今天唯一需要推进的事，是什么。<br>
+      其余的，有感悟就写，没有就留白。
     </p>
   </div>
 
@@ -322,29 +333,45 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </div>
   </div>
 
-  <!-- 字段 -->
+  <!-- 字段：一个问题 + 三栏随感（有则写，无则不写） -->
   <div class="fields">
-    <div class="field rv d1">
-      <label><span class="zh">阶段方向</span>DIRECTION</label>
-      <textarea data-key="direction" rows="3" placeholder="三十天尺度上，我在往哪里走……"></textarea>
-    </div>
-    <div class="field big rv d2">
+    <div class="field big rv d1">
       <label><span class="zh">今日唯一重点</span>THE ONE THING</label>
       <textarea data-key="dailyFocus" rows="2" placeholder="今天只做一件事……"></textarea>
     </div>
+
+    <div class="fields-head rv d1"><span class="zh">随感</span>REFLECTIONS<em>有则写，无则不写</em></div>
+    <div class="field rv d1">
+      <label><span class="zh">生活</span>LIFE</label>
+      <textarea data-key="notesLife" rows="2" placeholder="生活的观察与感受……"></textarea>
+    </div>
     <div class="field rv d2">
+      <label><span class="zh">投资</span>INVESTING</label>
+      <textarea data-key="notesInvest" rows="2" placeholder="盘面、持仓与判断……"></textarea>
+    </div>
+    <div class="field rv d2">
+      <label><span class="zh">思考</span>THINKING</label>
+      <textarea data-key="notesThink" rows="2" placeholder="闪过的念头与未成形的想法……"></textarea>
+    </div>
+
+    <!-- 旧版字段：仅当历史记录里写过内容时才显示，新记录不再出现 -->
+    <div class="field legacy rv d3">
+      <label><span class="zh">阶段方向</span>DIRECTION</label>
+      <textarea data-key="direction" rows="3" placeholder="三十天尺度上，我在往哪里走……"></textarea>
+    </div>
+    <div class="field legacy rv d3">
       <label><span class="zh">下一步动作</span>NEXT ACTION</label>
       <input data-key="nextAction" placeholder="最小、可立即执行的一步……" autocomplete="off">
     </div>
-    <div class="field rv d3">
+    <div class="field legacy rv d3">
       <label><span class="zh">今天最有生命感的时刻</span>ALIVE MOMENT</label>
       <textarea data-key="aliveMoment" rows="2" placeholder="一句话记下它……"></textarea>
     </div>
-    <div class="field rv d3">
+    <div class="field legacy rv d3">
       <label><span class="zh">旧模式何时出现</span>OLD PATTERN</label>
       <textarea data-key="oldPattern" rows="2" placeholder="今天什么时候又开始准备、逃避或自我怀疑……"></textarea>
     </div>
-    <div class="field rv d3">
+    <div class="field legacy rv d3">
       <label><span class="zh">明天只修正一点</span>ONE FIX</label>
       <input data-key="tomorrowChange" placeholder="只改一个变量……" autocomplete="off">
     </div>
@@ -437,7 +464,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
 (function(){
   var KEY='nowEntries';
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
-  var FIELDS=['energy','focusState','feeling','direction','dailyFocus','nextAction','aliveMoment','oldPattern','tomorrowChange'];
+  var FIELDS=['energy','focusState','feeling','dailyFocus','notesLife','notesInvest','notesThink','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
+  var LEGACY=['direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
 
   function todayStr(){
     var d=new Date();
@@ -455,8 +483,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   var seed={};
   seed[todayStr()]={
     energy:'平稳',focusState:'单点',feeling:'清醒且平静',
-    direction:'用三十天重建秩序：每天只做一件有复利的事——研究、复盘、执行中最薄弱的一环；以可验证的方式迭代，降低噪音，提升确定性。',
-    dailyFocus:'',nextAction:'',aliveMoment:'',oldPattern:'',tomorrowChange:''
+    dailyFocus:'',notesLife:'',notesInvest:'',notesThink:''
   };
 
   var entries=Object.assign({},seed,load());
@@ -484,6 +511,11 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     document.querySelectorAll('[data-key]').forEach(function(el){
       el.value=data[el.getAttribute('data-key')]||'';
       el.readOnly=isReadOnly();
+    });
+    /* 旧版字段：历史记录里写过才显示 */
+    LEGACY.forEach(function(k){
+      var f=document.querySelector('.field.legacy [data-key="'+k+'"]');
+      if(f)f.parentNode.classList.toggle('show',!!String(data[k]||'').trim());
     });
     document.body.classList.toggle('ro',isReadOnly());
     banner.classList.toggle('on',selected!==today);
