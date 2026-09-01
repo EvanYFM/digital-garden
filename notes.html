@@ -501,7 +501,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       .map(function(id){
         var a=userMap[id],d=String(a.created||'').split('-');
         return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
-          cls:a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed',
+          cls:'gd '+(a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed'),
           ts:d.length===3?new Date(+d[0],+d[1]-1,+d[2]).getTime():(a.updated||0)};
       });
   }
