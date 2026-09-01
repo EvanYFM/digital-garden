@@ -162,6 +162,30 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
   letter-spacing:.04em;text-decoration:none;transition:color .4s}
 a.seed .t:hover{color:var(--ink)}
 
+/* ---------- 用户文章 · Markdown 正文 ---------- */
+.md-body{margin-top:14px}
+.md-body h2,.md-body h3,.md-body h1{font-family:var(--serif);font-weight:600;color:var(--ink);
+  scroll-margin-top:120px}
+.md-body h1,.md-body h2{font-size:clamp(20px,3vw,26px);letter-spacing:.06em;
+  margin:72px 0 8px;padding-top:28px;border-top:1px solid var(--line)}
+.md-body h1:first-child,.md-body h2:first-child{margin-top:24px;border-top:none;padding-top:0}
+.md-body h3{font-size:18px;letter-spacing:.05em;margin:48px 0 6px}
+.md-body p{margin:0 0 18px}
+.md-body ul,.md-body ol{margin:0 0 18px;padding-left:26px}
+.md-body li{margin-bottom:10px;line-height:2.1}
+.md-body blockquote{margin:34px 0;padding:2px 0 2px 22px;border-left:2px solid var(--cinnabar);
+  font-family:var(--serif);font-size:16px;line-height:2.2;color:var(--charcoal)}
+.md-body code{font-family:'Sarasa Mono SC',ui-monospace,monospace;font-size:13.5px;
+  background:var(--paper-soft);border-radius:3px;padding:2px 7px;letter-spacing:.02em}
+.md-body pre{background:var(--paper-soft);border-radius:4px;padding:18px 22px;overflow:auto;
+  margin:0 0 18px}
+.md-body pre code{background:none;padding:0}
+.md-body hr{border:none;border-top:1px solid var(--line);margin:44px 0}
+.md-body a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--cinnabar);
+  padding-bottom:1px;transition:opacity .4s}
+.md-body a:hover{opacity:.65}
+.md-body strong{font-weight:600;color:var(--ink)}
+
 /* ---------- 上一篇 / 下一篇 ---------- */
 .pn{
   max-width:660px;margin:0 0 40px;padding:0;border-top:1px solid var(--line);
@@ -263,6 +287,8 @@ footer{border-top:1px solid var(--line)}
   </div>
 </footer>
 
+<script src="garden-data.js"></script>
+<script src="md.js"></script>
 <script>
 /* 日夜切换 */
 (function(){
@@ -404,19 +430,30 @@ a7:{title:"为什么把网站做成一座安静的园子",en:"Why This Site Beca
 
 var ORDER=['a0','a1','a2','a3','a4','a5','a6','a7'];
 
+/* 用户文章：本地草稿（含云端同步）+ 公开发布（user-articles.json），由 GD.loadUserArticles 合并 */
+var USER={};
+function fmtDate(d){
+  var p=String(d||'').split('-');
+  if(p.length===3)return p[0]+' · '+p[1]+' · '+p[2];
+  return esc(d||'');
+}
+
 function getId(){
-  /* 路由：#a2 锚点优先（file:// 与任何静态服务都兼容），?id=a2 作后备；#s1 等章节锚点不参与路由 */
-  var m=/^#(a\d+)$/i.exec(location.hash);
-  if(m&&ARTICLES[m[1]])return m[1];
+  /* 路由：#a2 / #u1756… 锚点优先（file:// 与任何静态服务都兼容），?id= 作后备；#s1 等章节锚点不参与路由 */
+  var m=/^#([au]\d+)$/i.exec(location.hash);
+  if(m&&(ARTICLES[m[1]]||USER[m[1]]))return m[1];
   m=/[?&]id=([a-z0-9]+)/i.exec(location.search);
-  if(m&&ARTICLES[m[1]])return m[1];
+  if(m&&(ARTICLES[m[1]]||USER[m[1]]))return m[1];
   return 'a0';
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function render(){
-  var id=getId(),a=ARTICLES[id],idx=ORDER.indexOf(id);
+  var id=getId(),a=ARTICLES[id]||USER[id],idx=ORDER.indexOf(id);
   var prev=ORDER[idx-1],next=ORDER[idx+1];
+  if(!a)return;
+  /* 用户文章走 Markdown 渲染分支 */
+  if(id.charAt(0)==='u'){renderUser(id,a);return;}
   document.title=(a.title.replace(/<br>/g,' '))+' — 小马';
   var md=document.querySelector('meta[name="description"]');
   if(md)md.setAttribute('content',(a.intro||'').replace(/<[^>]+>/g,''));
@@ -479,6 +516,37 @@ function render(){
   spy();
 }
 
+/* 用户文章：Markdown 正文 + 自动目录（H2 收进左侧），无上一篇下一篇 */
+function renderUser(id,a){
+  document.title=(a.title||'无题')+' — 小马';
+  var md=document.querySelector('meta[name="description"]');
+  if(md)md.setAttribute('content',(a.intro||String(a.body||'').replace(/[#>*`\-\[\]]/g,'').slice(0,80)));
+
+  var box=document.getElementById('articleBox');
+  var html='';
+  html+='<p class="crumb rv">思考 NOTES <b>/</b> '+esc(a.cat||'随想')+'</p>';
+  html+='<h1 class="rv d1">'+esc(a.title||'无题')+'</h1>';
+  html+='<div class="art-meta rv d2">'
+      +'<span>'+esc(a.cat||'随想')+'</span><i>·</i>'
+      +'<span>'+fmtDate(a.created)+'</span><i>·</i>'
+      +'<span>第 '+(a.rev||1)+' 次修订</span></div>';
+  html+='<div class="md-body rv d2">'+MD.render(a.body)+'</div>';
+  html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
+  box.innerHTML=html;
+
+  /* 目录：从 Markdown 的 ## 标题自动生成 */
+  var toc=document.getElementById('tocBox');
+  var tocHTML='',n=0;
+  box.querySelectorAll('.md-body h2').forEach(function(h){
+    n++;h.id='s'+n;
+    tocHTML+='<a href="#s'+n+'"><span class="no">'+n+'</span>'+esc(h.textContent)+'</a>';
+  });
+  tocHTML+='<a class="toc-back" href="notes.html"><span class="sq"></span>返回思考</a>';
+  toc.innerHTML=tocHTML;
+  document.getElementById('pnBox').innerHTML='';
+  reveal();
+}
+
 function reveal(){
   var els=document.querySelectorAll('.rv');
   function show(el){el.classList.add('in');}
@@ -525,11 +593,16 @@ function spy(){
 try{
   render();
   window.addEventListener('hashchange',function(){
-    /* 只有 #a数字 形式的锚点才切换文章；#s1 等章节锚点交给浏览器滚动 */
-    if(/^#a\d+$/i.test(location.hash)){
+    /* 只有 #a数字 / #u数字 形式的锚点才切换文章；#s1 等章节锚点交给浏览器滚动 */
+    if(/^#[au]\d+$/i.test(location.hash)){
       render();
       window.scrollTo(0,0);
     }
+  });
+  /* 用户文章到达后，若当前正处于其锚点，重渲染 */
+  GD.loadUserArticles(function(all){
+    USER=all;
+    if(/^#[u]\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search)){render();window.scrollTo(0,0);}
   });
 }catch(err){
   document.getElementById('articleBox').innerHTML=

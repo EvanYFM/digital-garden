@@ -16,7 +16,10 @@ var GD=(function(){
   function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))));}
 
   function api(method,path,body){
-    return fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+'/contents/'+path,{
+    return apiRepo(REPO,method,path,body);
+  }
+  function apiRepo(repo,method,path,body){
+    return fetch('https://api.github.com/repos/'+OWNER+'/'+repo+'/contents/'+path,{
       method:method,
       headers:{
         'Accept':'application/vnd.github+json',
@@ -87,6 +90,41 @@ var GD=(function(){
     return out;
   }
 
+  /* 发布到公开仓库（数字花园本体，EvanYFM/digital-garden）：
+     把已发布文章写入 user-articles.json，Pages 约 1 分钟后全站可见 */
+  function pushPublic(path,obj){
+    var body={message:'publish '+path+' · '+new Date().toISOString().slice(0,16),
+      content:b64e(JSON.stringify(obj))};
+    return apiRepo('digital-garden','GET',path).then(function(j){
+      if(j)body.sha=j.sha;
+      return apiRepo('digital-garden','PUT',path,body);
+    });
+  }
+
+  /* 用户文章合并：按 id，updated 较新者胜 */
+  function mergeArticles(local,remote){
+    var out={},k;
+    for(k in remote)out[k]=remote[k];
+    for(k in local){
+      if(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0))out[k]=local[k];
+    }
+    return out;
+  }
+
+  /* 加载用户文章（本地草稿 + 公开发布合并），cb(all) */
+  function loadUserArticles(cb){
+    var local={};
+    try{local=JSON.parse(localStorage.getItem('userArticles'))||{};}catch(e){}
+    fetch('user-articles.json?t='+Date.now()).then(function(r){
+      return r.ok?r.json():null;
+    }).catch(function(){return null;}).then(function(pub){
+      if(pub&&pub.articles)local=mergeArticles(local,
+        pub.articles.reduce(function(m,a){m[a.id]=a;return m;},{}));
+      cb(local);
+    });
+  }
+
   return {token:token,setToken:setToken,hasToken:hasToken,
-    pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments};
+    pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments,
+    pushPublic:pushPublic,mergeArticles:mergeArticles,loadUserArticles:loadUserArticles};
 })();

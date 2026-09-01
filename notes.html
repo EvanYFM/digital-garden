@@ -119,9 +119,12 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 
 /* ---------- 文章索引 ---------- */
 .index{padding:88px 0 40px;border-top:1px solid var(--line)}
-.index-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:56px}
+.index-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:56px;gap:20px}
 .index-head h3{font-family:var(--serif);font-size:18px;font-weight:600;letter-spacing:.24em}
 .index-head .count{font-size:11px;color:var(--gray);letter-spacing:.2em}
+.index-head .wnew{font-size:11px;letter-spacing:.2em;color:var(--cinnabar);text-decoration:none;
+  border-bottom:1px solid rgba(179,64,42,.35);padding-bottom:2px;flex:none;transition:opacity .4s}
+.index-head .wnew:hover{opacity:.65}
 .row{display:grid;grid-template-columns:56px 1fr 150px 110px;gap:28px;align-items:baseline;
   padding:26px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);
   position:relative}
@@ -291,6 +294,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
         <i class="gd gd-grow"></i> 生长 · 修订中　
         <i class="gd gd-seed"></i> 种子 · 初想法
       </span>
+      <a class="wnew" href="write.html">✎ 写作台</a>
     </div>
 
     <a class="row rv" href="article.html#a1">
@@ -362,6 +366,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 </footer>
 
 <script src="garden-data.js"></script>
+<script src="md.js"></script>
 <script>
 (function(){
   var saved=localStorage.getItem('theme');
@@ -451,6 +456,31 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     var merged=GD.mergeFragments(load(),r.data);
     persist(merged);render();
   }).catch(function(){});
+})();
+
+/* ===== 用户文章：追加进条目索引（本地草稿 + 已发布） ===== */
+(function(){
+  var CN=['九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
+          '二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九','三十'];
+  var list=document.querySelector('.index');
+  if(!list)return;
+  GD.loadUserArticles(function(all){
+    var ids=Object.keys(all).sort(function(x,y){return (all[y].updated||0)-(all[x].updated||0);});
+    if(!ids.length)return;
+    ids.forEach(function(id,i){
+      var a=all[id];
+      var cls=a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed';
+      var d=String(a.created||'').split('-');
+      var row=document.createElement('a');
+      row.className='row rv in';
+      row.href='article.html#'+id;
+      row.innerHTML='<span class="no">'+(CN[i]||'·')+'</span>'
+        +'<h4>'+MD.esc(a.title||'无题')+'</h4>'
+        +'<span class="cat"><i class="gd '+cls+'"></i>'+MD.esc(a.cat||'随想')+'</span>'
+        +'<span class="date">'+(d.length===3?d[0]+' · '+d[1]+' · '+d[2]:'')+'</span>';
+      list.appendChild(row);
+    });
+  });
 })();
 </script>
 </body>
