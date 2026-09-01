@@ -124,8 +124,8 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 .hero h1{
   font-family:var(--serif);font-weight:600;
-  font-size:clamp(30px,4.4vw,44px);letter-spacing:.28em;
-  margin-bottom:30px;text-indent:.28em;
+  font-size:clamp(26px,3.9vw,38px);letter-spacing:.85em;text-indent:.85em;
+  margin-bottom:30px;
 }
 .hero .statement{
   font-family:var(--serif);font-size:15px;line-height:2.6;
@@ -135,12 +135,11 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 .scroll-hint{
   position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;
-  color:var(--gray);font-size:10px;letter-spacing:.4em;
 }
-.scroll-hint .vline{width:1px;height:44px;background:var(--line-strong);overflow:hidden;position:relative}
+.scroll-hint .vline{width:2px;height:64px;background:var(--ink);opacity:.75;overflow:hidden;position:relative}
 .scroll-hint .vline::after{
   content:"";position:absolute;left:0;top:-100%;width:100%;height:100%;
-  background:var(--ink);animation:drop 2.8s var(--ease) infinite;
+  background:var(--paper);animation:drop 2.8s var(--ease) infinite;
 }
 @keyframes drop{0%{top:-100%}55%{top:0}100%{top:100%}}
 
@@ -148,7 +147,7 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 main{max-width:1080px;margin:0 auto;padding:0 48px}
 section{padding:120px 0;border-top:1px solid var(--line)}
 .sec-head{display:flex;align-items:baseline;gap:26px;margin-bottom:72px}
-.sec-num{font-family:var(--serif);font-size:13px;color:var(--cinnabar);letter-spacing:.1em}
+.sec-num{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--cinnabar);letter-spacing:.1em}
 .sec-title{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:.2em}
 .sec-en{font-size:10px;letter-spacing:.32em;color:var(--gray);text-transform:uppercase}
 .sec-line{flex:1;height:1px;background:var(--line);transform-origin:left;transform:scaleX(0);transition:transform 1.4s var(--ease)}
@@ -156,11 +155,10 @@ section{padding:120px 0;border-top:1px solid var(--line)}
 
 /* ---------- 精选思考 ---------- */
 .entry{
-  display:grid;grid-template-columns:64px 1fr 130px;gap:32px;align-items:baseline;
+  display:grid;grid-template-columns:1fr 130px;gap:32px;align-items:baseline;
   padding:34px 0;border-bottom:1px solid var(--line);
   text-decoration:none;color:var(--ink);position:relative;
 }
-.entry .idx{font-family:var(--serif);font-size:14px;color:var(--gray)}
 .entry .dot{
   display:inline-block;width:6px;height:6px;border-radius:50%;
   background:var(--ink);margin-right:14px;vertical-align:2px;
@@ -275,7 +273,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </g>
   </svg>
 
-  <h1 class="rv d2">小 马</h1>
+  <h1 class="rv d2">静观长思</h1>
   <p class="statement rv d2">
     以<em>长期主义</em>为尺，观察宏观与市场；<br>
     以清醒的自我观察为镜，修炼交易与生活。<br>
@@ -283,7 +281,6 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   </p>
 
   <div class="scroll-hint rv d3">
-    <span>向下</span>
     <span class="vline"></span>
   </div>
 </section>
@@ -299,7 +296,6 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </div>
 
     <a class="entry rv" href="article.html#a1">
-      <span class="idx">一</span>
       <div>
         <h3><span class="dot"></span>止损的纪律，与承认错误的自由</h3>
         <p class="desc">一次坏判断不等于「我不行」。把止损当作系统修正的数据，而非对自我的审判——纪律反而带来自由。</p>
@@ -308,7 +304,6 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </a>
 
     <a class="entry rv d1" href="article.html#a2">
-      <span class="idx">二</span>
       <div>
         <h3><span class="dot"></span>过度准备，是一种体面的逃避</h3>
         <p class="desc">准备让人感觉安全，因为它推迟了被反馈审判的时刻。识别「准备循环」与「行动循环」的边界。</p>
@@ -317,7 +312,6 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </a>
 
     <a class="entry rv d2" href="article.html#a3">
-      <span class="idx">三</span>
       <div>
         <h3><span class="dot"></span>把 AI 用成外脑，而不是拐杖</h3>
         <p class="desc">工具放大的是已有的思考结构。没有假设的人得到的是答案，有假设的人得到的是验证。</p>

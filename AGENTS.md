@@ -12,6 +12,11 @@
 线上：https://evanyfm.github.io/digital-garden/
 更新流程：改文件 → `git add -A` → `git commit -m "说明"` → `git push` → 约 1 分钟自动部署（GitHub Pages，main 分支根路径）。
 
+**铁律：GitHub 优先**。用户会直接在 GitHub 网页端改代码，远端经常领先本地。
+任何修改前必须先 `git fetch origin && git pull --rebase origin main`（无本地提交时用
+`git reset --hard origin/main` 对齐），以远端最新版为修改基准，禁止凭本地旧副本动手。
+（2026-09-01 教训：一次失败的 rebase 曾损坏本地 .git，靠远端重建恢复——远端即真相。）
+
 ## 技术栈与结构
 
 - HTML + 内联 CSS/JS，无构建步骤。共享数据层 `garden-data.js`
