@@ -108,7 +108,7 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 }
 .quote .src{
   font-family:var(--sans);font-size:12px;letter-spacing:.34em;color:var(--gray);
-  margin-top:20px;
+  margin-top:20px;display:flex;align-items:center;justify-content:center;
 }
 .quote .a{
   font-family:var(--sans);font-weight:300;font-size:15px;letter-spacing:.08em;
@@ -116,19 +116,20 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 }
 .quote .a b{font-weight:400;color:var(--charcoal)}
 
-/* 经注入口：道德经/金刚经语句悬停可留、点击可入 classics/ */
+/* 经注入口：道德经/金刚经语句悬停可留、点击可入 classics/
+   可入提示 = 书名与章节之间的圆点：普通语句小灰点，经注语句放大为朱砂实心点 */
 .quote .qlink{display:inline-block;text-decoration:none;color:inherit;
   pointer-events:none;cursor:default}
 .quote.on .qlink{pointer-events:auto}
 .quote .qlink[href]{cursor:pointer}
-.quote .qlink .src::after{
-  content:'';display:inline-block;width:5px;height:5px;border-radius:50%;
-  border:1px solid var(--ink);margin-left:14px;vertical-align:2px;
-  opacity:0;transform:scale(.5);
-  transition:opacity .7s var(--ease),transform .7s var(--ease),background .7s var(--ease);
+.quote .src .dot{
+  display:inline-block;width:3px;height:3px;border-radius:50%;flex:0 0 auto;
+  background:var(--gray);margin:0 14px;transition:all .7s var(--ease);
 }
-.quote .qlink[href] .src::after{opacity:.5;transform:scale(1)}
-.quote .qlink[href]:hover .src::after{opacity:1;background:var(--ink)}
+.quote .qlink[href] .src .dot{
+  width:6.5px;height:6.5px;background:var(--cinnabar);
+}
+.quote .qlink[href]:hover .src .dot{transform:scale(1.3)}
 .quote .qlink[href]:hover .src{color:var(--charcoal)}
 
 /* 追逐即退去 */
@@ -233,7 +234,8 @@ body.moving .cosmos{opacity:.45}
   });
 })();
 
-/* 语录五十五条：道德经 · 金刚经 · 庄子 · 论语 · 孟子 · 周易 · 列子 · 菜根谭 · 坛经 · 传习录 · 大学中庸
+/* 语录四十九条：道德经 · 金刚经 · 庄子 · 列子 · 菜根谭 · 坛经 · 佛经禅语 · 西方哲学
+   2026-09-02：剔除儒家（论语/孟子/周易/传习录/大学/中庸）——转向内心体验与东西方哲思
    lk 字段：跳转 classics/ 经注对应章——悬停可留，点击可入 */
 var QUOTES=[
 /* —— 道德经 —— */
@@ -293,35 +295,6 @@ var QUOTES=[
  a:"空出来的房间，才会亮；心空出来，光才进得来。<b>塞得太满的头脑，产生不了真正的洞察</b>。"},
 {q:"水静犹明，而况精神。",src:"庄子 · 天道",
  a:"静止的水尚且能照见万物，何况人的精神。<b>静不是目的，是照见的前提</b>——水面不平时，看到的都是扭曲的。"},
-/* —— 论语 —— */
-{q:"学而不思则罔，思而不学则殆。",src:"论语 · 为政",
- a:"只学不想，会迷惘；只想不学，会危险。<b>输入和思考互为验证，缺一边，另一边就开始变形</b>。"},
-{q:"知之为知之，不知为不知，是知也。",src:"论语 · 为政",
- a:"知道就说知道，不知道就承认不知道——这才是真正的智慧。<b>诚实的无知，好过自信的错误</b>。"},
-{q:"君子和而不同，小人同而不和。",src:"论语 · 子路",
- a:"君子能与人和谐，但保持自己的不同；小人表面附和，内心并不和睦。<b>真正的合作不需要你放弃判断</b>。"},
-{q:"不怨天，不尤人。",src:"论语 · 宪问",
- a:"不怪天，不怪人。<b>把归因收回自己手里，才把选择权也收了回来</b>。"},
-{q:"己所不欲，勿施于人。",src:"论语 · 颜渊",
- a:"自己不想要的，不要强加给别人。<b>这条规则之所以流传两千年，是因为它一次就能完成视角切换</b>。"},
-{q:"岁寒，然后知松柏之后凋也。",src:"论语 · 子罕",
- a:"天冷了，才知道松柏是最后凋零的。<b>顺境里人人都好；品质，只在压力来临时显形</b>。"},
-{q:"逝者如斯夫，不舍昼夜。",src:"论语 · 子罕",
- a:"时间像这河水，昼夜不停地流走。<b>孔子没有哀叹，只是看见了——看见流逝本身，就是珍惜的开始</b>。"},
-/* —— 孟子 —— */
-{q:"虽千万人，吾往矣。",src:"孟子 · 公孙丑上",
- a:"哪怕千万人反对，我也去。<b>这不是莽撞，是主体性完整时自然生出的定力</b>——方向由我认定，代价由我承担。"},
-{q:"行有不得，反求诸己。",src:"孟子 · 离娄上",
- a:"事情做不成，先回头在自己身上找原因。<b>反求诸己不是自责，是把解决问题的入口放回自己手里</b>。"},
-{q:"我善养吾浩然之气。",src:"孟子 · 公孙丑上",
- a:"我擅长养护我的浩然之气——它由日复一日的正直积累而成。<b>气不是激出来的，是养出来的</b>。"},
-/* —— 周易 —— */
-{q:"天行健，君子以自强不息。",src:"周易 · 乾卦",
- a:"天体运行刚健不止，人也当如此。但注意——自强是<b>持续</b>，不是用力：像天一样，是不停，不是拼命。"},
-{q:"地势坤，君子以厚德载物。",src:"周易 · 坤卦",
- a:"大地宽厚，承载万物，不挑不拣。<b>容得下，才载得起</b>——厚不是软弱，是能承受的总量。"},
-{q:"穷则变，变则通，通则久。",src:"周易 · 系辞下",
- a:"走到尽头就变化，变化就能通达，通达就能长久。<b>困住你的往往不是路，是不肯变</b>。"},
 /* —— 列子 —— */
 {q:"大道以多歧亡羊，学者以多方丧生。",src:"列子 · 说符",
  a:"岔路太多，羊就丢了；方向太多，人就废了。<b>选择权太多而不行使，等于没有选择</b>。"},
@@ -345,18 +318,32 @@ var QUOTES=[
  a:"不是风在动，不是幡在动，是你的心在动。<b>市场没变、事情没变、世界没变——先动的，常常是解读</b>。"},
 {q:"迷时师度，悟了自度。",src:"六祖坛经",
  a:"迷惑时需要老师渡你，觉悟之后，自己渡自己。<b>所有外力最终都要换成内在结构，否则一撤走，就退回原样</b>。"},
-/* —— 传习录 · 王阳明 —— */
-{q:"心外无物，心外无理。",src:"传习录",
- a:"离开心，没有真正被体验的物；离开心，没有被领会的理。<b>世界呈现为什么样，取决于用怎样的一颗心去照它</b>。"},
-{q:"破山中贼易，破心中贼难。",src:"王阳明 · 与杨仕德薛尚谦书",
- a:"打败山里的贼容易，打败心里的贼难。<b>恐惧、贪婪、自我欺骗——这些贼不用攻城，它们就住在指挥部里</b>。"},
-{q:"知是行之始，行是知之成。",src:"传习录",
- a:"知是行动的开始，行动是知的完成。<b>没有落地的「知道」，只是听说</b>——知与行本是一件事的两端。"},
-/* —— 大学 · 中庸 —— */
-{q:"知止而后有定，定而后能静。",src:"大学",
- a:"知道终点在哪里，心才能定；心定了，才能静。<b>焦虑常常不是因为难，是因为不知道边界在哪</b>。"},
-{q:"万物并育而不相害，道并行而不相悖。",src:"中庸",
- a:"万物一同生长而互不伤害，大道并行而互不冲突。<b>真正的秩序不是统一，是让不同各得其所</b>。"}
+/* —— 佛经禅语 —— */
+{q:"色不异空，空不异色。",src:"心经",
+ a:"看得见摸得着的一切，本性是空的；空，也不在色外。<b>空不是没有，是不粘着</b>——行情如此，得失也如此。"},
+{q:"随其心净，则佛土净。",src:"维摩诘经",
+ a:"世界呈现的样子，跟着心的状态走。<b>你与外界的关系，是内心状态的投影</b>——心乱时看到的市场，不是市场。"},
+{q:"饥来吃饭，困来即眠。",src:"景德传灯录 · 大珠慧海",
+ a:"有人问如何用功，答：饥来吃饭，困来即眠。众人一样吃饭睡觉，却百般需索千般计较。<b>体验感不在别处，就在事情本身里</b>——吃饭时吃饭，看盘时看盘。"},
+{q:"日日是好日。",src:"碧岩录 · 云门",
+ a:"晴是好日，雨也是好日。<b>不是天气都好，是不再挑拣</b>——体验的开关，从来在评价这一步。"},
+{q:"见山是山，见山不是山，见山只是山。",src:"五灯会元 · 青原惟信",
+ a:"入山前见山是山，入山后见山不是山，悟后见山只是山。<b>第二轮的山，是带着全部认知回来看的山</b>——朴素不是起点，是穿越复杂之后的复归。"},
+/* —— 西方哲学 —— */
+{q:"自由的人绝少想到死；他的智慧，不是死的默念，而是生的沉思。",src:"斯宾诺莎 · 伦理学",
+ a:"自由的头脑不在终点处停留，而在生本身里打转。<b>沉思不是逃避生活，是更深地进入它</b>。"},
+{q:"不要哭，不要笑，要理解。",src:"斯宾诺莎 · 政治论",
+ a:"情绪不是用来宣泄的，是用来理解的。<b>理解一块情绪，它就从主人变成客人</b>——恐惧与贪婪也一样。"},
+{q:"人是一根会思想的芦苇。",src:"帕斯卡 · 思想录",
+ a:"人是自然界最脆弱的东西，一滴水就足以杀死他。<b>但人知道自己会死，宇宙并不知情</b>——尊严全部装在这点自知里。"},
+{q:"一个人退隐到任何地方，都不如退入自己的心灵更为宁静。",src:"马可·奥勒留 · 沉思录",
+ a:"乡间、海边、山林，都只是身体的撤退。<b>真正的退隐不占地方</b>——市况再喧嚣，那扇门一直开着。"},
+{q:"对于不可言说的东西，人们必须保持沉默。",src:"维特根斯坦 · 逻辑哲学论",
+ a:"语言的边界就是世界的边界。<b>两千年前老子已经说过：道可道，非常道</b>——最深的体验都停在语言门外，只能自己走进去。"},
+{q:"我们应当想象西西弗是幸福的。",src:"加缪 · 西西弗神话",
+ a:"巨石注定滚落，西西弗注定再推。<b>当他全然投入没有终点的攀登，命运就再也奈何不了他</b>——长期主义的另一副面孔。"},
+{q:"观察者即是被观察者。",src:"克里希那穆提 · 重新认识你自己",
+ a:"你用什么样的心去看市场，那颗心本身就是要被看见的东西。<b>看清观察者的成见，观察才刚刚开始</b>——这既是禅，也是交易。"}
 ];
 
 /* 经注悬停检测：鼠标在可入语句上时，不退去、不轮转 */
@@ -394,10 +381,23 @@ function qHover(){
   function show(){
     var it=QUOTES[i%QUOTES.length];
     qT.textContent=it.q;
-    qS.textContent=it.src;
+    setSrc(it.src,it.lk);
     qN.innerHTML=it.a;
     if(it.lk){lk.setAttribute('href',it.lk);}else{lk.removeAttribute('href');}
     box.classList.add('on');
+  }
+  /* 来源行结构：书名 ● 章节——圆点即经注入口提示 */
+  function setSrc(t,linked){
+    qS.textContent='';
+    var parts=t.split(' · ');
+    if(parts.length>1){
+      var s1=document.createElement('span');s1.textContent=parts[0];
+      var s2=document.createElement('span');s2.textContent=parts.slice(1).join(' · ');
+      var d=document.createElement('i');d.className='dot';
+      qS.appendChild(s1);qS.appendChild(d);qS.appendChild(s2);
+    }else{
+      qS.textContent=t;
+    }
   }
   function hide(cb){
     box.classList.remove('on');
