@@ -116,6 +116,21 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 }
 .quote .a b{font-weight:400;color:var(--charcoal)}
 
+/* 经注入口：道德经/金刚经语句悬停可留、点击可入 classics/ */
+.quote .qlink{display:inline-block;text-decoration:none;color:inherit;
+  pointer-events:none;cursor:default}
+.quote.on .qlink{pointer-events:auto}
+.quote .qlink[href]{cursor:pointer}
+.quote .qlink .src::after{
+  content:'';display:inline-block;width:5px;height:5px;border-radius:50%;
+  border:1px solid var(--ink);margin-left:14px;vertical-align:2px;
+  opacity:0;transform:scale(.5);
+  transition:opacity .7s var(--ease),transform .7s var(--ease),background .7s var(--ease);
+}
+.quote .qlink[href] .src::after{opacity:.5;transform:scale(1)}
+.quote .qlink[href]:hover .src::after{opacity:1;background:var(--ink)}
+.quote .qlink[href]:hover .src{color:var(--charcoal)}
+
 /* 追逐即退去 */
 body.moving .quote{opacity:0!important;transition:opacity 1.1s var(--ease)}
 body.moving .cosmos{opacity:.45}
@@ -194,10 +209,12 @@ body.moving .cosmos{opacity:.45}
     </g>
   </svg>
 
-  <!-- 语录与注释：静止时轮转 -->
+  <!-- 语录与注释：静止时轮转；带 lk 的语句悬停可留、点击入经注 -->
   <div class="quote" id="quote">
-    <p class="q" id="qText"></p>
-    <p class="src" id="qSrc"></p>
+    <a class="qlink" id="qLink">
+      <p class="q" id="qText"></p>
+      <p class="src" id="qSrc"></p>
+    </a>
     <p class="a" id="qNote"></p>
   </div>
 </div>
@@ -216,37 +233,49 @@ body.moving .cosmos{opacity:.45}
   });
 })();
 
-/* 语录五十条：道德经 · 庄子 · 论语 · 孟子 · 周易 · 列子 · 菜根谭 · 坛经 · 传习录 · 大学中庸 */
+/* 语录五十五条：道德经 · 金刚经 · 庄子 · 论语 · 孟子 · 周易 · 列子 · 菜根谭 · 坛经 · 传习录 · 大学中庸
+   lk 字段：跳转 classics/ 经注对应章——悬停可留，点击可入 */
 var QUOTES=[
 /* —— 道德经 —— */
-{q:"道可道，非常道。",src:"道德经 · 第一章",
+{q:"道可道，非常道。",src:"道德经 · 第一章",lk:"classics/daodejing.html#1",
  a:"能被说出来的道，就不是那个恒常的道。<b>语言指向真理，但语言不是真理本身</b>——所以经典只肯指月，不肯给你月亮。"},
-{q:"上善若水。水善利万物而不争。",src:"道德经 · 第八章",
+{q:"上善若水。水善利万物而不争。",src:"道德经 · 第八章",lk:"classics/daodejing.html#8",
  a:"最高的善像水：滋养万物，却总往低处流。<b>力量在柔处，不在硬处</b>；不争，反而没有任何东西能与你争。"},
-{q:"知人者智，自知者明。",src:"道德经 · 第三十三章",
+{q:"知人者智，自知者明。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html#33",
  a:"看懂别人只是聪明，看清自己才是真正的清明。<b>向外的观察可以很多，向内的那一次才是关键</b>。"},
-{q:"大直若屈，大巧若拙，大辩若讷。",src:"道德经 · 第四十五章",
+{q:"大直若屈，大巧若拙，大辩若讷。",src:"道德经 · 第四十五章",lk:"classics/daodejing.html#45",
  a:"最直的东西看似弯曲，最高明的手艺看似笨拙，最能言的人看似迟钝。<b>真正的深度不显山露水</b>——展示出来的巧，往往只到巧的表面。"},
-{q:"为学日益，为道日损。",src:"道德经 · 第四十八章",
+{q:"为学日益，为道日损。",src:"道德经 · 第四十八章",lk:"classics/daodejing.html#48",
  a:"求知识，靠每天增加；求道，靠每天减少——<b>减去执念、成见与多余的聪明</b>。加法让你更能干，减法让你更自由。"},
-{q:"祸兮福之所倚，福兮祸之所伏。",src:"道德经 · 第五十八章",
+{q:"祸兮福之所倚，福兮祸之所伏。",src:"道德经 · 第五十八章",lk:"classics/daodejing.html#58",
  a:"祸与福互相依存、互相转化。<b>顺境不必得意，逆境不必绝望</b>——此刻的结果，不是终点，只是循环中的一个位置。"},
-{q:"天下难事，必作于易；天下大事，必作于细。",src:"道德经 · 第六十三章",
+{q:"天下难事，必作于易；天下大事，必作于细。",src:"道德经 · 第六十三章",lk:"classics/daodejing.html#63",
  a:"所有难事都从简单处入手，所有大事都从细微处起步。<b>觉得无从下手，往往只是不肯从最小的地方开始</b>。"},
-{q:"合抱之木，生于毫末；九层之台，起于累土。",src:"道德经 · 第六十四章",
+{q:"合抱之木，生于毫末；九层之台，起于累土。",src:"道德经 · 第六十四章",lk:"classics/daodejing.html#64",
  a:"抱不过来的大树，从一粒种子长起；九层高台，是一筐土一筐土堆的。<b>长期主义不是信念，是算术</b>。"},
-{q:"知足者富，强行者有志。",src:"道德经 · 第三十三章",
+{q:"知足者富，强行者有志。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html#33",
  a:"知道够在哪里的人，才是真正富有；坚持在正路上走的人，才算真有志气。<b>富不在多，在知止；志不在言，在持续</b>。"},
-{q:"见素抱朴，少私寡欲。",src:"道德经 · 第十九章",
+{q:"见素抱朴，少私寡欲。",src:"道德经 · 第十九章",lk:"classics/daodejing.html#19",
  a:"保持素净的面目，抱住朴实的内心，私心少一点，欲望低一点。<b>这不是清苦，是降噪</b>——噪音少了，本来的声音才听得见。"},
-{q:"夫唯不争，故天下莫能与之争。",src:"道德经 · 第二十二章",
+{q:"夫唯不争，故天下莫能与之争。",src:"道德经 · 第二十二章",lk:"classics/daodejing.html#22",
  a:"正因为不与人争，天下反而没有人能与他争。<b>不争不是退缩，是换了一个别人进不来的维度</b>。"},
-{q:"知止可以不殆。",src:"道德经 · 第三十二章",
+{q:"知止可以不殆。",src:"道德经 · 第三十二章",lk:"classics/daodejing.html#32",
  a:"知道停在哪里，就不会有危险。<b>边界不是限制，是安全带的另一种说法</b>——交易如此，人生也如此。"},
-{q:"大器晚成。",src:"道德经 · 第四十一章",
+{q:"大器晚成。",src:"道德经 · 第四十一章",lk:"classics/daodejing.html#41",
  a:"最大的器物，最晚成型。<b>慢不是落后，是大东西的必要工艺</b>——急出来的，都是小件。"},
-{q:"圣人不积，既以为人己愈有。",src:"道德经 · 第八十一章",
+{q:"圣人不积，既以为人己愈有。",src:"道德经 · 第八十一章",lk:"classics/daodejing.html#81",
  a:"有道的人不囤积：尽力给予别人，自己反而更充裕。<b>给出去的思考、教学与善意，才是真正留在你身上的</b>。"},
+/* —— 金刚经 —— */
+{q:"凡所有相，皆是虚妄。若见诸相非相，即见如来。",src:"金刚经 · 第五品",lk:"classics/jingangjing.html#5",
+ a:"凡是你能看见的相，都不是实相本身。<b>行情是相，身份是相，情绪也是相</b>——看见相不是相的那一刻，才看得见真的。"},
+{q:"应无所住，而生其心。",src:"金刚经 · 第十品",lk:"classics/jingangjing.html#10",
+ a:"心不粘在任何一处，又活泼泼地生着。<b>住是执着，生是应对</b>——事来则应，事去不留，心才能一直清明。"},
+{q:"过去心不可得，现在心不可得，未来心不可得。",src:"金刚经 · 第十八品",lk:"classics/jingangjing.html#18",
+ a:"三心了不可得——过去的已经过去，未来的还没来，所谓的现在正在流逝。<b>后悔与焦虑都是向不可得处伸手</b>。"},
+{q:"若以色见我，以音声求我，是人行邪道，不能见如来。",src:"金刚经 · 第二十六品",lk:"classics/jingangjing.html#26",
+ a:"靠表象和声音去求真理，路就走偏了。<b>指标、观点、他人的判断都是音声色相</b>——真相要自己看见，不能听来。"},
+{q:"一切有为法，如梦幻泡影，如露亦如电，应作如是观。",src:"金刚经 · 第三十二品",lk:"classics/jingangjing.html#32",
+ a:"一切因缘造作之事，如梦、如幻、如泡、如影，如晨露如闪电。<b>看破不是消极，是不把暂时当永恒</b>——所以仓位的浮盈浮亏，也只是露与电。"},
 /* —— 庄子 —— */
 {q:"吾生也有涯，而知也无涯。",src:"庄子 · 养生主",
  a:"生命有限，知识无限；用有限去追无限，会把自己耗尽。<b>学，但不必穷尽</b>——知道边界在哪里，本身就是一种知。"},
@@ -330,10 +359,17 @@ var QUOTES=[
  a:"万物一同生长而互不伤害，大道并行而互不冲突。<b>真正的秩序不是统一，是让不同各得其所</b>。"}
 ];
 
-/* 静止检测：追逐即退去，静止则显 */
+/* 经注悬停检测：鼠标在可入语句上时，不退去、不轮转 */
+function qHover(){
+  var z=document.getElementById('qLink');
+  return !!(z&&z.matches(':hover'));
+}
+
+/* 静止检测：追逐即退去，静止则显；悬停语句上时留住 */
 (function(){
   var timer=null,hint=document.getElementById('hint'),hinted=false;
   function moving(){
+    if(qHover()){document.body.classList.remove('moving');clearTimeout(timer);return;}
     document.body.classList.add('moving');
     clearTimeout(timer);
     timer=setTimeout(function(){
@@ -347,9 +383,10 @@ var QUOTES=[
   moving();
 })();
 
-/* 语录轮转：不快，不催促 */
+/* 语录轮转：不快，不催促；悬停经注语句时暂停轮转 */
 (function(){
   var box=document.getElementById('quote'),
+      lk=document.getElementById('qLink'),
       qT=document.getElementById('qText'),
       qS=document.getElementById('qSrc'),
       qN=document.getElementById('qNote');
@@ -359,6 +396,7 @@ var QUOTES=[
     qT.textContent=it.q;
     qS.textContent=it.src;
     qN.innerHTML=it.a;
+    if(it.lk){lk.setAttribute('href',it.lk);}else{lk.removeAttribute('href');}
     box.classList.add('on');
   }
   function hide(cb){
@@ -366,6 +404,7 @@ var QUOTES=[
     setTimeout(cb,1600);
   }
   function cycle(){
+    if(qHover()){setTimeout(cycle,1500);return;}
     hide(function(){
       i++;
       show();
