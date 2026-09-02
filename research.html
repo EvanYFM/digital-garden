@@ -136,6 +136,25 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .kt-row h5{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.1em}
 .kt-row .ken{font-size:9.5px;letter-spacing:.24em;color:var(--gray);text-transform:uppercase}
 .kt-row p{margin-top:12px;font-size:12.5px;line-height:2.1;color:var(--gray);max-width:40em}
+/* 手风琴：默认折叠，点击展开该层概念与注释；左侧节点空心→展开实心 */
+.kt-row .kh{cursor:pointer;user-select:none;-webkit-user-select:none}
+.kt-row .kh:focus-visible{outline:1px solid var(--line-strong);outline-offset:6px}
+.kt-row h5{transition:transform .5s var(--ease)}
+.kt-row .kh:hover h5{transform:translateX(8px)}
+.kt-row::before{background:transparent;border:1px solid var(--ink);box-sizing:border-box}
+.kt-row.open::before{background:var(--ink)}
+.kt-detail{display:none}
+.kt-row.open .kt-detail{display:block;animation:ktIn .7s var(--ease)}
+@keyframes ktIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.kt-terms{list-style:none;margin:16px 0 0;padding:0;max-width:46em}
+.kt-terms li{display:flex;gap:16px;padding:10px 0;border-top:1px solid var(--line);
+  font-size:12.5px;line-height:1.9;align-items:baseline}
+.kt-terms li:first-child{border-top:none}
+.kt-terms b{font-family:var(--serif);font-weight:600;color:var(--charcoal);
+  letter-spacing:.08em;flex:0 0 6em;font-size:13px}
+.kt-terms span{color:var(--gray)}
+/* 六变量网格小标题 */
+.vars-cap{grid-column:1/-1;font-size:10px;letter-spacing:.3em;color:var(--gray)}
 .exp-note{margin-top:48px;font-size:11px;letter-spacing:.2em;color:var(--gray)}
 .exp-note b{font-weight:400;color:var(--cinnabar)}
 
@@ -215,7 +234,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <h1 class="rv d1">研 究</h1>
     <p class="en-title rv d2">Research — Frameworks Before Opinions</p>
     <p class="lede rv d3">
-      重心有二：AI 与投资。<br>
+      主线有三：AI 是杠杆，投资是实践，知识树是生长方向。<br>
       研究的意义不是更确信，而是更清楚地知道自己可能错在哪里。
     </p>
   </div>
@@ -240,19 +259,43 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     </div>
   </div>
 
-  <!-- 主线一：宏观 -->
+  <!-- 主线一：AI -->
   <section class="line-sec">
     <div class="line-head rv">
       <span class="line-num">一</span>
-      <h2>宏观</h2>
-      <span class="en">Macro — Six-Variable Framework</span>
+      <h2>AI</h2>
+      <span class="en">AI as Leverage</span>
       <span class="ln"></span>
     </div>
     <p class="line-intro rv">
-      以<b>六变量框架</b>判断宏观状态：先判断状态变量，再看传导，最后才看资产结果。
-      每个指标只保留一个分析归属；变量之间出现冲突时，冲突本身就是信息。
+      把 AI 当作<b>思考结构的外化</b>，用在三处：写作与办公——从笔记到成稿，
+      让结构先于文字；探索自我——与 AI 对话是照镜子，把模糊的感觉逼成清晰的问题；
+      小工具、网站、APP——想到什么就做出来用。没有假设的人从 AI 那里得到答案，
+      有假设的人得到验证。本站与两个研究工作台，都是这条主线的实验品。
+    </p>
+    <div class="tags rv d1">
+      <span>写作办公</span><span>探索自我</span><span>小工具</span>
+      <span>网站 / APP</span><span>Agent 工作流</span><span>技能沉淀</span>
+    </div>
+  </section>
+
+  <!-- 主线二：投资 -->
+  <section class="line-sec">
+    <div class="line-head rv">
+      <span class="line-num">二</span>
+      <h2>投资</h2>
+      <span class="en">Investing — Instruments &amp; Framework</span>
+      <span class="ln"></span>
+    </div>
+    <p class="line-intro rv">
+      资产不设限：<b>股票、股指、期货期权、债券、银行理财</b>——工具箱按风险与流动性分层，
+      不被单一品种定义。宏观不是研究终点，是判断状态的底层工具：
+      先以<b>六变量框架</b>判断状态，再看传导，最后才看资产结果；
+      权益与衍生品部分辅以<b>三方持仓与保证金流向</b>——内资、外资按原方向解读，
+      "家人"席位作反向指标，所有快照按披露日独立固化。变量之间出现冲突时，冲突本身就是信息。
     </p>
     <div class="vars rv d1">
+      <span class="vars-cap">底层工具 · 六变量判断宏观状态</span>
       <div class="var"><span class="vr"></span><h5>增长</h5><span class="ven">Growth</span><p>GDPNow · PMI · 就业——信号分化时以就业为准</p></div>
       <div class="var"><span class="vr"></span><h5>通胀</h5><span class="ven">Inflation</span><p>CPI · PCE · Breakeven——核心项比标题项更接近真相</p></div>
       <div class="var"><span class="vr"></span><h5>货币政策</h5><span class="ven">Monetary</span><p>2Y 利率 · SOFR 隐含——预期比声明更诚实</p></div>
@@ -260,57 +303,25 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       <div class="var"><span class="vr"></span><h5>流动性 / 杠杆</h5><span class="ven">Liquidity</span><p>准备金 · ON RRP · MOVE——资金价格的顺畅度</p></div>
       <div class="var"><span class="vr"></span><h5>全球美元</h5><span class="ven">Global Dollar</span><p>DXY · USDJPY · USDCNH——美元是万物的分母</p></div>
     </div>
-  </section>
-
-  <!-- 主线二：期货 -->
-  <section class="line-sec">
-    <div class="line-head rv">
-      <span class="line-num">二</span>
-      <h2>期货</h2>
-      <span class="en">Futures — Positioning &amp; Margin Flow</span>
-      <span class="ln"></span>
-    </div>
-    <p class="line-intro rv">
-      跟踪<b>三方持仓与保证金流向</b>：内资、外资按原方向解读，"家人"席位作反向指标。
-      资金净变动与主力合约涨跌交叉，区分增仓驱动与减仓驱动；
-      所有快照按披露日独立固化，旧来源不冒充当日事实。
-    </p>
     <div class="tags rv d1">
-      <span>三方强共振</span><span>资金潮汐</span><span>席位贡献</span>
-      <span>板块方向</span><span>历史回看</span><span>五日归因</span>
-    </div>
-  </section>
-
-  <!-- 主线三：AI -->
-  <section class="line-sec">
-    <div class="line-head rv">
-      <span class="line-num">三</span>
-      <h2>AI</h2>
-      <span class="en">AI as Leverage</span>
-      <span class="ln"></span>
-    </div>
-    <p class="line-intro rv">
-      把 AI 当作<b>思考结构的外化</b>：自动化数据管道、可复用的技能沉淀、
-      人机协作的分工原则。没有假设的人从 AI 那里得到答案，有假设的人得到验证。
-      上面两条主线的研究工作台，本身就是这条主线的实验品。
-    </p>
-    <div class="tags rv d1">
-      <span>自动化数据管道</span><span>Agent 工作流</span><span>技能沉淀</span><span>人机分工</span>
+      <span>股票</span><span>股指</span><span>期货期权</span><span>债券</span><span>银行理财</span>
+      <span>三方持仓</span><span>五日归因</span>
     </div>
   </section>
 
   <!-- 知识树 -->
   <section class="explore">
     <div class="line-head rv">
-      <span class="line-num">四</span>
+      <span class="line-num">三</span>
       <h2>知识树</h2>
       <span class="en">The Knowledge Tree</span>
       <span class="ln"></span>
     </div>
     <p class="line-intro rv">
       一棵<b>横断知识树</b>，自下而上生长：哲学提供底层问题，数学与科学方法提供语言，
-      系统与信息提供横断工具，认知科学研究所「人」，经济金融研究群体决策，AI 是新的认知系统——
-      最终回到「人、世界、决策」三个元问题。不为收藏学科，只为<b>认识自我与世界</b>。
+      系统与信息提供横断工具，生命与认知研究所「人」，经济金融研究群体决策，AI 是新的认知系统——
+      两条主线贯穿始终：<b>向内认识自己</b>（个体发展），<b>向外理解世界</b>（外界探索）。
+      不为收藏学科，只为认识自我与世界。点击任一层，展开该层主要概念与注释。
     </p>
 
     <div class="kt-root rv d1">
@@ -318,55 +329,114 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       <p>世界由什么构成（本体论）　·　我凭什么认为自己知道（认识论）　·　我应当如何行动（决策论）</p>
     </div>
 
-    <div class="kt-list rv d2">
+    <div class="kt-list rv d2" id="ktList">
       <div class="kt-row">
         <div class="kh"><span class="kn">一</span><h5>哲学</h5><span class="ken">Philosophy</span></div>
-        <p>本体论 · 认识论 · 心灵哲学 · 科学哲学——一切学科的根：世界是什么，我为什么相信自己知道。
-          「可证伪」的纪律，由科学哲学给出边界。</p>
+        <div class="kt-detail">
+          <p>一切学科的根：世界是什么，我为什么相信自己知道。「可证伪」的纪律，由科学哲学给出边界。</p>
+          <ul class="kt-terms">
+            <li><b>本体论</b><span>世界由什么构成——一切追问的起点，其余学科都在回答它的分支问题</span></li>
+            <li><b>认识论</b><span>我凭什么认为自己知道——怀疑是方法而非目的，知道自己的无知边界</span></li>
+            <li><b>心灵哲学</b><span>心与世界如何相互构成——意识为何存在，是尚未解开的硬问题</span></li>
+            <li><b>科学哲学</b><span>可证伪划出知识的边界——不可反驳的命题，不承担知识的责任</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">二</span><h5>形式语言</h5><span class="ken">Formal Language</span></div>
-        <p>数学与概率 · 统计与因果 · 计算与算法——把直觉翻译成可计算、可反驳的命题；
-          能被形式化的判断，才能被干净地验证或丢弃。</p>
+        <div class="kt-detail">
+          <p>把直觉翻译成可计算、可反驳的命题；能被形式化的判断，才能被干净地验证或丢弃。</p>
+          <ul class="kt-terms">
+            <li><b>数学与概率</b><span>不确定性的语法——随机被分布刻画之后，才进入可讨论的范围</span></li>
+            <li><b>统计与因果</b><span>相关不是因果，因果需要机制——观察、干预、反事实三层阶梯</span></li>
+            <li><b>逻辑与计算</b><span>什么可被证明、什么可被算出——以及不可计算划下的边界</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">三</span><h5>系统与信息</h5><span class="ken">Systems &amp; Information</span></div>
-        <p>反馈 · 控制 · 熵 · 信号与噪声——第一组横断工具：任何学科的对象，
-          都可以重述为「元素—关系—反馈—系统行为」。</p>
+        <div class="kt-detail">
+          <p>第一组横断工具：任何学科的对象，都可以重述为「元素—关系—反馈—系统行为」。</p>
+          <ul class="kt-terms">
+            <li><b>反馈</b><span>输出回到输入——系统行为的第一动力，正反馈放大，负反馈稳定</span></li>
+            <li><b>熵与信息</b><span>不确定被消除多少，信息就有多少——秩序与噪声共用同一把尺</span></li>
+            <li><b>信号与噪声</b><span>过滤是认知的第一道工序——先问这是信号还是噪声，再解读含义</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">四</span><h5>复杂性</h5><span class="ken">Complexity</span></div>
-        <p>涌现 · 自组织 · 网络 · 演化——树的主干：为什么简单的微观规则能产生复杂的宏观现象。
-          理解涌现之后，「宏观行为没有宏观指挥者」不再是口号。</p>
+        <div class="kt-detail">
+          <p>树的主干：为什么简单的微观规则能产生复杂的宏观现象。理解涌现之后，「宏观行为没有宏观指挥者」不再是口号。</p>
+          <ul class="kt-terms">
+            <li><b>涌现</b><span>微观简单规则生成宏观秩序——整体性质不存在于任何单个部分之中</span></li>
+            <li><b>自组织</b><span>没有指挥者的协调——秩序可以从内部长出来，不必自上而下设计</span></li>
+            <li><b>网络科学</b><span>结构决定行为——节点之间的关系，常常比节点本身更重要</span></li>
+            <li><b>演化</b><span>变异—选择—复制——适应不需要设计者，只需要时间与淘汰压力</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">五</span><h5>生命与认知</h5><span class="ken">Life &amp; Mind</span></div>
-        <p>神经科学 · 认知科学 · 心灵哲学——开始研究「人」：预测加工的大脑、被构造的世界模型、
-          双系统与奖励回路，以及自我欺骗的生理基础。</p>
+        <div class="kt-detail">
+          <p>开始研究「人」：从脑硬件到行为模式，从训练到饮食——个体发展的生理底盘；「向内认识自己」这条主线由此展开。</p>
+          <ul class="kt-terms">
+            <li><b>脑科学</b><span>约 860 亿神经元的硬件——预测加工的大脑主动构造世界模型，而非被动接收</span></li>
+            <li><b>认知科学</b><span>注意 · 记忆 · 偏差——双系统与奖励回路，也是自我欺骗的生理基础</span></li>
+            <li><b>运动科学</b><span>训练—恢复—适应——最朴素的成长算法，身体是认知的底层硬件</span></li>
+            <li><b>营养学</b><span>输入决定状态——大脑是耗能大户，饮食直接写进情绪与专注</span></li>
+            <li><b>中医</b><span>整体观与证候系统——另一套观察「人」的语言；存疑而借鉴，验于自身</span></li>
+            <li><b>心灵哲学</b><span>意识如何从物质升起——生理研究抵达之处，哲学问题仍在等候</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">六</span><h5>决策科学</h5><span class="ken">Decision Science</span></div>
-        <p>博弈论 · 行为经济学 · 神经经济学——人与市场之间的桥：为什么短期效用压倒长期效用、
-          为什么止损这么难。交易在这里获得第二重定义。</p>
+        <div class="kt-detail">
+          <p>人与市场之间的桥：为什么短期效用压倒长期效用、为什么止损这么难。交易在这里获得第二重定义。</p>
+          <ul class="kt-terms">
+            <li><b>博弈论</b><span>策略互动——你的最优选择取决于别人的选择，市场是最大的博弈场</span></li>
+            <li><b>行为经济学</b><span>损失厌恶 · 框架效应 · 过度自信——理性人只是假设，真人偏差有系统方向</span></li>
+            <li><b>神经经济学</b><span>决策的生理成本——多巴胺与恐惧回路，在每一次开仓前已经投票</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">七</span><h5>社会与市场</h5><span class="ken">Society &amp; Markets</span></div>
-        <p>经济系统 · 金融市场 · 反身性——由无数决策者构成的复杂适应系统：参与者会学习，
-          价格会反过来改变基本面，市场因此永远不是完全有效。</p>
+        <div class="kt-detail">
+          <p>由无数决策者构成的复杂适应系统：参与者会学习，价格会反过来改变基本面，市场因此永远不是完全有效。</p>
+          <ul class="kt-terms">
+            <li><b>经济系统</b><span>价格是分布式信息系统——亿万决策被一个数字压缩与传递</span></li>
+            <li><b>反身性</b><span>认知改变现实，现实再改变认知——索罗斯给复杂性科学的市场注脚</span></li>
+            <li><b>集体行为</b><span>羊群 · 叙事 · 周期——个体理性叠加出集体非理性，然后均值回归</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">八</span><h5>AI</h5><span class="ken">Artificial Intelligence</span></div>
-        <p>机器学习 · LLM · Agents——新的认知系统：前六层的镜子与放大器，
-          以新的方式重新连接每一根主干。研究与工作台，本身就是这条枝干的实验。</p>
+        <div class="kt-detail">
+          <p>新的认知系统：前几层的镜子与放大器，以新的方式重新连接每一根主干。研究与工作台，本身就是这条枝干的实验。</p>
+          <ul class="kt-terms">
+            <li><b>机器学习</b><span>从数据归纳规律——归纳法的新形态，也让「过拟合」成为认识论问题</span></li>
+            <li><b>大语言模型</b><span>语言的统计结构里，沉淀着世界的常识——压缩即理解的一种形态</span></li>
+            <li><b>Agents</b><span>从回答问题到完成任务——人机分工重新划界，判断力成为人的护城河</span></li>
+          </ul>
+        </div>
       </div>
       <div class="kt-row">
         <div class="kh"><span class="kn">九</span><h5>回到哲学</h5><span class="ken">Return</span></div>
-        <p>意识 · 自由意志 · 理性——树梢与树根相遇：我是谁、我如何知道、我如何行动。
-          学习最后收敛的问题，正是发芽时提出的那些。</p>
+        <div class="kt-detail">
+          <p>树梢与树根相遇：我是谁、我如何知道、我如何行动。学习最后收敛的问题，正是发芽时提出的那些。</p>
+          <ul class="kt-terms">
+            <li><b>意识</b><span>穿过全部学科回到自身——体验本身如何可能，仍是未完成的问题</span></li>
+            <li><b>自由意志</b><span>决定论与选择感——如果选择是幻觉，复盘还有意义吗（有）</span></li>
+            <li><b>理性</b><span>工具还是目的——理性帮我们接近真相，但驱动我们的是别的东西</span></li>
+          </ul>
+        </div>
       </div>
     </div>
 
-    <p class="exp-note rv d3"><b>注</b>　学习自下而上：先打通「认识论、系统、涌现」三个节点——认识世界、组织世界、理解复杂世界；其余按需生长，不作求全承诺。</p>
+    <p class="exp-note rv d3"><b>注</b>　学习自下而上：先打通「认识论、系统、涌现」三个节点——认识世界、组织世界、理解复杂世界；「生命与认知」承接向内探索，其余按需生长，不作求全承诺。</p>
   </section>
 </main>
 
@@ -395,6 +465,30 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
   },{threshold:.12});
   document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+})();
+/* 知识树手风琴：单开模式，默认展开第一层 */
+(function(){
+  var rows=[].slice.call(document.querySelectorAll('#ktList .kt-row'));
+  if(!rows.length)return;
+  function openRow(r){
+    rows.forEach(function(x){
+      var on=x===r;
+      x.classList.toggle('open',on);
+      x.querySelector('.kh').setAttribute('aria-expanded',on?'true':'false');
+    });
+  }
+  rows.forEach(function(r){
+    var h=r.querySelector('.kh');
+    h.setAttribute('role','button');
+    h.setAttribute('tabindex','0');
+    h.setAttribute('aria-expanded','false');
+    h.addEventListener('click',function(){openRow(r.classList.contains('open')?null:r);});
+    h.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openRow(r.classList.contains('open')?null:r);}
+    });
+  });
+  rows[0].classList.add('open');
+  rows[0].querySelector('.kh').setAttribute('aria-expanded','true');
 })();
 </script>
 </body>
