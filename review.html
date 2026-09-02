@@ -393,7 +393,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(!t)t='已记录状态与方向，未写具体事项';
     return t.length>42?t.slice(0,42)+'…':t;
   }
-  var dir=1, PAGE=10, page=0;  /* dir: 1=近→远(desc), -1=远→近(asc) */
+  var dir=1, PAGE=5, page=0;  /* dir: 1=近→远(desc), -1=远→近(asc)；每页 5 条 */
   function build(){
     list.innerHTML='';
     var entries={};
@@ -493,7 +493,7 @@ build();
   var box=document.getElementById('rowBox'),pagerEl=document.getElementById('pager'),
       info=document.getElementById('pgInfo'),
       prevB=document.getElementById('pgPrev'),nextB=document.getElementById('pgNext');
-  var dir=1,PAGE=10,page=0,pages=1,items=[];
+  var dir=1,PAGE=5,page=0,pages=1,items=[];
   function parseD(s){
     var p=String(s).trim().split(' · ');
     return p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0;
