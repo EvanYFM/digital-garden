@@ -409,7 +409,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   function load(){
     try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}
   }
+  function loadDel(){
+    try{return JSON.parse(localStorage.getItem('fragDel'))||[];}catch(e){return [];}
+  }
   function persist(arr){localStorage.setItem(KEY,JSON.stringify(arr));}
+  function persistDel(del){localStorage.setItem('fragDel',JSON.stringify(del));}
   function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function fmt(ts){
     var d=new Date(ts);
@@ -417,8 +421,9 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       +'　'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }
   function syncFrag(arr){
-    return GD.sync('fragments.json',arr,GD.mergeFragments).then(function(r){
-      persist(r.data);render();return r;
+    return GD.sync('fragments.json',{items:arr,del:loadDel()},GD.mergeFragments).then(function(r){
+      var d=Array.isArray(r.data)?{items:r.data,del:loadDel()}:r.data;
+      persist(d.items);persistDel(d.del);render();return r;
     });
   }
   function render(){
@@ -443,7 +448,9 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       btn.addEventListener('click',function(){
         var id=+btn.getAttribute('data-id');
         var arr=load().filter(function(f){return f.t!==id;});
-        persist(arr);render();
+        var del=loadDel();
+        if(del.indexOf(id)<0)del.push(id);
+        persist(arr);persistDel(del);render();
         if(GD.hasToken())syncFrag(arr).catch(function(){});
       });
     });
@@ -462,11 +469,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){save.click();}
   });
   render();
-  /* 打开页面：静默拉取云端随记并合并 */
+  /* 打开页面：静默拉取云端随记并合并（v2 含墓碑，删除跨设备生效） */
   GD.pull('fragments.json').then(function(r){
     if(!r)return;
-    var merged=GD.mergeFragments(load(),r.data);
-    persist(merged);render();
+    var merged=GD.mergeFragments({items:load(),del:loadDel()},r.data);
+    persist(merged.items);persistDel(merged.del);render();
   }).catch(function(){});
 })();
 

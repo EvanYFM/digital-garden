@@ -528,8 +528,12 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     if(GD.hasToken()){
       GD.pull('fragments.json').then(function(r){
         if(!r)return;
-        FRAGS=GD.mergeFragments(FRAGS,r.data);
-        try{localStorage.setItem('fragments',JSON.stringify(FRAGS));}catch(e){}
+        var m=GD.mergeFragments(FRAGS,r.data);
+        FRAGS=m.items;
+        try{
+          localStorage.setItem('fragments',JSON.stringify(FRAGS));
+          localStorage.setItem('fragDel',JSON.stringify(m.del));
+        }catch(e){}
         renderFragPick();
       }).catch(function(){});
     }

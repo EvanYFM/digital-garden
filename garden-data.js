@@ -81,13 +81,24 @@ var GD=(function(){
     }
     return out;
   }
+  /* 随记合并 v2：支持墓碑（删除跨设备生效）。
+     remote 可为旧版数组或 {items:[],del:[]}；本地墓碑存 localStorage('fragDel')；
+     墓碑并集后从条目剔除，返回 v2 对象，调用方取 .items / .del 落盘 */
+  function fragParts(x){
+    if(Array.isArray(x))return{items:x,del:[]};
+    return{items:(x&&x.items)||[],del:(x&&x.del)||[]};
+  }
   function mergeFragments(local,remote){
-    var map={},i,out=[];
-    for(i=0;i<remote.length;i++)map[remote[i].t]=remote[i];
-    for(i=0;i<local.length;i++)if(!map[local[i].t])map[local[i].t]=local[i];
-    out=Object.keys(map).map(function(t){return map[t];});
-    out.sort(function(a,b){return a.t-b.t;});
-    return out;
+    var L=fragParts(local),R=fragParts(remote),del={},map={},i;
+    try{
+      (JSON.parse(localStorage.getItem('fragDel'))||[]).forEach(function(t){del[t]=1;});
+    }catch(e){}
+    R.del.forEach(function(t){del[t]=1;});
+    for(i=0;i<R.items.length;i++)if(!del[R.items[i].t])map[R.items[i].t]=R.items[i];
+    for(i=0;i<L.items.length;i++)if(!del[L.items[i].t]&&!map[L.items[i].t])map[L.items[i].t]=L.items[i];
+    var items=Object.keys(map).map(function(t){return map[t];});
+    items.sort(function(a,b){return a.t-b.t;});
+    return{items:items,del:Object.keys(del).map(Number).sort(function(a,b){return a-b;})};
   }
 
   /* 发布到公开仓库（数字花园本体，EvanYFM/digital-garden）：

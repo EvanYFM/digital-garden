@@ -159,7 +159,11 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 /* 篇末印记 */
 .endmark{display:flex;align-items:center;gap:18px;margin:96px 0 0}
 .endmark .ln{flex:1;height:1px;background:var(--line)}
-.endmark .sq{width:9px;height:9px;border:1px solid var(--cinnabar);border-radius:50%}
+.endmark .sq{width:9px;height:9px;padding:0;border:1px solid var(--cinnabar);border-radius:50%;
+  background:transparent;cursor:pointer;flex:none;
+  transition:transform .6s var(--ease),background .6s var(--ease)}
+.endmark .sq:hover{background:var(--cinnabar)}
+.endmark .sq.closing{transform:scale(.25);background:var(--cinnabar)}
 
 /* ---------- 种子 · 本文由哪些随记长成 ---------- */
 .seeds{margin:80px 0 0;padding-top:28px;border-top:1px solid var(--line)}
@@ -222,24 +226,9 @@ a.seed .t:hover{color:var(--ink)}
 .pn a:hover .t{transform:translateX(6px)}
 .pn a+a:hover .t{transform:translateX(-6px)}
 
-/* ---------- 出版物资质 · 墨线 / 收 / 竖排 / 悬挂 / 打印 ---------- */
+/* ---------- 出版物资质 · 竖排 / 悬挂 / 打印 ---------- */
 /* 标点悬挂：句首引号括号挂出版心（Safari 等支持，渐进增强） */
 .article p,.md-body p,.pull,.md-body blockquote{hanging-punctuation:first allow-end}
-
-/* 阅读进度「墨线」：正文栏右缘 1px 细线，随阅读自上而下注入墨色，篇末与朱砂圆环相接 */
-.inkline{position:absolute;top:0;bottom:40px;right:-30px;width:1px;background:var(--line)}
-.inkline i{position:absolute;left:0;top:0;width:1px;height:100%;background:var(--ink);
-  transform-origin:top center;transform:scaleY(0);opacity:.85}
-@media (max-width:960px){.inkline{right:-16px}}
-
-/* 回到顶部的「收」：滚动超过一屏，右下浮现 16px 空心圆环；点击收缩为点、页归顶 */
-.totop{position:fixed;right:34px;bottom:44px;width:16px;height:16px;padding:0;z-index:20;
-  border:1px solid var(--ink);border-radius:50%;background:transparent;cursor:pointer;
-  opacity:0;pointer-events:none;
-  transition:opacity .6s var(--ease),transform .6s var(--ease),background .6s var(--ease)}
-.totop.show{opacity:.5;pointer-events:auto}
-.totop.show:hover{opacity:1}
-.totop.closing{transform:scale(.25);background:var(--ink);opacity:1}
 
 /* 长引文竖排：点击引文区在横排 / 竖排间切换 */
 .pull,.md-body blockquote{cursor:pointer}
@@ -262,7 +251,7 @@ a.seed .t:hover{color:var(--ink)}
   body{background:#fdfcf8!important;color:#1a1a1a;padding-top:8mm;padding-bottom:8mm}
   .rv{opacity:1!important;transform:none!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  header,.toc,.inkline,.totop,.uacts,.pn,.toc-back{display:none!important}
+  header,.toc,.uacts,.pn,.toc-back{display:none!important}
   .layout{display:block;max-width:100%;padding:0}
   .article{padding-top:10mm;max-width:100%}
   a{color:inherit;text-decoration:none;border-bottom:none}
@@ -368,8 +357,6 @@ footer{border-top:1px solid var(--line)}
   </div>
 </footer>
 
-<!-- 回到顶部的「收」 -->
-<button class="totop" id="toTop" type="button" aria-label="回到顶部"></button>
 <!-- 打印专属页眉页脚（屏幕不显示） -->
 <div class="print-head" aria-hidden="true"><span>小马 · 数字花园</span><span id="printTitle"></span></div>
 <div class="print-foot" aria-hidden="true"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>
@@ -581,10 +568,8 @@ function render(){
     });
     html+='</div>';
   }
-  html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
+  html+='<div class="endmark rv"><span class="ln"></span><button class="sq" type="button" title="回到顶部" aria-label="回到页面顶部"></button><span class="ln"></span></div>';
   box.innerHTML=html;
-  /* 墨线：阅读进度轨道，随渲染重建 */
-  box.insertAdjacentHTML('afterbegin','<div class="inkline" aria-hidden="true"><i id="inkFill"></i></div>');
 
   /* 上一篇 / 下一篇 */
   var pn=document.getElementById('pnBox');
@@ -638,10 +623,8 @@ function renderUser(id,a){
     });
     html+='</div>';
   }
-  html+='<div class="endmark rv"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>';
+  html+='<div class="endmark rv"><span class="ln"></span><button class="sq" type="button" title="回到顶部" aria-label="回到页面顶部"></button><span class="ln"></span></div>';
   box.innerHTML=html;
-  /* 墨线：阅读进度轨道，随渲染重建 */
-  box.insertAdjacentHTML('afterbegin','<div class="inkline" aria-hidden="true"><i id="inkFill"></i></div>');
 
   /* 目录：从 Markdown 的 ## 标题自动生成 */
   var toc=document.getElementById('tocBox');
@@ -741,31 +724,16 @@ try{
   document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in');});
 }
 
-/* ---------- 出版物资质交互：墨线 / 收 / 竖排 / 旁注 / 打印页眉 ---------- */
+/* ---------- 出版物资质交互：篇末印记「收」/ 竖排 / 旁注 / 打印页眉 ---------- */
 (function(){
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fill=document.getElementById('inkFill'),
-      tt=document.getElementById('toTop'),
-      art=document.getElementById('articleBox');
-  function onScroll(){
-    if(fill&&art){
-      var r=art.getBoundingClientRect();
-      var p=(window.innerHeight-r.top)/Math.max(1,r.height);
-      p=Math.max(0,Math.min(1,p));
-      fill.style.transform='scaleY('+p+')';
-    }
-    if(tt){
-      if(window.scrollY>window.innerHeight*.9){tt.classList.add('show');}
-      else{tt.classList.remove('show','closing');}
-    }
-  }
-  window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('resize',onScroll);
-  onScroll();
-  if(tt)tt.addEventListener('click',function(){
-    tt.classList.add('closing');
+  /* 篇末朱砂圆环：点击收缩为点，页归顶（收放呼应） */
+  document.addEventListener('click',function(e){
+    var q=e.target.closest&&e.target.closest('.endmark .sq');
+    if(!q||q.classList.contains('closing'))return;
+    q.classList.add('closing');
     window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
-    setTimeout(function(){tt.classList.remove('closing');},900);
+    setTimeout(function(){q.classList.remove('closing');},900);
   });
 })();
 (function(){
