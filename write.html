@@ -297,6 +297,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     <div class="acts">
       <button id="saveBtn" type="button"><span class="rr"></span>保存草稿</button>
       <button id="pubBtn" type="button"><span class="rr rr-hollow"></span>发布到花园</button>
+      <button id="impBtn" type="button" title="从本地 Markdown 文件导入为草稿，支持可选的 YAML 头（title / cat / state）"><span class="rr rr-hollow"></span>导入 .md</button>
+      <input id="impFile" type="file" accept=".md,.markdown,.txt" hidden multiple>
       <button id="newBtn" type="button"><span class="rr rr-hollow"></span>另起一篇</button>
       <button id="delBtn" type="button" class="danger">删除</button>
       <span class="hint" id="actHint"></span>
@@ -470,6 +472,48 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     return a;
   }
   $('saveBtn').addEventListener('click',function(){doSave(false);});
+  /* ---------- 导入 .md：本地写好的 Markdown 一键成稿 ----------
+     解析顺序：YAML 头（--- 包裹，可选 title/cat/state）→ 正文首个 # 一级标题做题名（剥离出正文）→ 文件名兜底；
+     分类须命中 CATS 否则落默认；每篇直接存为草稿（rev 1），末次同步云端 */
+  var impSeq=0;
+  function importMd(text,fname){
+    text=String(text).replace(/^\uFEFF/,'');
+    var fm=null,m=text.match(/^---\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/);
+    if(m){fm={};m[1].split(/\r?\n/).forEach(function(l){
+      var p=l.match(/^([A-Za-z_]+)\s*:\s*(.+)$/);
+      if(p)fm[p[1].toLowerCase()]=p[2].trim().replace(/^["']|["']$/g,'');
+    });text=text.slice(m[0].length).replace(/^\s+/,'');}
+    /* 首个 # 一级标题视为题名行，从正文剥离；题名优先级：YAML 头 > 一级标题 > 文件名 */
+    var h1='';
+    var h=text.match(/^#[ \t]+([^\r\n]+)/);
+    if(h){h1=h[1].trim();text=text.slice(h.index+h[0].length).replace(/^\s+/,'');}
+    var title=(fm&&fm.title)||h1||(fname||'').replace(/\.(md|markdown|txt)$/i,'')||'无题';
+    var cat=(fm&&CATS.indexOf(fm.cat)>=0)?fm.cat:CATS[0];
+    var st=(fm&&STATES.some(function(s){return s[0]===fm.state;}))?fm.state:'seed';
+    var now=Date.now(),id='u'+now+(impSeq?'i'+impSeq:'');impSeq++;
+    all[id]={id:id,created:todayStr(),title:title,cat:cat,state:st,body:text,
+      rev:1,updated:now,revisions:[{n:1,t:now,chars:text.length}]};
+    return id;
+  }
+  $('impBtn').addEventListener('click',function(){$('impFile').click();});
+  $('impFile').addEventListener('change',function(){
+    var files=[].slice.call(this.files);this.value='';
+    if(!files.length)return;
+    var last=null,n=0;
+    (function next(){
+      var f=files.shift();
+      if(!f){
+        if(n){editing=last;fillForm(all[last]);metaUpdate();renderWorks();
+          hint('已导入 '+n+' 篇草稿 · 最新：《'+all[last].title+'》——发布前记得校对');
+          persist();syncPrivate();window.scrollTo({top:0,behavior:'smooth'});}
+        return;
+      }
+      var rd=new FileReader();
+      rd.onload=function(){last=importMd(rd.result,f.name);n++;next();};
+      rd.onerror=function(){hint('读取 '+f.name+' 失败，已跳过');next();};
+      rd.readAsText(f);
+    })();
+  });
   $('newBtn').addEventListener('click',function(){
     editing=null;fillForm(null);
     hint('已另起一篇——写完记得保存');
