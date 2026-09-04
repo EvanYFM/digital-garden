@@ -198,6 +198,18 @@ section{padding:120px 0;border-top:1px solid var(--line)}
 
 /* ---------- 页脚 ---------- */
 footer{border-top:1px solid var(--line);margin-top:40px}
+
+/* ---------- 观 · 静处入口（呼吸空心圆，悬停才实心——朱砂只在交互时出现） ---------- */
+.jing-gate{display:flex;flex-direction:column;align-items:center;gap:28px;
+  margin:150px auto 170px;text-decoration:none;color:var(--ink);text-align:center}
+.jing-circle{width:34px;height:34px;border-radius:50%;border:1px solid var(--cinnabar);
+  animation:jbreath 9s ease-in-out infinite;transition:background .8s var(--ease)}
+.jing-gate:hover .jing-circle{background:var(--cinnabar)}
+.jing-word{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:.5em;text-indent:.5em}
+.jing-line{font-size:12px;color:var(--gray);letter-spacing:.18em}
+.jing-en{font-size:10px;color:var(--gray);letter-spacing:.3em;text-transform:uppercase;opacity:.7}
+@keyframes jbreath{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.08);opacity:1}}
+@media (prefers-reduced-motion:reduce){.jing-circle{animation:none}}
 .foot-inner{
   max-width:1080px;margin:0 auto;padding:64px 48px 48px;
   display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
@@ -360,6 +372,14 @@ footer{border-top:1px solid var(--line);margin-top:40px}
       </div>
     </div>
   </section>
+
+  <!-- 观 · 精神花园的静处。不入「一、二」编号序列——它不在清单里，是发呆的去处 -->
+  <a class="jing-gate rv" href="jing.html" aria-label="观——静止体验区">
+    <span class="jing-circle"></span>
+    <span class="jing-word">观</span>
+    <span class="jing-line">不知道去哪的时候，跟着它发一会儿呆</span>
+    <span class="jing-en">Stillness · 静止时，字才会来</span>
+  </a>
 </main>
 
 <footer>

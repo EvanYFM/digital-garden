@@ -69,6 +69,19 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 
 main{max-width:1080px;margin:0 auto;padding:0 48px}
 
+/* ---------- 侧边目录 · 三章快跳（≥1240px 显示） ---------- */
+.toc{position:fixed;right:42px;top:50%;transform:translateY(-50%);z-index:40;
+  display:flex;flex-direction:column;gap:26px}
+.toc a{display:flex;align-items:center;justify-content:flex-end;gap:12px;
+  font-size:11px;letter-spacing:.22em;color:var(--gray);text-decoration:none;
+  transition:color .5s var(--ease)}
+.toc a i{width:5px;height:5px;border-radius:50%;border:1px solid var(--gray);flex:none;
+  transition:background .5s,border-color .5s,transform .5s var(--ease)}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--ink)}
+.toc a.on i{background:var(--cinnabar);border-color:var(--cinnabar);transform:scale(1.25)}
+@media (max-width:1239px){.toc{display:none}}
+
 /* ---------- 页头 ---------- */
 .page-head{padding:220px 0 110px}
 .crumb{font-size:11px;letter-spacing:.3em;color:var(--gray);margin-bottom:40px;text-transform:uppercase}
@@ -94,8 +107,6 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   transition:color .4s,transform .5s var(--ease)}
 .now-strip:hover .na{color:var(--ink);transform:translateX(4px)}
 .now-strip + .now-strip{border-top:none}
-.jing-strip .nr{border-color:var(--gray)}
-.jing-strip:hover .nr{background:var(--gray)}
 
 /* ---------- 特写条目 · 纯排版，不用图 ---------- */
 .featured{display:block;padding:88px 0;border-top:1px solid var(--line);
@@ -110,6 +121,8 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .featured .excerpt{font-size:14px;line-height:2.3;color:var(--charcoal);
   max-width:44em;margin-bottom:26px}
 .featured .meta{font-size:11px;color:var(--gray);letter-spacing:.16em}
+.featured .meta .ago{color:var(--cinnabar)}
+.featured,.index,.frag-section{scroll-margin-top:120px}
 .featured .meta i{font-style:normal;color:var(--cinnabar);margin:0 10px}
 .featured .go{display:inline-block;margin-top:34px;font-size:12px;letter-spacing:.3em;
   color:var(--ink)}
@@ -256,6 +269,13 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 </header>
 
 <main>
+
+  <!-- 侧边目录 · 三章快跳 -->
+  <nav class="toc" aria-label="页面章节">
+    <a href="#feat"><span>本期特写</span><i></i></a>
+    <a href="#index"><span>全部条目</span><i></i></a>
+    <a href="#frags"><span>随记</span><i></i></a>
+  </nav>
   <div class="page-head">
     <p class="crumb rv">INDEX <b>/</b> 思考 NOTES</p>
     <h1 class="rv d1">思 考</h1>
@@ -274,16 +294,8 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <span class="na">进入 →</span>
   </a>
 
-  <!-- 观 · 体验区入口（更安静的一条） -->
-  <a class="now-strip jing-strip rv d1" href="jing.html">
-    <span class="nr"></span>
-    <span class="nt">观 · STILLNESS</span>
-    <span class="nd">不能分析，只能体验 —— 无目录，无编号，静止时字才会来</span>
-    <span class="na">进入 →</span>
-  </a>
-
-  <!-- 特写：纯排版，以字为图 -->
-  <a class="featured rv" href="article.html">
+  <!-- 特写：自动跟随最新一篇（静态 8 篇 + 写作台发布），此为 JS 未就绪时的兜底内容 -->
+  <a class="featured rv" id="feat" href="article.html">
     <div class="feat-tag">
       <span class="sq"></span>
       <span>Featured · 本期特写</span>
@@ -297,7 +309,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <span class="go">阅读全文 · READ</span>
   </a>
 
-  <div class="index">
+  <div class="index" id="index">
     <div class="index-head rv">
       <h3>全部条目</h3>
       <span class="count">
@@ -536,6 +548,84 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   nextB.addEventListener('click',function(){if(page<pages-1){page++;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
   render();
   GD.loadUserArticles(function(m){userMap=m;render();});
+})();
+
+/* ===== 特写：自动跟随最新一篇（静态 8 篇 + 写作台发布），沉睡天数作更新提醒 ===== */
+(function(){
+  var feat=document.getElementById('feat');
+  if(!feat)return;
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function ts(s){var p=String(s).trim().split(' · ');return p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0;}
+  /* 静态 8 篇的题名/摘要（与 article.html ARTICLES.intro 同源，改文章时记得同步这 8 行） */
+  var STATIC=[
+    {id:'a1',t:'止损的纪律，与承认错误的自由',cat:'交易日志',date:'2026 · 08 · 02',rd:'约 12 分钟',
+     x:'一次坏判断不等于「我不行」。把止损当作系统修正的数据，而非对自我的审判——纪律反而带来自由。'},
+    {id:'a2',t:'过度准备，是一种体面的逃避',cat:'自我观察',date:'2026 · 07 · 18',rd:'约 10 分钟',
+     x:'准备让人感觉安全，因为它推迟了被反馈审判的时刻。识别「准备循环」与「行动循环」的边界。'},
+    {id:'a3',t:'把 AI 用成外脑，而不是拐杖',cat:'工具方法论',date:'2026 · 06 · 30',rd:'约 9 分钟',
+     x:'工具放大的是已有的思考结构。没有假设的人从 AI 那里得到的是答案，有假设的人得到的是验证。'},
+    {id:'a0',t:'利率、汇率与情绪：一个交易员候选人的宏观笔记',cat:'宏观研究',date:'2026 · 06 · 12',rd:'约 18 分钟',
+     x:'宏观不是预测的游戏，而是识别主要矛盾的游戏。先确认数据口径，再区分事实与推断，最后写下会让我改变看法的反例——写下来，是为了让未来的自己可以审查。'},
+    {id:'a4',t:'一次坏判断 ≠ 我不行：复盘的基本功',cat:'复盘',date:'2026 · 05 · 28',rd:'约 11 分钟',
+     x:'只要「一次判断错误」与「我这个人不行」被绑定，反馈就会变得过于痛苦；而没有反馈，就没有修正。'},
+    {id:'a5',t:'自由不是保留所有选项',cat:'长期主义',date:'2026 · 05 · 09',rd:'约 9 分钟',
+     x:'真正的可塑性不是「什么都不选」，而是「选一条路，投入足够长时间，获得真实反馈，然后修正」。'},
+    {id:'a6',t:'我的每日仪表盘：让数据自己说话',cat:'工具方法论',date:'2026 · 04 · 20',rd:'约 8 分钟',
+     x:'目的不是预测，而是让每天收盘后，数据的结构自己浮现。'},
+    {id:'a7',t:'为什么把网站做成一座安静的园子',cat:'关于本站',date:'2026 · 04 · 01',rd:'约 7 分钟',
+     x:'不是作品集、不是 SaaS 落地页、不是新中式装饰——是一份可以回来居住的精神空间。'}
+  ];
+  var pool=STATIC.map(function(s){return {href:'article.html#'+s.id,title:s.t,cat:s.cat,
+    date:s.date,rd:s.rd,ts:ts(s.date),sleep:ts(s.date),x:s.x};});
+  function userItem(id,a){
+    var body=String(a.body||'').replace(/^---[\s\S]*?---/,'');
+    var para='';var lines=body.replace(/^#{1,6}[^\n]*$/gm,'').split(/\r?\n/);
+    for(var i=0;i<lines.length;i++){var t=lines[i].replace(/[*`>\-]|^\d+\.\s/g,'').trim();
+      if(t.length>4){para=t;break;}}
+    if(!para)para=(a.title||'')+'——全文见文章页。';
+    if(para.length>110)para=para.slice(0,110)+'……';
+    var p=String(a.created||'').split('-');
+    return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+      date:p.length===3?p[0]+' · '+p[1]+' · '+p[2]:'',rd:'约 '+Math.max(1,Math.round(String(a.body||'').length/450))+' 分钟',
+      ts:p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():(a.updated||0),
+      sleep:Number(a.updated||a.ts||0)||(p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0),x:para};
+  }
+  function pickRender(m){
+    if(m)Object.keys(m).forEach(function(id){
+      if(!m[id].deleted)pool.push(userItem(id,m[id]));});
+    pool.sort(function(a,b){return b.ts-a.ts;});
+    var f=pool[0];if(!f)return;
+    feat.setAttribute('href',f.href);
+    feat.querySelector('h2').textContent=f.title;
+    feat.querySelector('.excerpt').textContent=f.x;
+    var days=f.sleep?Math.floor((Date.now()-f.sleep)/864e5):0;
+    feat.querySelector('.meta').innerHTML=esc(f.cat)+'<i>·</i>'+esc(f.date)
+      +'<i>·</i>'+esc(f.rd)
+      +(days>=30?'<i>·</i><span class="ago">已沉睡 '+days+' 天</span>':'');
+  }
+  pickRender(null);
+  if(window.GD&&GD.loadUserArticles)GD.loadUserArticles(pickRender);
+})();
+
+/* ===== 侧边目录：点击平滑跳转 + 滚动跟随高亮 ===== */
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if(!links.length)return;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  links.forEach(function(a,i){
+    a.addEventListener('click',function(e){
+      var s=secs[i];if(!s)return;e.preventDefault();
+      window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-110,
+        behavior:reduce?'auto':'smooth'});
+    });
+  });
+  function update(){
+    var pos=window.scrollY+window.innerHeight*0.35,cur=0;
+    secs.forEach(function(s,i){if(s&&s.offsetTop<=pos)cur=i;});
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur);});
+  }
+  window.addEventListener('scroll',update,{passive:true});update();
 })();
 </script>
 </body>

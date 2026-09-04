@@ -130,7 +130,17 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 
 .endmark{display:flex;align-items:center;gap:18px;margin:96px 0 0}
 .endmark .ln{flex:1;height:1px;background:var(--line)}
-.endmark .sq{width:9px;height:9px;border:1px solid var(--cinnabar);border-radius:50%}
+.endmark .sq{width:9px;height:9px;padding:0;border:1px solid var(--cinnabar);border-radius:50%;
+  background:transparent;cursor:pointer;flex:none;
+  transition:transform .6s var(--ease),background .6s var(--ease)}
+.endmark .sq:hover{background:var(--cinnabar)}
+.endmark .sq.closing{transform:scale(.25);background:var(--cinnabar)}
+
+/* 修心模块里的「观」：行内安静链接，悬停才现朱砂 */
+.jing-mention{color:inherit;text-decoration:none;
+  border-bottom:1px solid var(--line-strong);padding-bottom:2px;
+  transition:border-color .5s var(--ease),color .5s var(--ease)}
+.jing-mention:hover{color:var(--cinnabar);border-color:var(--cinnabar)}
 
 footer{border-top:1px solid var(--line)}
 .foot-inner{max-width:1180px;margin:0 auto;padding:64px 48px 48px;display:flex;
@@ -304,12 +314,12 @@ footer{border-top:1px solid var(--line)}
       所以这个阶段的方向是：<b>读书之后，超越读书；思考之后，超越思考</b>。
       有些东西不能反思，只能进入；不能分析，只能体验；不能用理智穷尽，只能被其包裹。
       混沌、共生、圆融、隐喻、整体——这些不是反理性，而是理性够不到的地方。
-      本模块不设验证指标，不接受复盘审查。本站<b>「观」</b>页是它的练习场。
+      本模块不设验证指标，不接受复盘审查。本站<a class="jing-mention" href="jing.html"><b>「观」</b></a>页是它的练习场。
     </p>
 
     <div class="endmark rv">
       <span class="ln"></span>
-      <span class="sq"></span>
+      <button class="sq" type="button" title="回到顶部" aria-label="回到页面顶部"></button>
       <span class="ln"></span>
     </div>
   </div>
@@ -361,6 +371,18 @@ footer{border-top:1px solid var(--line)}
   }
   window.addEventListener('scroll',update,{passive:true});
   update();
+})();
+/* 篇末圆环 · 收：点击收缩归顶（与文章页同一交互） */
+(function(){
+  var q=document.querySelector('.endmark .sq');
+  if(!q)return;
+  q.addEventListener('click',function(){
+    if(q.classList.contains('closing'))return;
+    q.classList.add('closing');
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    setTimeout(function(){q.classList.remove('closing');},900);
+  });
 })();
 </script>
 </body>
