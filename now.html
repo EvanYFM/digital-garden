@@ -390,6 +390,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <h3>同步 · SYNC</h3>
     <p class="sync-lede" id="syncState">
       设置 GitHub Token 后，记录将同步到私有仓库——任何设备续写，只有你自己可见。
+      <b>Token 需同时授权两个仓库</b>：<code>digital-garden-data</code>（私库 · 随记与文章备份）与 <code>digital-garden</code>（公开仓库 · 文章发布），权限均为 Contents 读写。只授私库的话，「发布到花园」会一直失败。
     </p>
     <div class="sync-row">
       <input type="password" id="tokenInput" placeholder="github_pat_ 开头的 Token（仅自己设备上填写）" autocomplete="off">
@@ -623,7 +624,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   /* ===== 同步 · 数据层 ===== */
   var syncState=document.getElementById('syncState');
   function syncLabel(){
-    if(!GD.hasToken())return '设置 GitHub Token 后，记录将同步到私有仓库——任何设备续写，只有你自己可见。';
+    if(!GD.hasToken())return '设置 GitHub Token 后，记录将同步到私有仓库——任何设备续写，只有你自己可见。
+      <b>Token 需同时授权两个仓库</b>：<code>digital-garden-data</code>（私库 · 随记与文章备份）与 <code>digital-garden</code>（公开仓库 · 文章发布），权限均为 Contents 读写。只授私库的话，「发布到花园」会一直失败。';
     return '已启用同步 · 记录保存时自动写入私有仓库 digital-garden-data';
   }
   function syncNow(localEntries){

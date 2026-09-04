@@ -707,7 +707,15 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       if(r&&r.data){all=GD.mergeArticles(all,r.data);persist();renderWorks();}
       syncHint.classList.add('ok');
       syncText.textContent='云端已就绪';
-    }).catch(function(){syncText.textContent='云端暂不可达 · 本地可用';});
+      /* 公开列表体检：本地有作品但站点公开列表缺失 → 点名提醒 */
+      return fetch('user-articles.json?t='+Date.now());
+    }).then(function(res){return res&&res.ok?res.json():null;})
+      .catch(function(){return null;})
+      .then(function(pub){
+        var mine=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].body;}).length;
+        var n=pub&&pub.articles?Object.keys(pub.articles).filter(function(k){return !pub.articles[k].deleted;}).length:0;
+        if(mine&&!n)hint('⚠ 公开列表缺失——文章还没真正同步到云端。请点「我的作品」上方的「重发全部到云端」');
+      });
   }else{
     syncText.textContent='未设置同步 · 草稿仅存本机';
   }
