@@ -314,7 +314,11 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   <div class="works">
     <div class="works-head">
       <h3>我的作品 <b>/</b> WORKS</h3>
-      <button class="sortbtn" id="workSort" type="button">时间 · 近→远</button>
+      <span style="display:flex;gap:14px;align-items:baseline">
+        <button class="sortbtn" id="exportBtn" type="button" title="把全部文章打包成一个 Markdown 文件下载到本机——云端之外的最后一道保险">导出全部 .md</button>
+        <button class="sortbtn" id="resyncPubBtn" type="button" title="把当前全部作品重建为公开列表并推到云端（发布管线失灵时的自救按钮）">重发全部到云端</button>
+        <button class="sortbtn" id="workSort" type="button">时间 · 近→远</button>
+      </span>
     </div>
     <div id="workList"></div>
     <div class="pager" id="workPager" style="display:none">
@@ -533,7 +537,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         .map(function(k){var x=all[k],p=x.pub;
           return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
             updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};});
-      GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts}).catch(function(){});
+      GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts})
+        .catch(function(e){hint('⚠ 公开列表更新失败（'+e.message+'）——文章可能仍挂在站点上，请到「我的作品」点「重发全部到云端」');});
     }
   });
   $('pubBtn').addEventListener('click',function(){
@@ -556,8 +561,53 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       syncPrivate();
     }).catch(function(e){
       syncText.textContent='发布失败（'+e.message+'）';
-      hint('发布失败：'+e.message);
+      hint('⚠ 发布失败：'+e.message+'。若提示 403/404，多半是 Token 没有公开仓库（digital-garden）权限——到「此刻」页更新 Token（同时授权两个仓库），或用「重发全部到云端」重试');
     });
+  });
+
+  /* ---------- 自救：重发全部到云端 / 导出全部 .md ---------- */
+  function buildPubFile(){
+    return {generated:Date.now(),articles:Object.keys(all)
+      .filter(function(k){return !all[k].deleted&&all[k].body;})
+      .map(function(k){var x=all[k];
+        if(!x.pub||x.pub.rev<x.rev)x.pub={rev:x.rev||1,updated:x.updated,
+          title:x.title,cat:x.cat,state:x.state,body:x.body,seeds:x.seeds||[]};
+        var p=x.pub;
+        return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
+          updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};})};
+  }
+  $('resyncPubBtn').addEventListener('click',function(){
+    if(!GD.hasToken()){hint('未设置同步 Token——请先在「此刻」页设置');return;}
+    var file=buildPubFile();
+    if(!file.articles.length){hint('还没有可发布的作品');return;}
+    syncText.textContent='重发中…('+file.articles.length+' 篇)';
+    GD.pushPublic('user-articles.json',file).then(function(){
+      persist();renderWorks();syncPrivate();
+      syncHint.classList.add('ok');
+      syncText.textContent='已重发 '+file.articles.length+' 篇 · 约一分钟后全站可见';
+      hint('✓ 公开列表已重建并推上云端');
+    }).catch(function(e){
+      syncText.textContent='重发失败（'+e.message+'）';
+      hint('⚠ 重发失败：'+e.message+'。多半是 Token 权限不足——到「此刻」页更新 Token（需同时授权 digital-garden 与 digital-garden-data 两个仓库）');
+    });
+  });
+  $('exportBtn').addEventListener('click',function(){
+    var arts=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].body;})
+      .map(function(k){return all[k];})
+      .sort(function(a,b){return (b.updated||0)-(a.updated||0);});
+    if(!arts.length){hint('还没有可导出的作品');return;}
+    var md=arts.map(function(x){
+      return '---\ntitle: '+(x.title||'无题')+'\ncat: '+(x.cat||'')+'\nstate: '+(x.state||'')
+        +'\ncreated: '+(x.created||'')+'\nupdated: '+(x.updated?new Date(x.updated).toISOString().slice(0,10):'')
+        +'\n---\n\n'+(x.body||'')+'\n';
+    }).join('\n\n=====\n\n');
+    var blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='garden-works-'+new Date().toISOString().slice(0,10)+'.md';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},3000);
+    hint('已导出 '+arts.length+' 篇到本地 .md');
   });
 
   /* ---------- 随记 · 种子 ---------- */
