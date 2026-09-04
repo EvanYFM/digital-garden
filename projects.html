@@ -68,7 +68,7 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 
 main{max-width:1080px;margin:0 auto;padding:0 48px}
 
-.page-head{padding:220px 0 100px}
+.page-head{padding:150px 0 100px}
 .crumb{font-size:11px;letter-spacing:.3em;color:var(--gray);margin-bottom:40px;text-transform:uppercase}
 .crumb b{font-weight:400;color:var(--cinnabar)}
 .page-head h1{font-family:var(--serif);font-size:clamp(40px,6vw,64px);font-weight:600;
@@ -138,6 +138,20 @@ footer{border-top:1px solid var(--line)}
   html{scroll-behavior:auto}
   .rv{opacity:1;transform:none}
 }
+
+/* ---------- 侧边目录 · 章节快跳（≥1240px 显示） ---------- */
+.toc{position:fixed;right:42px;top:50%;transform:translateY(-50%);z-index:40;
+  display:flex;flex-direction:column;gap:26px}
+.toc a{display:flex;align-items:center;justify-content:flex-end;gap:12px;
+  font-size:11px;letter-spacing:.22em;color:var(--gray);text-decoration:none;
+  transition:color .5s var(--ease)}
+.toc a i{width:5px;height:5px;border-radius:50%;border:1px solid var(--gray);flex:none;
+  transition:background .5s,border-color .5s,transform .5s var(--ease)}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--ink)}
+.toc a.on i{background:var(--cinnabar);border-color:var(--cinnabar);transform:scale(1.25)}
+@media (max-width:1239px){.toc{display:none}}
+p1, p2, p3{scroll-margin-top:120px}
 </style>
 </head>
 <body>
@@ -168,6 +182,12 @@ footer{border-top:1px solid var(--line)}
 </header>
 
 <main>
+  <!-- 侧边目录 · 章节快跳 -->
+  <nav class="toc" aria-label="页面章节">
+    <a href="#p1"><span>交易工作台</span><i></i></a>
+    <a href="#p2"><span>研究工作站</span><i></i></a>
+    <a href="#p3"><span>轮动仪表盘</span><i></i></a>
+    </nav>
   <div class="page-head">
     <p class="crumb rv">INDEX <b>/</b> 项目 PROJECTS</p>
     <h1 class="rv d1">项 目</h1>
@@ -179,7 +199,7 @@ footer{border-top:1px solid var(--line)}
   </div>
 
   <!-- 项目一 -->
-  <div class="proj rv">
+  <div class="proj rv" id="p1">
     <span class="pno">一</span>
     <div>
       <h3>宏观交易工作台</h3>
@@ -201,7 +221,7 @@ footer{border-top:1px solid var(--line)}
   </div>
 
   <!-- 项目二 -->
-  <div class="proj rv d1">
+  <div class="proj rv d1" id="p2">
     <span class="pno">二</span>
     <div>
       <h3>期货研究工作站</h3>
@@ -223,7 +243,7 @@ footer{border-top:1px solid var(--line)}
   </div>
 
   <!-- 项目三 -->
-  <div class="proj rv d2">
+  <div class="proj rv d2" id="p3">
     <span class="pno">三</span>
     <div>
       <h3>A 股行业轮动仪表盘</h3>
@@ -272,6 +292,28 @@ footer{border-top:1px solid var(--line)}
     es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
   },{threshold:.12});
   document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+})();
+</script>
+<script>
+/* 侧边目录：点击平滑跳转 + 滚动跟随高亮 */
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if(!links.length)return;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  links.forEach(function(a,i){
+    a.addEventListener('click',function(e){
+      var s=secs[i];if(!s)return;e.preventDefault();
+      window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-110,
+        behavior:reduce?'auto':'smooth'});
+    });
+  });
+  function update(){
+    var pos=window.scrollY+window.innerHeight*0.35,cur=0;
+    secs.forEach(function(s,i){if(s&&s.offsetTop<=pos)cur=i;});
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur);});
+  }
+  window.addEventListener('scroll',update,{passive:true});update();
 })();
 </script>
 </body>
