@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /now.html
+Disallow: /write.html
+
+Sitemap: https://evanyfm.github.io/digital-garden/sitemap.xml
