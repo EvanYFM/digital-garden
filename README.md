@@ -1,4 +1,7 @@
 # 小马的数字花园
+<p align="center">
+  <img src="assets/hero.svg" alt="小马的数字花园" width="840">
+</p>
 
 现代东方极简主义个人网站——克制、留白、长期主义。
 
