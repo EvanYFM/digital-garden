@@ -19,7 +19,9 @@
 
 ## 技术栈与结构
 
-- HTML + 内联 CSS/JS，无构建步骤。共享数据层 `garden-data.js`
+- HTML + 内联 CSS/JS，无构建步骤。共享层：`garden-data.js`（数据）、`base.css`（色彩 tokens/页头导航/太极钮，七页引入）、`base.js`（日夜切换 + 入场动效，`body data-rv` 可扩展观察选择器）
+- 页头样式有页面差异的 index/jing/write 未抽取，仍为内联——改全站页头/太极时这三页需手动同步
+- 语法守门：`node scripts/syntax-check.js`（推送后 CI 自动跑，见 .github/workflows/check.yml）
 - 仓库：`EvanYFM/digital-garden`（公开，站点）、`EvanYFM/digital-garden-data`（私有，此刻/随记数据）
 - 设计系统权威文档：`DESIGN.md`；对外说明：`README.md`
 - 项目记忆：`.workbuddy/memory/` 按日期追加

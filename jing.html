@@ -11,6 +11,7 @@
 <meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script src="base.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
@@ -227,15 +228,6 @@ body.moving .cosmos{opacity:.45}
 
 <script>
 /* 日夜切换（全站一致） */
-(function(){
-  var saved=localStorage.getItem('theme');
-  if(saved)document.documentElement.setAttribute('data-theme',saved);
-  document.getElementById('themeToggle').addEventListener('click',function(){
-    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-    document.documentElement.setAttribute('data-theme',cur);
-    localStorage.setItem('theme',cur);
-  });
-})();
 
 /* 语录四十九条：道德经 · 金刚经 · 庄子 · 列子 · 菜根谭 · 坛经 · 佛经禅语 · 西方哲学
    2026-09-02：剔除儒家（论语/孟子/周易/传习录/大学/中庸）——转向内心体验与东西方哲思

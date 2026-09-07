@@ -1,0 +1,60 @@
+/* ============================================================
+   base.css · 数字花园共享样式
+   内容：色彩 tokens（明/暗）→ 基础重置 → 页头导航 → 太极日夜钮
+   由各页内联共享块抽取而来（2026-09-07）；页面自有样式仍留在各页 <style>，
+   加载顺序 base.css 在前，页面内联可覆盖任何同选择器规则。
+   ============================================================ */
+:root{
+  --paper:#f6f4ee; --paper-soft:#efece4; --ink:#1c1c1a; --charcoal:#2b2b28;
+  --gray:#8a877d; --line:rgba(28,28,26,.16); --line-strong:rgba(28,28,26,.4);
+  --cinnabar:#b3402a;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --paper:#141412; --paper-soft:#1b1b18; --ink:#e9e6de; --charcoal:#d6d3ca;
+  --gray:#7d7a71; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
+  --cinnabar:#c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;
+  letter-spacing:.02em;transition:background .9s var(--ease),color .9s var(--ease);
+  -webkit-font-smoothing:antialiased}
+::selection{background:var(--ink);color:var(--paper)}
+
+header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;
+  justify-content:space-between;align-items:center;padding:28px 48px;
+  background:color-mix(in srgb,var(--paper) 86%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
+  justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
+nav{display:flex;align-items:center;gap:34px}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  position:relative;padding:4px 0;opacity:.75;transition:opacity .4s}
+nav a:hover,nav a.cur{opacity:1}
+nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
+nav a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+  background:var(--ink);transition:width .5s var(--ease)}
+nav a:hover::after,nav a.cur::after{width:100%}
+
+/* 太极日夜钮（与首页同一组件） */
+.taiji{width:24px;height:24px;border:none;background:transparent;cursor:pointer;
+  padding:0;flex:none;color:var(--ink)}
+.taiji svg{display:block;width:100%;height:100%;overflow:visible}
+.taiji .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.55;transition:opacity .5s}
+.taiji:hover .ring{opacity:1}
+.taiji .disc{transform-origin:12px 12px;transition:transform 1.1s var(--ease)}
+html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
+.taiji .half{fill:currentColor;opacity:0;transform-origin:12px 12px;transform:rotate(-100deg);
+  transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.taiji:hover .half{opacity:1;transform:rotate(0deg)}
+.taiji .d1,.taiji .d2{opacity:0;transition:opacity .7s var(--ease) .1s}
+.taiji:hover .d1,.taiji:hover .d2{opacity:1}
+.taiji .d1{fill:var(--paper)}
+.taiji .d2{fill:currentColor}
+.taiji .still{fill:currentColor;transition:opacity .5s}
+.taiji:hover .still{opacity:0}
