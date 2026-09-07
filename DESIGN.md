@@ -150,7 +150,7 @@ classics/       经注      古文经典解读（小马自制，原样收录，�
 
 ## 十一、实现备注
 
-- 当前为静态 HTML（8 个页面 + 共享层 `garden-data.js`/`base.css`/`base.js`，零依赖），字体走 Google Fonts CDN；另有 classics/ 四份经注页。2026-09-07 起色彩 tokens、页头导航与太极钮抽取至 `base.css`（七页引入；index/jing/write 因页面差异保留内联，级联在其后可覆盖），日夜切换与 `.rv` 入场动效抽取至 `base.js`；全站像素级对比验证一致
+- 当前为静态 HTML（8 个页面 + 共享层 `garden-data.js`/`base.css`/`base.js`，零依赖），字体走 Google Fonts CDN；另有 classics/ 四份经注页。2026-09-07 起色彩 tokens、页头导航与太极钮抽取至 `base.css`（七页引入；index/jing/write 因页面差异保留内联，级联在其后可覆盖），日夜切换与 `.rv` 入场动效抽取至 `base.js`；全站像素级对比验证一致。2026-09-07 晚新增全文检索（notes.html）：下划线式输入框、命中以墨色加重+细下划线标记（**不占朱砂名额**）、命中数右上角计数；file:// 退化可用
 - 工程化方向（2026-09-02 与小马对齐的迁移备忘）：Next.js + Tailwind 时用 tailwindcss-themer/自定义插件把 `:root` 变量映射为语义化类（text-ink/bg-paper/border-line）；组件抽离优先级 `.taiji` → `.rv` → `.toc` → 条目组件 → 布局；MDX 迁移保留现有 frontmatter（状态/日期/修订次数/关联笔记），数据层用 contentlayer 或 @next/mdx；字体用 font-display:swap + 只加载 400/600 两字重（Google Fonts 中文已按 unicode-range 自动分片）
 - 暗色模式务必两套变量同步维护；新增颜色先问"能否用透明度解决"
 

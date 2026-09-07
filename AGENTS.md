@@ -22,6 +22,7 @@
 - HTML + 内联 CSS/JS，无构建步骤。共享层：`garden-data.js`（数据）、`base.css`（色彩 tokens/页头导航/太极钮，七页引入）、`base.js`（日夜切换 + 入场动效，`body data-rv` 可扩展观察选择器）
 - 页头样式有页面差异的 index/jing/write 未抽取，仍为内联——改全站页头/太极时这三页需手动同步
 - 语法守门：`node scripts/syntax-check.js`（推送后 CI 自动跑，见 .github/workflows/check.yml）
+- 全文检索：notes.html 检索框；索引 `search-index.json` 由 `node scripts/build-search-index.js` 从 article.html 的 ARTICLES 生成（确定性输出）。**改了 article.html 文章必须重跑索引**，否则 CI 新鲜度检查会挂红；用户文章不入索引（运行时从 user-articles.json 实时并入）；file:// 下自动退化为标题检索+本地草稿全文
 - 仓库：`EvanYFM/digital-garden`（公开，站点）、`EvanYFM/digital-garden-data`（私有，此刻/随记数据）
 - 设计系统权威文档：`DESIGN.md`；对外说明：`README.md`
 - 项目记忆：`.workbuddy/memory/` 按日期追加

@@ -13,4 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/syntax-check.js
+      - name: 语法守门（独立与内联 JS + base 引入结构校验）
+        run: node scripts/syntax-check.js
+      - name: 检索索引新鲜度（改了 article.html 未重建索引会挂红）
+        run: node scripts/build-search-index.js && git diff --exit-code -- search-index.json

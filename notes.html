@@ -155,6 +155,23 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   border-bottom:1px solid rgba(179,64,42,.32);padding-bottom:3px;transition:opacity .4s}
 .frag .fgrow:hover{opacity:.65}
 
+
+/* ---------- 全文检索 ---------- */
+.searchbar{margin:0 0 34px;display:flex;align-items:baseline;gap:14px}
+.searchbar input{flex:1;background:none;border:none;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:15px;letter-spacing:.06em;color:var(--ink);
+  padding:8px 2px;outline:none;transition:border-color .5s}
+.searchbar input:focus{border-bottom-color:var(--ink)}
+.searchbar input::placeholder{color:var(--gray);letter-spacing:.18em;font-size:12px}
+.searchbar .cnt{font-size:11px;color:var(--gray);letter-spacing:.2em;flex:none}
+.srow{display:block;padding:18px 2px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.srow h4{font-family:var(--serif);font-size:15.5px;font-weight:600;margin:0 0 6px}
+.srow .snippet{font-family:var(--sans);font-size:12.5px;line-height:1.9;color:var(--charcoal);
+  opacity:.85;letter-spacing:.02em;margin:0 0 8px}
+.srow .smeta{font-family:var(--sans);font-size:11px;color:var(--gray);letter-spacing:.18em}
+.srow mark{background:none;color:var(--ink);font-weight:600;border-bottom:1px solid var(--line-strong)}
+.sempty{padding:36px 2px;font-size:13px;letter-spacing:.14em;color:var(--gray)}
+
 footer{border-top:1px solid var(--line);margin-top:60px}
 .foot-inner{max-width:1080px;margin:0 auto;padding:64px 48px 48px;display:flex;
   justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
@@ -267,6 +284,13 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       <button class="sortbtn" id="sortBtn" type="button">时间 · 近→远</button>
       <a class="wnew" href="write.html">✎ 写作台</a>
     </div>
+
+    <div class="searchbar rv">
+      <input id="q" type="search" placeholder="检索 · SEARCH" aria-label="全文检索" autocomplete="off">
+      <span class="cnt" id="qCnt"></span>
+    </div>
+
+    <div id="sBox" style="display:none"></div>
 
     <div id="rowBox">
     <a class="row rv" href="article.html#a1">
@@ -480,7 +504,95 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   prevB.addEventListener('click',function(){if(page>0){page--;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
   nextB.addEventListener('click',function(){if(page<pages-1){page++;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
   render();
-  GD.loadUserArticles(function(m){userMap=m;render();});
+  GD.loadUserArticles(function(m){userMap=m;render();addUserDocs(m);});
+
+  /* —— 全文检索：静态索引 search-index.json + 我的文章全文。
+     file:// 下 fetch 不可用 → 自动退化为标题检索 + 本地草稿全文，不报错 —— */
+  var qInput=document.getElementById('q'),sBox=document.getElementById('sBox'),
+      qCnt=document.getElementById('qCnt'),qTimer=null,qDocs=[];
+  if(qInput){
+    function addUserDocs(m){
+      Object.keys(m||{}).forEach(function(id){
+        var a=m[id];if(a.deleted)return;
+        var d=String(a.created||'').split('-');
+        qDocs.push({href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+          date:d.length===3?d[0]+' · '+d[1]+' · '+d[2]:'',
+          ts:d.length===3?new Date(+d[0],+d[1]-1,+d[2]).getTime():(a.updated||0),
+          body:String(a.body||'').replace(/<[^>]+>/g,' ')});
+      });
+    }
+    fetch('search-index.json?t='+Date.now()).then(function(r){return r.ok?r.json():null;})
+      .catch(function(){return null;})
+      .then(function(ix){
+        if(ix&&ix.articles)ix.articles.forEach(function(a){
+          qDocs.push({href:'article.html#'+a.id,title:a.title,cat:a.cat,date:a.date,
+            ts:parseD(a.date),body:a.body||''});});
+        else statics.forEach(function(s){
+          qDocs.push({href:s.href,title:s.title,cat:s.cat,date:'',ts:s.ts,body:''});});
+      });
+    function qEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function qMark(s,kws){
+      var alt=kws.map(function(k){return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('|');
+      if(!alt)return qEsc(s);
+      return qEsc(s).replace(new RegExp('('+alt+')','gi'),'<mark>$1</mark>');
+    }
+    function qSnippet(body,kws){
+      var low=body.toLowerCase(),pos=-1,klen=0;
+      kws.forEach(function(k){var p=low.indexOf(k);if(p>=0&&(pos<0||p<pos)){pos=p;klen=k.length;}});
+      var st=Math.max(0,pos-42),en=Math.min(body.length,pos+klen+48);
+      return (st>0?'……':'')+qMark(body.slice(st,en),kws)+(en<body.length?'……':'');
+    }
+    function qRun(qRaw){
+      var kws=qRaw.toLowerCase().split(/\s+/).filter(Boolean);
+      if(!kws.length)return null;
+      var hits=[];
+      qDocs.forEach(function(d){
+        var title=d.title.toLowerCase(),hay=(d.title+' '+d.body).toLowerCase();
+        var score=0,ok=true;
+        kws.forEach(function(k){
+          if(hay.indexOf(k)<0){ok=false;return;}
+          score+=(title.split(k).length-1)*8+(d.body.toLowerCase().split(k).length-1);
+        });
+        if(ok)hits.push({d:d,score:score});
+      });
+      hits.sort(function(a,b){return b.score-a.score||b.d.ts-a.d.ts;});
+      return {kws:kws,hits:hits};
+    }
+    function qRender(res){
+      box.style.display='none';pagerEl.style.display='none';
+      var sbt=document.getElementById('sortBtn');if(sbt)sbt.style.display='none';
+      sBox.style.display='block';
+      qCnt.textContent=res.hits.length?'命中 '+res.hits.length+' 篇':'';
+      if(!res.hits.length){
+        sBox.innerHTML='<div class="sempty">园中暂无此径——「'+qEsc(res.kws.join(' '))+'」未命中任何篇章。</div>';
+        return;
+      }
+      sBox.innerHTML=res.hits.slice(0,20).map(function(h){
+        return '<a class="srow" href="'+h.d.href+'"><h4>'+qMark(h.d.title,res.kws)+'</h4>'
+          +(h.d.body?'<p class="snippet">'+qSnippet(h.d.body,res.kws)+'</p>':'')
+          +'<span class="smeta">'+qEsc(h.d.cat)+' · '+qEsc(h.d.date)+'</span></a>';
+      }).join('');
+    }
+    function qClear(){
+      sBox.style.display='none';sBox.innerHTML='';qCnt.textContent='';
+      box.style.display='';
+      var sbt=document.getElementById('sortBtn');if(sbt)sbt.style.display='';
+      render();
+    }
+    window.__qDump=function(){return {docs:qDocs.length,user:!!window.GD}};
+    qInput.addEventListener('input',function(){
+      clearTimeout(qTimer);
+      qTimer=setTimeout(function(){
+        var v=qInput.value.trim();
+        if(!v){qClear();return;}
+        var res=qRun(v);
+        if(res)qRender(res);
+      },180);
+    });
+    qInput.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){qInput.value='';qClear();qInput.blur();}
+    });
+  }
 })();
 
 /* ===== 特写：自动跟随最新一篇（静态 8 篇 + 写作台发布），沉睡天数作更新提醒 ===== */
