@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四〇四 — 小马的数字花园</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23b3402a'/%3E%3Ctext x='12' y='17.5' font-family='serif' font-size='14' font-weight='700' fill='%23f6f4ee' text-anchor='middle'%3E%E9%A9%AC%3C/text%3E%3C/svg%3E">
+<meta name="description" content="页面不存在。这里是一条没有铺好的园中小径。">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{
+  --paper:#f6f4ee;--paper-soft:#efece4;--ink:#1c1c1a;--gray:#8a877d;
+  --line:rgba(28,28,26,.16);--line-strong:rgba(28,28,26,.4);--cinnabar:#b3402a;
+}
+html[data-theme="dark"]{
+  --paper:#141412;--paper-soft:#1b1b18;--ink:#e9e6de;--gray:#7d7a71;
+  --line:rgba(233,230,222,.16);--line-strong:rgba(233,230,222,.42);--cinnabar:#c8503a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);transition:background .9s}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--paper);color:var(--ink);
+  font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  transition:background .9s,color .9s;
+}
+.stage{text-align:center;padding:48px 24px}
+/* 圆环 · 呼吸 · 一枚朱砂点 */
+.ring{
+  width:96px;height:96px;margin:0 auto 56px;position:relative;
+  border:1px solid var(--line-strong);border-radius:50%;
+  animation:breathe 9s ease-in-out infinite;
+}
+.ring::after{
+  content:'';position:absolute;top:-4px;left:50%;margin-left:-4px;
+  width:8px;height:8px;border-radius:50%;background:var(--cinnabar);
+}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@media (prefers-reduced-motion: reduce){.ring{animation:none}}
+.no{
+  font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-weight:600;
+  font-size:clamp(40px,6vw,64px);letter-spacing:.22em;text-indent:.22em;
+}
+.en{
+  margin-top:18px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--gray);
+}
+.rule{width:56px;height:1px;background:var(--line-strong);margin:44px auto}
+.note{
+  font-size:15px;line-height:2.3;letter-spacing:.04em;color:var(--charcoal,#2b2b28);
+}
+html[data-theme="dark"] .note{color:#d6d3ca}
+.back{
+  display:inline-block;margin-top:40px;padding-bottom:4px;
+  font-size:14px;letter-spacing:.14em;color:var(--ink);text-decoration:none;
+  border-bottom:1px solid transparent;transition:border-color .5s;
+}
+.back:hover{border-bottom-color:var(--ink)}
+.back .dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  border:1px solid var(--cinnabar);margin-right:10px;vertical-align:1px;
+  transition:background .5s;
+}
+.back:hover .dot{background:var(--cinnabar)}
+</style>
+</head>
+<body>
+<main class="stage">
+  <div class="ring" aria-hidden="true"></div>
+  <h1 class="no">四〇四</h1>
+  <p class="en">Lost in the Garden</p>
+  <div class="rule" aria-hidden="true"></div>
+  <p class="note">走进了一条尚未铺好的小径。<br>园子还在生长，这一页或许是尚未写下的篇章。</p>
+  <a class="back" href="/digital-garden/"><span class="dot" aria-hidden="true"></span>回到入口</a>
+</main>
+</body>
+</html>
