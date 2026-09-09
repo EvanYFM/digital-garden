@@ -118,6 +118,57 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .sortbtn{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
   letter-spacing:.2em;color:var(--gray);padding:0;flex:none;transition:color .4s}
 .sortbtn:hover{color:var(--ink)}
+
+/* ===== 复盘工作台：新建按钮 · 编辑器 · 动态条目 ===== */
+.rev-new{background:none;border:1px solid var(--line);cursor:pointer;font-family:var(--serif);
+  font-size:12px;letter-spacing:.2em;color:var(--charcoal);padding:6px 18px;margin-left:22px;
+  transition:all .4s;flex:none}
+.rev-new:hover{border-color:var(--ink);color:var(--ink)}
+.rev-editor{margin:-28px 0 56px;padding:30px 34px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg,#f7f4ee) 72%,transparent)}
+.rev-editor-head{display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:24px;letter-spacing:.3em;font-size:10.5px;color:var(--gray);text-transform:uppercase}
+.rev-editor-head b{font-family:var(--serif);font-size:14px;font-weight:600;
+  letter-spacing:.24em;color:var(--charcoal)}
+.rev-editor-head button{background:none;border:none;cursor:pointer;font-size:16px;
+  color:var(--gray);line-height:1;padding:2px 6px;transition:color .4s}
+.rev-editor-head button:hover{color:var(--ink)}
+.rev-fields{display:grid;grid-template-columns:130px 1fr 170px;gap:26px;margin-bottom:22px}
+.rev-fields label{display:block}
+.rev-fields label i{display:block;font-style:normal;font-size:10px;letter-spacing:.28em;
+  color:var(--gray);text-transform:uppercase;margin-bottom:12px}
+.rev-fields input,.rev-fields select{width:100%;background:none;border:none;
+  border-bottom:1px solid var(--line);font-family:var(--serif);font-size:16px;color:var(--ink);
+  padding:4px 2px 10px;outline:none;transition:border-color .4s;border-radius:0}
+.rev-fields input:focus,.rev-fields select:focus{border-bottom-color:var(--ink)}
+.rev-editor textarea{width:100%;background:none;border:none;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:15px;line-height:2;color:var(--ink);padding:2px 2px 10px;
+  outline:none;resize:vertical;min-height:120px;transition:border-color .4s}
+.rev-editor textarea:focus{border-bottom-color:var(--ink)}
+.rev-editor textarea::placeholder,.rev-fields input::placeholder{color:var(--gray);opacity:.55}
+.rev-ed-foot{display:flex;justify-content:flex-end;gap:18px;margin-top:10px}
+.rev-ed-foot button{background:none;cursor:pointer;font-family:var(--sans);font-size:11px;
+  letter-spacing:.22em;padding:8px 22px;transition:all .4s}
+#revEdCancel{border:1px solid var(--line);color:var(--gray)}
+#revEdCancel:hover{color:var(--ink);border-color:var(--ink)}
+#revEdSave{border:1px solid var(--ink);color:var(--ink)}
+#revEdSave:hover{background:var(--ink);color:var(--bg,#f7f4ee)}
+.rev-row-dyn{cursor:pointer}
+.rev-ops{position:absolute;right:-2px;top:0;display:flex;gap:4px;opacity:0;transition:opacity .4s}
+.row.rev-row-dyn:hover .rev-ops{opacity:1}
+.rev-ops button{background:none;border:none;cursor:pointer;font-size:13px;color:var(--gray);
+  padding:0 6px;line-height:1.4;transition:color .4s}
+.rev-ops button:hover{color:var(--ink)}
+.rev-ops button.del:hover{color:var(--cinnabar)}
+.rev-body{display:none;grid-column:1/-1;padding:6px 0 26px 0;
+  font-family:var(--serif);font-size:14px;line-height:2.15;color:var(--charcoal);
+  letter-spacing:.04em;white-space:pre-wrap;cursor:auto}
+.rev-body.open{display:block}
+.rev-body .meta{display:block;font-size:10.5px;color:var(--gray);letter-spacing:.2em;
+  margin-bottom:14px}
+.rev-editing-date{font-size:10.5px;color:var(--gray);letter-spacing:.18em;margin-left:10px}
+@media(max-width:720px){.rev-fields{grid-template-columns:1fr;gap:18px}
+  .rev-editor{padding:22px 18px;margin:-14px 0 42px}}
 .pager{display:flex;align-items:center;justify-content:center;gap:28px;padding:34px 0 10px}
 .pager button{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
   letter-spacing:.22em;color:var(--gray);padding:0;transition:color .4s}
@@ -275,46 +326,35 @@ loop, ws, reclog{scroll-margin-top:120px}
     <div class="index-head rv">
       <h3>复盘记录</h3>
       <span class="count">周复盘 · 月复盘 · 季度访谈</span>
+      <button class="rev-new" id="revNew" type="button" hidden>+ 新复盘</button>
       <button class="sortbtn" id="sortBtn" type="button">时间 · 近→远</button>
     </div>
 
-    <div id="rowBox">
-    <a class="row rv" href="article.html">
-      <h4>2026 · W32：两次止损，一次迟疑</h4>
-      <span class="cat">周复盘</span>
-      <span class="date">2026 · 08 · 09</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · 07 月：准备循环的三次现身</h4>
-      <span class="cat">月复盘</span>
-      <span class="date">2026 · 07 · 31</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · W28：空仓也是一种持仓</h4>
-      <span class="cat">周复盘</span>
-      <span class="date">2026 · 07 · 12</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · 06 月：把「我可能不行」改写成「这次判断错了」</h4>
-      <span class="cat">月复盘</span>
-      <span class="date">2026 · 06 · 30</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · Q2：一次完整的自我访谈</h4>
-      <span class="cat">季度复盘</span>
-      <span class="date">2026 · 06 · 15</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · 05 月：自由与秩序的换算</h4>
-      <span class="cat">月复盘</span>
-      <span class="date">2026 · 05 · 31</span>
-    </a>
-    <a class="row rv" href="article.html">
-      <h4>2026 · 04 月：建立复盘机制本身</h4>
-      <span class="cat">月复盘</span>
-      <span class="date">2026 · 04 · 30</span>
-    </a>
+    <!-- 复盘编辑器：新建/修改共用，仅本人 Token 可见 -->
+    <div class="rev-editor" id="revEditor" hidden>
+      <div class="rev-editor-head">
+        <div><b id="revEdTitle">新复盘</b><span class="rev-editing-date" id="revEdDateHint"></span></div>
+        <button id="revEdCancel" type="button" aria-label="收起编辑器">✕</button>
+      </div>
+      <div class="rev-fields">
+        <label><i>类型 TYPE</i>
+          <select id="revEdCat">
+            <option>周复盘</option><option>月复盘</option><option>季度复盘</option>
+          </select></label>
+        <label><i>标题 TITLE</i><input id="revEdHead" type="text" maxlength="60"
+          placeholder="2026 · W37：一次迟疑的完整解剖"></label>
+        <label><i>日期 DATE</i><input id="revEdDate" type="date"></label>
+      </div>
+      <label style="display:block"><i style="display:block;font-style:normal;font-size:10px;
+        letter-spacing:.28em;color:var(--gray);text-transform:uppercase;margin-bottom:12px">正文 BODY</i>
+        <textarea id="revEdBody" placeholder="结论先行；事实、归因、修正动作……"></textarea></label>
+      <div class="rev-ed-foot">
+        <button id="revEdCancel2" type="button">取消</button>
+        <button id="revEdSave" type="button">保存</button>
+      </div>
     </div>
+
+    <div id="rowBox"><!-- 行由 JS 渲染：种子（公开）+ 动态（本地/私有云） --></div>
     <div class="pager" id="pager" style="display:none">
       <button id="pgPrev" type="button">← 上一页</button>
       <span id="pgInfo"></span>
@@ -466,16 +506,37 @@ build();
   }).catch(function(){});
 })();
 
-/* ===== 复盘记录索引：无序号 · 时间流 · 排序切换 · 每 10 篇分页 ===== */
+/* ===== 复盘记录：工作台化 =====
+   数据三源合一渲染：SEED（公开种子，7 条成型的复盘索引）
+   + 本地动态条目（localStorage 'reviewEntries'，{items:[],del:[]}）
+   + 私有云同步（GD.sync → digital-garden-data/reviews.json，墓碑防复活）
+   编辑/新建/删除入口仅 GD.hasToken() 时可见——访客纯只读 */
 (function(){
   var list=document.querySelector('.index');
   if(!list)return;
   var box=document.getElementById('rowBox'),pagerEl=document.getElementById('pager'),
       info=document.getElementById('pgInfo'),
-      prevB=document.getElementById('pgPrev'),nextB=document.getElementById('pgNext');
-  var dir=1,PAGE=5,page=0,pages=1,items=[];
+      prevB=document.getElementById('pgPrev'),nextB=document.getElementById('pgNext'),
+      edBox=document.getElementById('revEditor'),
+      edTitle=document.getElementById('revEdTitle'),edHint=document.getElementById('revEdDateHint'),
+      edCat=document.getElementById('revEdCat'),edHead=document.getElementById('revEdHead'),
+      edDate=document.getElementById('revEdDate'),edBody=document.getElementById('revEdBody'),
+      newBtn=document.getElementById('revNew');
+  var KEY='reviewEntries',dir=1,PAGE=5,page=0,pages=1,items=[],
+      editingId=null,canEdit=GD.hasToken();
+
+  /* 公开种子：成型的复盘（跳文章页，访客可见） */
+  var SEED=[
+    {title:'2026 · W32：两次止损，一次迟疑',cat:'周复盘',date:'2026-08-09'},
+    {title:'2026 · 07 月：准备循环的三次现身',cat:'月复盘',date:'2026-07-31'},
+    {title:'2026 · W28：空仓也是一种持仓',cat:'周复盘',date:'2026-07-12'},
+    {title:'2026 · 06 月：把「我可能不行」改写成「这次判断错了」',cat:'月复盘',date:'2026-06-30'},
+    {title:'2026 · Q2：一次完整的自我访谈',cat:'季度复盘',date:'2026-06-15'},
+    {title:'2026 · 05 月：自由与秩序的换算',cat:'月复盘',date:'2026-05-31'},
+    {title:'2026 · 04 月：建立复盘机制本身',cat:'月复盘',date:'2026-04-30'}
+  ];
   function parseD(s){
-    var p=String(s).trim().split(' · ');
+    var p=String(s).trim().split('-');
     return p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0;
   }
   function fmt(ts){
@@ -483,26 +544,139 @@ build();
     var d=new Date(ts),p=function(n){return String(n).padStart(2,'0');};
     return d.getFullYear()+' · '+p(d.getMonth()+1)+' · '+p(d.getDate());
   }
-  list.querySelectorAll('#rowBox .row').forEach(function(r){
-    items.push({href:r.getAttribute('href')||'article.html',
-      title:r.querySelector('h4').textContent.trim(),
-      cat:r.querySelector('.cat').textContent.trim(),
-      ts:parseD(r.querySelector('.date').textContent)});
-  });
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+  /* ---- 本地库（v2 带墓碑） ---- */
+  function load(){
+    var d={items:[],del:[]};
+    try{var raw=JSON.parse(localStorage.getItem(KEY));if(raw&&raw.items)d=raw;}catch(e){}
+    return d;
+  }
+  function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+
+  /* ---- 合并（fragments 模式）：按 id，updated 新者胜，del 墓碑防复活 ---- */
+  function merge(local,remote){
+    var map={},del={},k;
+    (local.items||[]).forEach(function(x){map[x.id]=x;});
+    (remote&&remote.items||[]).forEach(function(x){
+      if(map[x.id]&&Number(map[x.id].updated||0)>=Number(x.updated||0))return;
+      map[x.id]=x;
+    });
+    (local.del||[]).forEach(function(t){del[t]=1;});
+    (remote&&remote.del||[]).forEach(function(t){del[t]=1;});
+    var items=Object.keys(map).filter(function(id){return !del[id];})
+      .map(function(id){return map[id];});
+    items.sort(function(a,b){return (a.date<b.date?-1:1)*-1;});
+    return {items:items,del:Object.keys(del).sort()};
+  }
+
+  /* ---- 数据源合一 ---- */
+  function collect(){
+    var out=SEED.map(function(s){
+      return {seed:true,title:s.title,cat:s.cat,ts:parseD(s.date),date:s.date};
+    });
+    load().items.forEach(function(r){
+      out.push({id:r.id,title:r.title,cat:r.cat,ts:parseD(r.date),date:r.date,
+        body:r.body,updated:r.updated});
+    });
+    return out;
+  }
+
+  /* ---- 渲染 ---- */
   function render(){
+    items=collect();
     items.sort(function(x,y){return dir*(y.ts-x.ts);});
     pages=Math.max(1,Math.ceil(items.length/PAGE));
     if(page>=pages)page=pages-1;
     box.innerHTML=items.slice(page*PAGE,page*PAGE+PAGE).map(function(it){
-      return '<a class="row rv in" href="'+it.href+'"><h4>'+it.title+'</h4>'
-        +'<span class="cat">'+it.cat+'</span>'
-        +'<span class="date">'+fmt(it.ts)+'</span></a>';
+      if(it.seed){
+        return '<a class="row rv in" href="article.html"><h4>'+esc(it.title)+'</h4>'
+          +'<span class="cat">'+esc(it.cat)+'</span>'
+          +'<span class="date">'+fmt(it.ts)+'</span></a>';
+      }
+      var ops=canEdit?'<span class="rev-ops">'
+        +'<button type="button" data-edit="'+it.id+'" title="修改">✎</button>'
+        +'<button type="button" data-del="'+it.id+'" class="del" title="删除">✕</button></span>':'';
+      return '<div class="row rv in rev-row-dyn" data-row="'+it.id+'">'
+        +'<h4>'+esc(it.title)+ops+'</h4>'
+        +'<span class="cat">'+esc(it.cat)+'</span>'
+        +'<span class="date">'+fmt(it.ts)+'</span>'
+        +'<div class="rev-body"><span class="meta">'+esc(it.cat)+' · '+fmt(it.ts)
+        +(it.updated?' · 修订 '+fmt(it.updated):'')+'</span>'+esc(it.body||'')+'</div></div>';
     }).join('');
     pagerEl.style.display=pages>1?'flex':'none';
     info.textContent=(page+1)+' / '+pages;
     prevB.disabled=page===0;
     nextB.disabled=page>=pages-1;
   }
+
+  /* ---- 条目交互：点题展开正文；✎ 编辑；✕ 删除 ---- */
+  box.addEventListener('click',function(e){
+    var ed=e.target.closest('[data-edit]'),dl=e.target.closest('[data-del]');
+    if(ed){e.stopPropagation();openEditor(ed.getAttribute('data-edit'));return;}
+    if(dl){
+      e.stopPropagation();
+      var row=load().items.filter(function(x){return x.id===dl.getAttribute('data-del');})[0];
+      if(!row||!confirm('删除「'+row.title+'」？此条将从所有设备移除。'))return;
+      var d=load();
+      d.items=d.items.filter(function(x){return x.id!==row.id;});
+      d.del.push(row.id);
+      save(d);render();syncNow();
+      return;
+    }
+    var r=e.target.closest('.rev-row-dyn');
+    if(r){
+      var b=r.querySelector('.rev-body');
+      b.classList.toggle('open');
+    }
+  });
+
+  /* ---- 编辑器 ---- */
+  function todayStr(){var d=new Date(),p=function(n){return String(n).padStart(2,'0');};
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+  function openEditor(id){
+    editingId=id||null;
+    var r=id?load().items.filter(function(x){return x.id===id;})[0]:null;
+    edTitle.textContent=r?'修改复盘':'新复盘';
+    edHint.textContent=r&&r.updated?'最后修订 '+fmt(r.updated):'';
+    edCat.value=r?r.cat:'周复盘';
+    edHead.value=r?r.title:'';
+    edDate.value=r?r.date:todayStr();
+    edBody.value=r?(r.body||''):'';
+    edBox.hidden=false;
+    edHead.focus();
+  }
+  function closeEditor(){edBox.hidden=true;editingId=null;}
+  function syncNow(){
+    if(!GD.hasToken())return;
+    GD.sync('reviews.json',load(),merge).then(function(r){
+      if(r&&r.data){save(r.data);render();}
+    }).catch(function(){});
+  }
+  if(canEdit){
+    newBtn.hidden=false;
+    newBtn.addEventListener('click',function(){openEditor(null);});
+    document.getElementById('revEdCancel').addEventListener('click',closeEditor);
+    document.getElementById('revEdCancel2').addEventListener('click',closeEditor);
+    document.getElementById('revEdSave').addEventListener('click',function(){
+      var title=edHead.value.trim();
+      if(!title){edHead.focus();return;}
+      var d=load(),now=Date.now();
+      if(editingId){
+        var r=d.items.filter(function(x){return x.id===editingId;})[0];
+        if(r){r.title=title;r.cat=edCat.value;r.date=edDate.value||todayStr();
+          r.body=edBody.value.trim();r.updated=now;}
+      }else{
+        d.items.push({id:'r'+now+String(Math.random()).slice(2,6),title:title,
+          cat:edCat.value,date:edDate.value||todayStr(),body:edBody.value.trim(),
+          created:now,updated:now});
+      }
+      d.items.sort(function(a,b){return a.date<b.date?1:-1;});
+      save(d);closeEditor();render();syncNow();
+    });
+  }
+
+  /* ---- 排序 / 分页 ---- */
   document.getElementById('sortBtn').addEventListener('click',function(){
     dir=-dir;
     this.textContent=dir===1?'时间 · 近→远':'时间 · 远→近';
@@ -511,6 +685,14 @@ build();
   prevB.addEventListener('click',function(){if(page>0){page--;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
   nextB.addEventListener('click',function(){if(page<pages-1){page++;render();window.scrollTo({top:list.offsetTop-90,behavior:'smooth'});}});
   render();
+
+  /* 云端有数据时（Token 已在本机设置）拉取合并后重渲染 */
+  if(GD.hasToken()){
+    GD.pull('reviews.json').then(function(r){
+      if(!r||!(r.data&&r.data.items&&r.data.items.length))return;
+      save(merge(load(),r.data));render();
+    }).catch(function(){});
+  }
 })();
 </script>
 <script>
