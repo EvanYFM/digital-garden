@@ -147,6 +147,12 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   transition:opacity .4s,color .4s;flex:none;padding:4px}
 .frag:hover .fdel{opacity:1}
 .frag .fdel:hover{color:var(--cinnabar)}
+/* 随记升格：跳写作台开稿（原文作初稿、自动挂种子） */
+.frag .fup{background:none;border:none;cursor:pointer;color:var(--gray);
+  font-family:var(--sans);font-size:11px;letter-spacing:.2em;opacity:0;
+  transition:opacity .4s,color .4s;flex:none;padding:4px;text-decoration:none}
+.frag:hover .fup{opacity:1}
+.frag .fup:hover{color:var(--ink)}
 .frag-empty{padding:30px 0;font-size:12px;letter-spacing:.14em;color:var(--gray)}
 .frag{scroll-margin-top:120px}
 /* 已长成文章：随记侧的回链 */
@@ -368,9 +374,23 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 (function(){
   var KEY='fragments';
   /* 已长成文章的随记登记处：{ 随记时间戳 : {href:'article.html#a1', title:'文章标题'} }
-     某条随记被移植成文章后在此加一行，随记流里即出现「已长成」回链 */
+     仅用于静态 8 篇（a0-a7）：某条随记被移植成静态文章后在此加一行。
+     用户文章无需登记——发布后自动按文章 seeds 里的时间戳匹配出「已长成」回链 */
   var FRAG_GROWN={
   };
+  /* 用户文章的动态回链：已发布（pub）且 seeds 挂了该随记 */
+  var userArts=null;
+  function grownBy(ts){
+    if(!userArts)return null;
+    var out=null;
+    Object.keys(userArts).forEach(function(id){
+      var a=userArts[id];
+      if(out||a.deleted||!a.pub)return;
+      if((a.seeds||[]).some(function(s){return Number(s.ts)===ts;}))
+        out={href:'article.html#'+id,title:a.title||'无题'};
+    });
+    return out;
+  }
   var input=document.getElementById('fragInput'),
       save=document.getElementById('fragSave'),
       list=document.getElementById('fragList'),
@@ -405,11 +425,12 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     }
     var html='';
     arr.slice().reverse().forEach(function(f){
-      var grow=FRAG_GROWN[f.t];
+      var grow=FRAG_GROWN[f.t]||grownBy(f.t);
       html+='<div class="frag" id="f'+f.t+'"><span class="fno">'+fmt(f.t)+'</span>'
         +'<span class="ftext">'+esc(f.text)
         +(grow?'<a class="fgrow" href="'+grow.href+'">已长成 · '+esc(grow.title)+' →</a>':'')
         +'</span>'
+        +'<a class="fup" href="write.html#grow='+f.t+'" title="把这条随记写成文章">升格 ✎</a>'
         +'<button class="fdel" data-id="'+f.t+'" type="button">移除</button></div>';
     });
     list.innerHTML=html;
@@ -438,6 +459,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){save.click();}
   });
   render();
+  if(window.GD&&GD.loadUserArticles)GD.loadUserArticles(function(m){userArts=m;render();});
   /* 打开页面：静默拉取云端随记并合并（v2 含墓碑，删除跨设备生效） */
   GD.pull('fragments.json').then(function(r){
     if(!r)return;

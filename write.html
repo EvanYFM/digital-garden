@@ -671,6 +671,26 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   renderFragPick();
   renderSeeds();
 
+  /* —— 随记升格着陆：notes 随记流「升格 ✎」跳转而来（write.html#grow=时间戳）——
+     自动开稿：随记原文作初稿首段，该随记挂为种子；发布后随记流长出「已长成」回链 */
+  function growFromHash(){
+    var m=location.hash.match(/^#grow=(\d+)$/);
+    if(!m)return;
+    history.replaceState(null,'',location.pathname+location.search);
+    var ts=+m[1],f=null;
+    try{(JSON.parse(localStorage.getItem('fragments'))||[]).forEach(function(x){
+      if(x.t===ts)f=x;});}catch(e){}
+    if(!f){hint('没找到这条随记——本机无此随记（可能未同步），请手动开稿');return;}
+    var now=Date.now();
+    editing='u'+now;
+    all[editing]={id:editing,created:todayStr(),updated:now,title:'',cat:CATS[0],state:'seed',
+      body:String(f.text)+'\n\n',seeds:[{ts:ts,d:fmtDT(ts),t:String(f.text)}],
+      rev:1,revisions:[{n:1,t:now,chars:String(f.text).length+2}]};
+    persist();fillForm(all[editing]);metaUpdate();renderWorks();
+    renderFragPick();renderSeeds();
+    hint('已从随记开稿：原文作初稿首段，种子已挂上——写成后发布，随记处会长出「已长成」回链');
+  }
+
   /* ---------- 页签 ---------- */
   tabEdit.addEventListener('click',function(){setMode(false);});
   tabPv.addEventListener('click',function(){setMode(true);});
@@ -685,6 +705,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 
   /* ---------- 启动 ---------- */
   all=load();
+  growFromHash();   /* 升格着陆：必须在 all=load() 之后，persist 才不会覆盖丢已有草稿 */
   GD.loadUserArticles(function(m){
     all=GD.mergeArticles(all,m);persist();renderWorks();
     var h=/^#(u\d+)$/i.exec(location.hash);
