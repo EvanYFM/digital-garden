@@ -122,6 +122,23 @@ var GD=(function(){
     return out;
   }
 
+  /* 复盘条目合并（review.html / review-edit.html 共用）：
+     v2 {items,del}，按 id 新者胜，墓碑防跨设备复活（fragments 同模式） */
+  function mergeReviews(local,remote){
+    var map={},del={},k;
+    (local&&local.items||[]).forEach(function(x){map[x.id]=x;});
+    (remote&&remote.items||[]).forEach(function(x){
+      if(map[x.id]&&Number(map[x.id].updated||0)>=Number(x.updated||0))return;
+      map[x.id]=x;
+    });
+    (local&&local.del||[]).forEach(function(t){del[t]=1;});
+    (remote&&remote.del||[]).forEach(function(t){del[t]=1;});
+    var items=Object.keys(map).filter(function(id){return !del[id];})
+      .map(function(id){return map[id];});
+    items.sort(function(a,b){return (a.date<b.date?-1:1)*-1;});
+    return {items:items,del:Object.keys(del).sort()};
+  }
+
   /* 加载用户文章（本地草稿 + 公开发布合并），cb(all) */
   function loadUserArticles(cb){
     var local={};
@@ -137,5 +154,6 @@ var GD=(function(){
 
   return {token:token,setToken:setToken,hasToken:hasToken,
     pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments,
-    pushPublic:pushPublic,mergeArticles:mergeArticles,loadUserArticles:loadUserArticles};
+    pushPublic:pushPublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
+    loadUserArticles:loadUserArticles};
 })();
