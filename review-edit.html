@@ -23,11 +23,17 @@
   --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
 }
+.meta-row select option,.meta-row input[type=date]{
+  background:var(--paper);color:var(--ink);}
 html[data-theme="dark"]{
   --paper:#141412; --paper-soft:#1b1b18; --ink:#e9e6de; --charcoal:#d6d3ca;
   --gray:#7d7a71; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
   --cinnabar:#c8503a;
 }
+html[data-theme="dark"] .meta-row select option,
+html[data-theme="dark"] .meta-row input[type=date]{
+  background:#1b1b18;color:var(--ink)}
+html[data-theme="dark"] .meta-row input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.85)}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;
@@ -180,8 +186,21 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   </a>
   <nav>
     <a href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html" class="cur">复盘<span class="en">REVIEW</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
+    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <g class="disc">
+          <path class="half" d="M12,2 a10,10 0 0 1 0,20 a5,5 0 0 1 0,-10 a5,5 0 0 0 0,-10 z"/>
+          <circle class="d1" cx="12" cy="7" r="1.7"/>
+          <circle class="d2" cx="12" cy="17" r="1.7"/>
+        </g>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
   </nav>
 </header>
 

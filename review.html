@@ -115,6 +115,13 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .row:hover::before{transform:translateY(-50%) scale(1)}
 
 /* 排序 / 分页 */
+/* 新复盘入口：与工作台动作按钮同款（衬线+朱砂圆点+无边框） */
+.rev-new{display:inline-flex;align-items:baseline;gap:10px;background:none;border:none;
+  cursor:pointer;font-family:var(--serif);font-size:13px;font-weight:600;letter-spacing:.2em;
+  color:var(--ink);padding:0;transition:opacity .4s}
+.rev-new:hover{opacity:.6}
+.rev-new .rr{width:8px;height:8px;border-radius:50%;background:var(--cinnabar);
+  flex:none;align-self:center}
 .sortbtn{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
   letter-spacing:.2em;color:var(--gray);padding:0;flex:none;transition:color .4s}
 .sortbtn:hover{color:var(--ink)}
@@ -281,7 +288,7 @@ loop, ws, reclog{scroll-margin-top:120px}
   </div>
 
   <!-- 决策与交易：期货工作站入口（数据在站，结论回园） -->
-  <a class="ext-strip rv" id="ws" href="https://evanyfm.github.io/futures-workstation/" target="_blank" rel="noopener">
+  <a class="ext-strip rv" id="ws" href="https://evanyfm.github.io/macro-workstation-site/" target="_blank" rel="noopener">
     <span class="nr"></span>
     <span class="nt">决策与交易</span>
     <span class="nd">每笔决策的快照、人工确认、退出结果与五日归因 —— 数据在期货工作站，复盘的结论回到这里</span>
@@ -309,7 +316,7 @@ loop, ws, reclog{scroll-margin-top:120px}
     <div class="index-head rv">
       <h3>复盘记录</h3>
       <span class="count">周复盘 · 月复盘 · 季度访谈</span>
-      <button class="rev-new" id="revNew" type="button" hidden>+ 新复盘</button>
+      <button class="rev-new" id="revNew" type="button" hidden><span class="rr"></span>新复盘</button>
       <button class="sortbtn" id="sortBtn" type="button">时间 · 近→远</button>
     </div>
 
@@ -353,6 +360,14 @@ loop, ws, reclog{scroll-margin-top:120px}
   /* 私密区块：仅已设置同步 Token 的设备显示（朋友设备上整块不可见） */
   if(!GD.hasToken())return;
   sec.hidden=false;
+  /* 目录同步补入「每日此刻」锚点（游客设备上不出现） */
+  var toc=document.querySelector('.toc');
+  if(toc&&!toc.querySelector('a[href="#nowlogSec"]')){
+    var a=document.createElement('a');
+    a.href='#nowlogSec';
+    a.innerHTML='<span>每日此刻</span><i></i>';
+    toc.insertBefore(a,toc.querySelector('a[href="#ws"]'));
+  }
   function todayStr(){
     var d=new Date();
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -586,21 +601,23 @@ build();
 })();
 </script>
 <script>
-/* 侧边目录：点击平滑跳转 + 滚动跟随高亮 */
+/* 侧边目录：点击平滑跳转 + 滚动跟随高亮
+   委托到 .toc 容器 + 每次实时查询——支持运行时插入的锚点（如「每日此刻」私密区块显形后） */
 (function(){
-  var links=[].slice.call(document.querySelectorAll('.toc a'));
-  if(!links.length)return;
+  var toc=document.querySelector('.toc');
+  if(!toc)return;
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
-  links.forEach(function(a,i){
-    a.addEventListener('click',function(e){
-      var s=secs[i];if(!s)return;e.preventDefault();
-      window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-110,
-        behavior:reduce?'auto':'smooth'});
-    });
+  toc.addEventListener('click',function(e){
+    var a=e.target.closest('a');if(!a)return;
+    var s=document.querySelector(a.getAttribute('href'));if(!s)return;
+    e.preventDefault();
+    window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-110,
+      behavior:reduce?'auto':'smooth'});
   });
   function update(){
     var pos=window.scrollY+window.innerHeight*0.35,cur=0;
+    var links=[].slice.call(toc.querySelectorAll('a'));
+    var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
     secs.forEach(function(s,i){if(s&&s.offsetTop<=pos)cur=i;});
     links.forEach(function(a,i){a.classList.toggle('on',i===cur);});
   }
