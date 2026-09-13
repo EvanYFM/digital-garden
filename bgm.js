@@ -1,26 +1,29 @@
 /* ============================================================
-   bgm.js · 数字花园背景音乐（全站共享，单曲循环）
+   bgm.js · 数字花园背景音乐（全站共享，单曲循环，跨页续播）
    - 音源：assets/bgm.mp3（未就位时本模块自动隐藏，不报错）
-   - 位置：页头「马」印章右侧
-   - 播放策略：载入即尝试播放；被浏览器拦截时，首次点击/触碰页面任意处自动开始
-   - 记忆：每台设备记住暂停/播放偏好（localStorage bgm_pref）
+   - 位置：页头右上，日夜切换太极钮左侧（含音符提示符）
+   - 播放策略：进入网站不自动播放——用户点击 ♪ 按钮后才开始；
+     之后站内换页自动接续上一进度，无需再点
+   - 跨页续播：换页前把播放进度存 sessionStorage，新页面从同一位置继续——
+     站内漫游听感接近连续；同 URL 音频已被浏览器缓存，续播几乎即时
    - 观（jing.html）刻意不引入——那一页属于静止
    ============================================================ */
 (function(){
   if(document.querySelector('.bgm-btn'))return;
-  var pref;
-  try{pref=localStorage.getItem('bgm_pref')||'on';}catch(e){pref='on';}
 
   /* 样式（自包含，避免逐页复制 CSS） */
   var style=document.createElement('style');
   style.textContent=[
-    '.bgm-btn{width:26px;height:26px;background:none;border:none;cursor:pointer;',
-    '  padding:0;color:var(--ink);opacity:.55;transition:opacity .4s;flex:none}',
+    '.bgm-btn{display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;',
+    '  padding:0;color:var(--ink);opacity:.6;transition:opacity .4s;flex:none;margin-left:48px;margin-right:28px}',
     '.bgm-btn:hover{opacity:1}',
-    '.bgm-btn svg{display:block;width:100%;height:100%;overflow:visible}',
+    '.bgm-btn .note{font-family:var(--sans);font-size:13px;line-height:1;opacity:.55;',
+    '  transform:translateY(-1px)}',
+    '.bgm-btn.playing .note{opacity:.9}',
+    '.bgm-btn svg{display:block;width:22px;height:22px;overflow:visible}',
     '.bgm-btn .ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.5}',
     '.bgm-btn .odot{fill:currentColor;transition:opacity .4s}',
-    '.bgm-btn .orbit{transform-origin:13px 13px}',
+    '.bgm-btn .orbit{transform-origin:11px 11px}',
     '.bgm-btn.playing .orbit{animation:bgm-orbit 7s linear infinite}',
     '.bgm-btn.playing .odot{opacity:1}',
     '.bgm-btn:not(.playing) .odot{opacity:.22}',
@@ -32,48 +35,72 @@
   var audio=new Audio('assets/bgm.mp3');
   audio.loop=true;audio.preload='auto';audio.volume=0.55;
 
-  /* 按钮：插入「马」印章右侧 */
+  /* 跨页续播：换页/隐藏前存进度；新页面恢复到同一位置再继续 */
+  function saveTime(){
+    try{if(audio.currentTime>0)sessionStorage.setItem('bgm_time',String(audio.currentTime));}catch(e){}
+  }
+  window.addEventListener('pagehide',saveTime);
+  window.addEventListener('beforeunload',saveTime);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)saveTime();});
+
+  /* 进度恢复：三重保险（元数据就绪时 / 开始播放时 / 播放事件中），只恢复一次 */
+  var restored=false;
+  function restoreTime(){
+    if(restored)return;
+    try{
+      var st=parseFloat(sessionStorage.getItem('bgm_time')||'0');
+      if(st>1){
+        if(audio.duration&&st>audio.duration-2){audio.currentTime=0;}
+        else{audio.currentTime=st;}
+      }
+      restored=true;
+    }catch(e){}
+  }
+  try{
+    var st0=parseFloat(sessionStorage.getItem('bgm_time')||'0');
+    if(st0>1)audio.currentTime=st0;
+  }catch(e){}
+  audio.addEventListener('loadedmetadata',restoreTime);
+  audio.addEventListener('playing',restoreTime);
+
+  /* 按钮：音符 + 圆环，插入太极日夜钮左侧 */
   var btn=document.createElement('button');
   btn.className='bgm-btn';btn.type='button';
-  btn.title='背景音乐 · 点击暂停/播放';
+  btn.title='背景音乐 · 点击播放/暂停';
   btn.setAttribute('aria-label','背景音乐');
-  btn.innerHTML='<svg viewBox="0 0 26 26" aria-hidden="true">'
-    +'<circle class="ring" cx="13" cy="13" r="10"/>'
-    +'<g class="orbit"><circle class="odot" cx="13" cy="3" r="2"/></g>'
+  btn.innerHTML='<span class="note" aria-hidden="true">♪</span>'
+    +'<svg viewBox="0 0 22 22" aria-hidden="true">'
+    +'<circle class="ring" cx="11" cy="11" r="8.5"/>'
+    +'<g class="orbit"><circle class="odot" cx="11" cy="2.5" r="1.8"/></g>'
     +'</svg>';
-  var brand=document.querySelector('header .brand');
-  if(!brand)return;
-  brand.insertAdjacentElement('afterend',btn);
+  var hdr=document.querySelector('header');
+  var taiji=hdr?hdr.querySelector('.taiji'):null;
+  if(hdr&&taiji){hdr.insertBefore(btn,taiji);}
+  else if(hdr){hdr.appendChild(btn);}
+  else{return;}
+
+  /* 站内已开播（本次标签页内点过播放）：换页后自动接续 */
+  var started=false;
+  try{started=sessionStorage.getItem('bgm_started')==='1';}catch(e){}
 
   function start(){
     audio.play().then(function(){
-      document.removeEventListener('pointerdown',kick);
-      document.removeEventListener('keydown',kick);
-      document.removeEventListener('touchstart',kick);
-    }).catch(function(){/* 等待首次交互 */});
+      restoreTime();
+      try{sessionStorage.setItem('bgm_started','1');}catch(e){}
+    }).catch(function(){/* 需要用户手势 */});
   }
-  function kick(){ if(pref==='on'&&audio.paused)start(); }
 
   audio.addEventListener('play',function(){btn.classList.add('playing');});
   audio.addEventListener('pause',function(){btn.classList.remove('playing');});
   /* 音源未就位（404/解码失败）：整个按钮移除，页面不留坏图标 */
   audio.addEventListener('error',function(){btn.remove();});
 
+  /* 唯一的播放入口：点击 ♪ 按钮。进入网站不自动播放 */
   btn.addEventListener('click',function(){
-    if(audio.paused){
-      pref='on';try{localStorage.setItem('bgm_pref','on');}catch(e){}
-      start();
-    }else{
-      pref='off';try{localStorage.setItem('bgm_pref','off');}catch(e){}
-      audio.pause();
-    }
+    if(audio.paused){start();}
+    else{audio.pause();}
   });
 
-  if(pref==='on'){
-    start();
-    /* 自动播放被拦截：任意首次交互即开声 */
-    document.addEventListener('pointerdown',kick);
-    document.addEventListener('keydown',kick);
-    document.addEventListener('touchstart',kick,{passive:true});
-  }
+  /* 本次标签页内已经播过 → 换页回来自动接续；首次进入保持安静 */
+  if(started){start();}
 })();

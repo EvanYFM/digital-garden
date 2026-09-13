@@ -37,15 +37,15 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weigh
 ::selection{background:var(--ink);color:var(--paper)}
 
 header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;
-  justify-content:space-between;align-items:center;padding:28px 48px;
+  align-items:center;padding:28px 48px;
   background:color-mix(in srgb,var(--paper) 86%,transparent);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
 .seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
   justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
 .brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
-nav{display:flex;align-items:center;gap:34px}
-nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+nav{margin-left:auto;display:flex;align-items:center;gap:34px}
+nav a{color:var(--ink);text-decoration:none;font-size:14px;letter-spacing:.14em;
   position:relative;padding:4px 0;opacity:.75;transition:opacity .4s}
 nav a:hover,nav a.cur{opacity:1}
 nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
@@ -252,7 +252,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
-    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+    </nav>
+  <button class="taiji" id="themeToggle" aria-label="切换日夜">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle class="ring" cx="12" cy="12" r="10"/>
         <g class="disc">
@@ -263,7 +264,6 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         <circle class="still" cx="12" cy="12" r="1.8"/>
       </svg>
     </button>
-  </nav>
 </header>
 
 <main>

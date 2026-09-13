@@ -55,7 +55,7 @@ body{
 /* ---------- 导航 ---------- */
 header{
   position:fixed;top:0;left:0;right:0;z-index:50;
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;align-items:center;
   padding:28px 48px;
 }
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
@@ -65,9 +65,9 @@ header{
   color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600;flex:none;
 }
 .brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
-nav{display:flex;align-items:center;gap:34px}
+nav{margin-left:auto;display:flex;align-items:center;gap:34px}
 nav a{
-  color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  color:var(--ink);text-decoration:none;font-size:14px;letter-spacing:.14em;
   position:relative;padding:4px 0;opacity:.75;transition:opacity .4s;
 }
 nav a:hover{opacity:1}
@@ -258,7 +258,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
-    <button class="taiji" id="themeToggle" aria-label="切换日夜">
+    </nav>
+  <button class="taiji" id="themeToggle" aria-label="切换日夜">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle class="ring" cx="12" cy="12" r="10"/>
         <g class="disc">
@@ -269,7 +270,6 @@ footer{border-top:1px solid var(--line);margin-top:40px}
         <circle class="still" cx="12" cy="12" r="1.8"/>
       </svg>
     </button>
-  </nav>
 </header>
 
 <!-- 第一屏 · 封面 -->
