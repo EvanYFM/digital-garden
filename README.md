@@ -33,7 +33,7 @@
 ## 日常更新
 
 ```
-改文件 → git add -A → git commit -m "说明" → git push
+改文件 → git add <本次相关文件> → git commit -m "说明" → git push
 ```
 
 推送后约一分钟，GitHub Pages 自动更新线上版本。
@@ -44,13 +44,13 @@
 
 - 数据仓库：`digital-garden-data`（私有），含 `now.json`（每日此刻）与 `fragments.json`（随记）
 - `garden-data.js` 为共享数据层：拉取/推送/合并（409 冲突自动重试）
-- Token 为 GitHub fine-grained PAT，只授权该私有仓库的 Contents 读写；仅存在各设备浏览器 localStorage，不进入网站代码
+- Token 为 GitHub fine-grained PAT，只授权 digital-garden-data 与 digital-garden 两个仓库的 Contents 读写；仅存在各设备浏览器 localStorage，不进入网站代码
 - 无 Token 时一切退化为纯本地，不报错
 
 ### 开启同步（每台设备一次）
 
 1. GitHub → Settings → Developer settings → Fine-grained tokens → Generate
-2. Repository access：仅 `digital-garden-data`；Permissions：Contents → Read and write
+2. Repository access：`digital-garden-data` 与 `digital-garden`；Permissions：Contents → Read and write
 3. 打开线上「此刻」页 → 底部「同步 · SYNC」→ 粘贴 Token → 保存
 
 ## 私密锁（分享给朋友时）
@@ -72,3 +72,9 @@
 - 禁圆角卡片、禁阴影；几何只用圆环、圆点、细线
 - 太极元素只存在于一枚 24px 日夜切换按钮的微交互里
 - 朱砂色作印章式点缀，全站不超过七处
+
+## 发布与恢复约定
+
+“重发已发布内容”只恢复既有发布快照，不发布草稿或新的草稿修订。删除采用墓碑，远端文章按ID合并。此刻记录按版本合并，冲突副本显示在页面并随JSON备份导出。
+
+运行与权限配置见 [operations](docs/operations.md)。同一 github.io 域名下的项目共享浏览器存储安全边界；前端密码锁不提供加密。

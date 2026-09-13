@@ -5,7 +5,7 @@
         **粗** *斜* `行内码` [链接](url) --- 分隔线
    ============================================================ */
 var MD=(function(){
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
   /* 行内加工（输入已转义） */
   function inline(s){
@@ -14,7 +14,7 @@ var MD=(function(){
       .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
       .replace(/\*([^*]+)\*/g,'<em>$1</em>')
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,function(m,t,u){
-        if(!/^(https?:|mailto:|#|\.\/|notes\.html|article\.html|now\.html|review\.html|research\.html|projects\.html|about\.html|jing\.html|write\.html)/i.test(u))return t;
+        if(!/^(https?:\/\/|mailto:|#|\.\/|(?:notes|article|now|review|research|projects|about|jing|write)\.html(?:[?#]|$))/i.test(u))return t;
         return '<a href="'+u+'">'+t+'</a>';
       });
   }

@@ -5,15 +5,21 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 20
       - name: 语法守门（独立与内联 JS + base 引入结构校验）
         run: node scripts/syntax-check.js
       - name: 检索索引新鲜度（改了 article.html 未重建索引会挂红）
         run: node scripts/build-search-index.js && git diff --exit-code -- search-index.json
+
+      - name: 安全与同步行为回归
+        run: node --test scripts/security-sync.test.js

@@ -397,6 +397,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
 /* ===== 此刻 · 数据逻辑 ===== */
 (function(){
   var KEY='nowEntries';
+  var formDirty=false,editBase=0;
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
   var FIELDS=['energy','focusState','feeling','dailyFocus','notesLife','notesInvest','notesThink','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
   var LEGACY=['direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
@@ -455,6 +456,13 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     banner.classList.toggle('on',selected!==today);
     saveHint.textContent=isReadOnly()?'历史快照已封存，仅供回看':'更改仅在当前页面，保存后写入本机';
     renderDates();
+    var old=document.getElementById('nowConflicts');if(old)old.remove();
+    if(data._conflicts&&data._conflicts.length){
+      var details=document.createElement('details');details.id='nowConflicts';
+      var summary=document.createElement('summary');summary.textContent='保留了 '+data._conflicts.length+' 份不同设备的记录，请核对后继续编辑';
+      var pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.textContent=JSON.stringify(data._conflicts,null,2);
+      details.appendChild(summary);details.appendChild(pre);saveHint.after(details);
+    }
     markDirty(false);
   }
 
@@ -476,6 +484,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   }
 
   function markDirty(dirty){
+    if(dirty&&!formDirty)editBase=Number((entries[selected]||{}).updated||0);
+    formDirty=dirty;
     if(dirty){
       saveState.classList.remove('ok');
       saveStateText.textContent='有未保存的更改';
@@ -494,8 +504,12 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     document.querySelectorAll('[data-key]').forEach(function(el){
       data[el.getAttribute('data-key')]=el.value;
     });
+    data._baseUpdated=formDirty?editBase:Number((entries[selected]||{}).updated||0);
+    data._conflicts=(entries[selected]||{})._conflicts||[];
+    data.updated=Math.max(Date.now(),Number((entries[selected]||{}).updated||0)+1);
     entries[selected]=data;
     localStorage.setItem(KEY,JSON.stringify(entries));
+    markDirty(false);
     saveState.classList.add('ok');
     var t=new Date();
     saveStateText.textContent='已保存到本机 · '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
@@ -564,9 +578,9 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     return GD.sync('now.json',localEntries,function(l,r){
       return GD.mergeNow(l,r,today);
     }).then(function(r){
-      entries=r.data;
+      entries=GD.mergeNow(load(),r.data);
       localStorage.setItem(KEY,JSON.stringify(entries));
-      render();
+      if(!formDirty)render();
       return r;
     });
   }
@@ -576,7 +590,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     var merged=GD.mergeNow(load(),r.data,today);
     entries=merged;
     localStorage.setItem(KEY,JSON.stringify(entries));
-    render();
+    if(!formDirty)render();
     syncState.textContent='已从云端拉取记录 · '+Object.keys(r.data).length+' 天';
     setTimeout(function(){syncState.textContent=syncLabel();},4000);
   }).catch(function(){

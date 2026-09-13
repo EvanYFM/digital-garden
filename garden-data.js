@@ -29,10 +29,13 @@ var GD=(function(){
       },
       body:body?JSON.stringify(body):undefined
     }).then(function(r){
-      if(r.status===404)return null;              /* 文件尚不存在 */
+      if(r.status===404&&method==='GET')return null;              /* 文件尚不存在 */
       if(r.status===401)throw new Error('Token 无效或已过期');
       if(!r.ok)throw new Error('GitHub '+r.status);
-      return r.json();
+      return r.json().then(function(j){
+        if(method==='PUT'&&(!j||!j.commit||!j.content))throw new Error('GitHub 未确认写入');
+        return j;
+      });
     });
   }
 
@@ -53,8 +56,10 @@ var GD=(function(){
   }
 
   /* 同步：拉取 → merge(本地, 远端) → 推送；409 冲突自动重试一次 */
+  var syncQueues={};
   function sync(path,localObj,merge){
     if(!hasToken())return Promise.resolve({data:localObj,local:true});
+    localObj=JSON.parse(JSON.stringify(localObj));
     function attempt(retry){
       return pull(path).then(function(r){
         var sha=r?r.sha:null;
@@ -67,18 +72,29 @@ var GD=(function(){
         throw e;
       });
     }
-    return attempt(true);
+    var work=(syncQueues[path]||Promise.resolve()).catch(function(){}).then(function(){return attempt(true);});
+    syncQueues[path]=work;return work;
   }
 
   /* 合并规则：now 按日期为键。远端为基准；本地独有日期保留；
      preferKey（通常为今天）本地优先——刚写的编辑不被云端旧值覆盖 */
-  function mergeNow(local,remote,preferKey){
-    var out={},k;
-    for(k in remote)out[k]=remote[k];
-    for(k in local){
-      if(!(k in out))out[k]=local[k];
-      else if(k===preferKey)out[k]=local[k];
-    }
+  function mergeNow(local,remote){
+    var out={};
+    Object.keys(remote||{}).concat(Object.keys(local||{})).forEach(function(k){
+      var l=local&&local[k],r=remote&&remote[k];
+      if(!l||!r){out[k]=l||r;return;}
+      var winner=Number(l.updated||0)>Number(r.updated||0)?l:r;
+      var loser=winner===l?r:l;
+      var copy=JSON.parse(JSON.stringify(winner));
+      var conflicts=(l._conflicts||[]).concat(r._conflicts||[]);
+      function plain(x){var y=Object.assign({},x);delete y._conflicts;delete y._baseUpdated;return y;}
+      if(JSON.stringify(plain(l))!==JSON.stringify(plain(r))&&
+          Number(winner._baseUpdated||0)!==Number(loser.updated||0))conflicts.push(plain(loser));
+      // Legacy values have no version: retain the alternative instead of losing it.
+      if(!l.updated&&!r.updated&&JSON.stringify(plain(l))!==JSON.stringify(plain(r)))conflicts.push(plain(l));
+      var seen={};copy._conflicts=conflicts.filter(function(x){var key=JSON.stringify(x);if(seen[key])return false;seen[key]=1;return true;});
+      out[k]=copy;
+    });
     return out;
   }
   /* 随记合并 v2：支持墓碑（删除跨设备生效）。
@@ -90,9 +106,7 @@ var GD=(function(){
   }
   function mergeFragments(local,remote){
     var L=fragParts(local),R=fragParts(remote),del={},map={},i;
-    try{
-      (JSON.parse(localStorage.getItem('fragDel'))||[]).forEach(function(t){del[t]=1;});
-    }catch(e){}
+    L.del.forEach(function(t){del[t]=1;});
     R.del.forEach(function(t){del[t]=1;});
     for(i=0;i<R.items.length;i++)if(!del[R.items[i].t])map[R.items[i].t]=R.items[i];
     for(i=0;i<L.items.length;i++)if(!del[L.items[i].t]&&!map[L.items[i].t])map[L.items[i].t]=L.items[i];
@@ -103,15 +117,40 @@ var GD=(function(){
 
   /* 发布到公开仓库（数字花园本体，EvanYFM/digital-garden）：
      把已发布文章写入 user-articles.json，Pages 约 1 分钟后全站可见 */
-  function pushPublic(path,obj){
-    var body={message:'publish '+path+' · '+new Date().toISOString().slice(0,16),
-      content:b64e(JSON.stringify(obj))};
-    return apiRepo('digital-garden','GET',path).then(function(j){
-      if(j)body.sha=j.sha;
-      return apiRepo('digital-garden','PUT',path,body);
-    });
+  function publicationSnapshot(x){
+    return {id:x.id,title:x.title,cat:x.cat,state:x.state,created:x.created,
+      updated:x.updated,rev:x.rev,body:x.body,seeds:x.seeds||[]};
   }
-
+  function publicationFile(all){
+    var articles=[],deletions=[];
+    Object.keys(all).forEach(function(k){var x=all[k];
+      if(x.deleted){deletions.push({id:x.id,updated:x.updated});return;}
+      if(x.pub)articles.push(publicationSnapshot(Object.assign({id:x.id,created:x.created},x.pub)));
+    });
+    return {articles:articles,deletions:deletions};
+  }
+  function mergePublic(local,remote){
+    var map={},del={};
+    [remote||{},local||{}].forEach(function(f){
+      (f.deletions||[]).forEach(function(x){del[x.id]=Math.max(del[x.id]||0,Number(x.updated||0));});
+      (f.articles||[]).forEach(function(x){if(!map[x.id]||Number(x.updated||0)>Number(map[x.id].updated||0))map[x.id]=x;});
+    });
+    return {generated:Date.now(),articles:Object.keys(map).sort().filter(function(k){return !(k in del);}).map(function(k){return map[k];}),
+      deletions:Object.keys(del).sort().map(function(k){return {id:k,updated:del[k]};})};
+  }
+  function pushPublic(path,obj){
+    if(!hasToken())return Promise.reject(new Error('未设置同步 Token'));
+    function attempt(retry){
+      return apiRepo('digital-garden','GET',path).then(function(j){
+        var remote=j?JSON.parse(b64d(j.content)):{};
+        var merged=mergePublic(obj,remote);
+        var body={message:'publish '+path,content:b64e(JSON.stringify(merged))};
+        if(j)body.sha=j.sha;
+        return apiRepo('digital-garden','PUT',path,body).then(function(){return merged;});
+      }).catch(function(e){if(retry&&/409/.test(e.message))return attempt(false);throw e;});
+    }
+    return attempt(true);
+  }
   /* 用户文章合并：按 id，updated 较新者胜 */
   function mergeArticles(local,remote){
     var out={},k;
@@ -147,13 +186,13 @@ var GD=(function(){
       return r.ok?r.json():null;
     }).catch(function(){return null;}).then(function(pub){
       if(pub&&pub.articles)local=mergeArticles(local,
-        pub.articles.reduce(function(m,a){m[a.id]=a;return m;},{}));
+        pub.articles.reduce(function(m,a){m[a.id]=Object.assign({},a,{pub:publicationSnapshot(a)});return m;},{}));
       cb(local);
     });
   }
 
   return {token:token,setToken:setToken,hasToken:hasToken,
     pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments,
-    pushPublic:pushPublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
+    pushPublic:pushPublic,publicationFile:publicationFile,publicationSnapshot:publicationSnapshot,mergePublic:mergePublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
     loadUserArticles:loadUserArticles};
 })();

@@ -320,7 +320,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       <h3>我的作品 <b>/</b> WORKS</h3>
       <span style="display:flex;gap:14px;align-items:baseline">
         <button class="sortbtn" id="exportBtn" type="button" title="把全部文章打包成一个 Markdown 文件下载到本机——云端之外的最后一道保险">导出全部 .md</button>
-        <button class="sortbtn" id="resyncPubBtn" type="button" title="把当前全部作品重建为公开列表并推到云端（发布管线失灵时的自救按钮）">重发全部到云端</button>
+        <button class="sortbtn" id="resyncPubBtn" type="button" title="恢复已发布快照；不发布草稿和未发布修订">重发已发布内容</button>
         <button class="sortbtn" id="workSort" type="button">时间 · 近→远</button>
       </span>
     </div>
@@ -436,14 +436,15 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 
   /* ---------- 云端 ---------- */
   function syncPrivate(){
-    if(!GD.hasToken())return;
+    if(!GD.hasToken())return Promise.resolve();
     syncText.textContent='同步中…';
-    GD.sync('articles.json',all,GD.mergeArticles).then(function(r){
-      all=r.data;persist();renderWorks();
+    return GD.sync('articles.json',all,GD.mergeArticles).then(function(r){
+      all=GD.mergeArticles(all,r.data);persist();renderWorks();
       syncHint.classList.add('ok');
       syncText.textContent='已同步云端';
     }).catch(function(e){
       syncText.textContent='云端同步失败（'+e.message+'）· 本地已保存';
+      throw e;
     });
   }
 
@@ -463,7 +464,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     a.updated=now;
     persist();metaUpdate();renderWorks();
     if(!silent)hint('已保存 · 第 '+a.rev+' 次修订');
-    syncPrivate();
+    syncPrivate().catch(function(){});
     return a;
   }
   $('saveBtn').addEventListener('click',function(){doSave(false);});
@@ -521,66 +522,44 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     all[editing]={id:editing,deleted:true,updated:Date.now()};
     editing=null;fillForm(null);
     persist();renderWorks();hint('已删除');
-    syncPrivate();
+    syncPrivate().catch(function(){});
     /* 已发布过的：同步更新公开列表，从站点撤下 */
     if(hadPub&&GD.hasToken()){
-      var arts=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].pub;})
-        .map(function(k){var x=all[k],p=x.pub;
-          return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
-            updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};});
-      GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts})
-        .catch(function(e){hint('⚠ 公开列表更新失败（'+e.message+'）——文章可能仍挂在站点上，请到「我的作品」点「重发全部到云端」');});
+      GD.pushPublic('user-articles.json',GD.publicationFile(all))
+        .catch(function(e){hint('⚠ 公开列表更新失败（'+e.message+'）——文章可能仍挂在站点上，请到「我的作品」点「重发已发布内容」');});
     }
   });
+  var publishBusy=false;
   $('pubBtn').addEventListener('click',function(){
-    if(!GD.hasToken()){hint('未设置同步 Token——请先在「此刻」页设置，再回来发布');return;}
-    var a=doSave(true);
-    if(a.pub&&a.pub.rev>=a.rev){hint('当前修订已发布过，内容未变');return;}
-    a.pub={rev:a.rev,updated:a.updated,title:a.title,cat:a.cat,state:a.state,body:a.body,seeds:a.seeds||[]};
-    var file={generated:Date.now(),articles:Object.keys(all)
-      .filter(function(k){return all[k].pub;})
-      .map(function(k){var x=all[k],p=x.pub;
-        return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
-          updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};})};
-    syncHint.classList.remove('ok');
-    syncText.textContent='发布中…';
-    GD.pushPublic('user-articles.json',file).then(function(){
+    if(!GD.hasToken()){hint('请先设置同步 Token');return;}
+    if(publishBusy)return;
+    var saved=doSave(true),id=saved.id;
+    var pending=GD.publicationSnapshot(saved);
+    publishBusy=true;syncText.textContent='发布中…';
+    syncPrivate().then(function(){
+      if(!all[id]||all[id].deleted)throw new Error('文章已被删除');
+      if(Number(all[id].updated)>Number(pending.updated))throw new Error('云端有更新版本，请核对后重新发布');
+      return GD.pushPublic('user-articles.json',{articles:[pending]});
+    }).then(function(){
+      if(all[id]&&!all[id].deleted)all[id].pub=pending;
       persist();renderWorks();
-      syncHint.classList.add('ok');
-      syncText.textContent='已发布 · v'+a.pub.rev;
-      hint('《'+a.title+'》已发布 · 约一分钟后全站可见');
-      syncPrivate();
-    }).catch(function(e){
-      syncText.textContent='发布失败（'+e.message+'）';
-      hint('⚠ 发布失败：'+e.message+'。若提示 403/404，多半是 Token 没有公开仓库（digital-garden）权限——到「此刻」页更新 Token（同时授权两个仓库），或用「重发全部到云端」重试');
-    });
+      syncHint.classList.add('ok');syncText.textContent='已发布 · v'+pending.rev;
+      hint('《'+pending.title+'》已发布');
+      return syncPrivate();
+    }).catch(function(e){syncText.textContent='发布或备份失败：'+e.message;hint('请重试；未确认成功的修订不会被标为已发布。');})
+      .finally(function(){publishBusy=false;});
   });
 
-  /* ---------- 自救：重发全部到云端 / 导出全部 .md ---------- */
-  function buildPubFile(){
-    return {generated:Date.now(),articles:Object.keys(all)
-      .filter(function(k){return !all[k].deleted&&all[k].body;})
-      .map(function(k){var x=all[k];
-        if(!x.pub||x.pub.rev<x.rev)x.pub={rev:x.rev||1,updated:x.updated,
-          title:x.title,cat:x.cat,state:x.state,body:x.body,seeds:x.seeds||[]};
-        var p=x.pub;
-        return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
-          updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};})};
-  }
+  /* ---------- 自救：重发已发布内容 / 导出全部 .md ---------- */
+  function buildPubFile(){return GD.publicationFile(all);}
   $('resyncPubBtn').addEventListener('click',function(){
-    if(!GD.hasToken()){hint('未设置同步 Token——请先在「此刻」页设置');return;}
-    var file=buildPubFile();
-    if(!file.articles.length){hint('还没有可发布的作品');return;}
-    syncText.textContent='重发中…('+file.articles.length+' 篇)';
-    GD.pushPublic('user-articles.json',file).then(function(){
-      persist();renderWorks();syncPrivate();
-      syncHint.classList.add('ok');
-      syncText.textContent='已重发 '+file.articles.length+' 篇 · 约一分钟后全站可见';
-      hint('✓ 公开列表已重建并推上云端');
-    }).catch(function(e){
-      syncText.textContent='重发失败（'+e.message+'）';
-      hint('⚠ 重发失败：'+e.message+'。多半是 Token 权限不足——到「此刻」页更新 Token（需同时授权 digital-garden 与 digital-garden-data 两个仓库）');
-    });
+    if(!GD.hasToken()){hint('请先设置同步 Token');return;}
+    if(publishBusy)return;
+    publishBusy=true;syncText.textContent='正在恢复已发布内容…';
+    syncPrivate().then(function(){return GD.pushPublic('user-articles.json',buildPubFile());})
+      .then(function(){syncText.textContent='已恢复已发布内容';hint('草稿和未发布修订保持私有');})
+      .catch(function(e){syncText.textContent='恢复失败：'+e.message;})
+      .finally(function(){publishBusy=false;});
   });
   $('exportBtn').addEventListener('click',function(){
     var arts=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].body;})
@@ -613,7 +592,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     if(GD.hasToken()){
       GD.pull('fragments.json').then(function(r){
         if(!r)return;
-        var m=GD.mergeFragments(FRAGS,r.data);
+        var m=GD.mergeFragments({items:FRAGS,del:JSON.parse(localStorage.getItem('fragDel')||'[]')},r.data);
         FRAGS=m.items;
         try{
           localStorage.setItem('fragments',JSON.stringify(FRAGS));
@@ -638,7 +617,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         a.seeds.splice(+b.getAttribute('data-i'),1);
         persist();renderSeeds();renderFragPick();
         hint('已移除种子 · 保存草稿后生效到云端');
-        syncPrivate();
+        syncPrivate().catch(function(){});
       });
     });
   }
@@ -726,7 +705,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       .then(function(pub){
         var mine=Object.keys(all).filter(function(k){return !all[k].deleted&&all[k].body;}).length;
         var n=pub&&pub.articles?Object.keys(pub.articles).filter(function(k){return !pub.articles[k].deleted;}).length:0;
-        if(mine&&!n)hint('⚠ 公开列表缺失——文章还没真正同步到云端。请点「我的作品」上方的「重发全部到云端」');
+        if(mine&&!n)hint('⚠ 公开列表缺失——文章还没真正同步到云端。请点「我的作品」上方的「重发已发布内容」');
       });
   }else{
     syncText.textContent='未设置同步 · 草稿仅存本机';

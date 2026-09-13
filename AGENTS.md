@@ -10,11 +10,10 @@
 字体走 Google Fonts CDN，断网时自动回退宋体/雅黑，不影响功能。
 
 线上：https://evanyfm.github.io/digital-garden/
-更新流程：改文件 → `git add -A` → `git commit -m "说明"` → `git push` → 约 1 分钟自动部署（GitHub Pages，main 分支根路径）。
+更新流程：改文件 → `git add <本次相关文件>` → `git commit -m "说明"` → `git push` → 约 1 分钟自动部署（GitHub Pages，main 分支根路径）。
 
 **铁律：GitHub 优先**。用户会直接在 GitHub 网页端改代码，远端经常领先本地。
-任何修改前必须先 `git fetch origin && git pull --rebase origin main`（无本地提交时用
-`git reset --hard origin/main` 对齐），以远端最新版为修改基准，禁止凭本地旧副本动手。
+修改前先检查 `git status --short`，保留未提交及未跟踪文件；在干净工作树执行 `git fetch origin` 与 `git pull --rebase origin main`。禁止自动 reset --hard 或清理用户文件。以最新远端为基线，只暂存本次相关修改。
 （2026-09-01 教训：一次失败的 rebase 曾损坏本地 .git，靠远端重建恢复——远端即真相。）
 
 ## 技术栈与结构
@@ -40,4 +39,5 @@
 
 v1 已上线（2026-08-24），数据层与私密锁已生效（2026-08-27 / 08-30）。
 待办：Token 需用户手动创建并在各设备粘贴一次；`.tmp-data` 等会话残留待用户确认后清理。
-后续可选：文章全文检索、双链、随记升格为文章的工作流。
+已具备全文检索与随记升格；后续可选双链。安全与同步回归：`node --test scripts/security-sync.test.js`。
+部署检查与权限待办见 `docs/operations.md`。

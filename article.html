@@ -580,16 +580,11 @@ function renderUser(id,a){
     try{localStorage.setItem('userArticles',JSON.stringify(A));}catch(e){}
     delete USER[id];
     if(GD.hasToken()){
-      GD.sync('articles.json',A,GD.mergeArticles).catch(function(){});
-      if(hadPub){
-        var arts=Object.keys(A).filter(function(k){return !A[k].deleted&&A[k].pub;})
-          .map(function(k){var x=A[k],p=x.pub;
-            return {id:x.id,title:p.title,cat:p.cat,state:p.state,created:x.created,
-              updated:p.updated,rev:p.rev,body:p.body,seeds:p.seeds||[]};});
-        GD.pushPublic('user-articles.json',{generated:Date.now(),articles:arts}).catch(function(){});
-      }
-    }
-    location.href='notes.html';
+      GD.sync('articles.json',A,GD.mergeArticles).then(function(){
+        if(hadPub)return GD.pushPublic('user-articles.json',GD.publicationFile(A));
+      }).then(function(){location.href='notes.html';})
+        .catch(function(e){alert('本机已删除，但云端撤下尚未完成：'+e.message+'。请到写作台重发已发布内容重试。');});
+    }else location.href='notes.html';
   });
 }
 
