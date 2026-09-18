@@ -29,11 +29,7 @@ var MD=(function(){
         return '<img class="md-img" src="'+u+'" alt="'+alt+'" loading="lazy">';
       })
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,function(m,t,u){
-<<<<<<< HEAD
-        if(!/^(https?:\/\/|mailto:|#|\.\/|(?:notes|article|now|review|research|projects|about|jing|write)\.html(?:[?#]|$))/i.test(u))return t;
-=======
         if(!safeUrl(u))return t;
->>>>>>> 485ead3 (feat: md.js v2 —— 表格/mermaid/图片/任务列表等全站渲染增强)
         return '<a href="'+u+'">'+t+'</a>';
       })
       .replace(/&lt;(https?:\/\/[^&\s]+)&gt;/g,'<a href="$1">$1</a>');
