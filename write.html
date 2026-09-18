@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
-<script src="base.js" defer></script>
+<script src="base.js?v=20260918" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -344,7 +344,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 </footer>
 
 <script src="garden-data.js"></script>
-<script src="md.js"></script>
+<script src="md.js?v=20260918"></script>
 <script>
 
 /* ===== 写作台 ===== */
@@ -432,7 +432,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     hint('已打开《'+(all[id].title||'无题')+'》');
     window.scrollTo({top:0,behavior:'smooth'});
   }
-  function renderPv(){pv.innerHTML=MD.render(bodyTa.value);}
+  function renderPv(){pv.innerHTML=MD.render(bodyTa.value);MD.hydrate(pv);}
 
   /* ---------- 云端 ---------- */
   function syncPrivate(){

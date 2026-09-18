@@ -26,8 +26,8 @@ for(const f of fs.readdirSync(root).filter(f=>f.endsWith('.html'))){
     const code=s.replace(/^<script>/,'').replace(/<\/script>$/,'');
     if(code.trim())checkJS(code,f+' #内联script['+i+']');
   });
-  if(!NO_BASE_JS.includes(f)&&!t.includes('src="base.js"')){console.error('✗ 缺少 base.js 引入:',f);fail=1;}
-  if(EXTRACT_CSS.includes(f)&&!t.includes('href="base.css"')){console.error('✗ 缺少 base.css 引入:',f);fail=1;}
+  if(!NO_BASE_JS.includes(f)&&!/src="base\.js(\?v=[0-9.]+)?"/.test(t)){console.error('✗ 缺少 base.js 引入:',f);fail=1;}
+  if(EXTRACT_CSS.includes(f)&&!/href="base\.css(\?v=[0-9.]+)?"/.test(t)){console.error('✗ 缺少 base.css 引入:',f);fail=1;}
 }
 /* 4. 语录计数守门：jing.html 注释声明的条数 == QUOTES 实际元素数
    中文数字支持到百位（语录规模 foreseeable < 200 条） */

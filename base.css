@@ -58,3 +58,19 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 .taiji .d2{fill:currentColor}
 .taiji .still{fill:currentColor;transition:opacity .5s}
 .taiji:hover .still{opacity:0}
+
+/* ---------- md.js v2：表格 / mermaid / 任务列表 / 图片 ---------- */
+.md-twrap{margin:0 0 22px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.md-twrap table{border-collapse:collapse;min-width:min(100%,420px);font-size:14.5px;line-height:1.8}
+.md-twrap th,.md-twrap td{border:1px solid var(--line);padding:9px 16px;font-family:var(--serif)}
+.md-twrap th{background:var(--paper-soft);font-weight:600;white-space:nowrap}
+.md-twrap tr:nth-child(even) td{background:color-mix(in srgb,var(--paper-soft) 45%,transparent)}
+.md-img{max-width:100%;height:auto;border-radius:4px;margin:6px 0;display:block}
+.md-task{list-style:none;margin-left:-20px}
+.md-task input[type=checkbox]{margin-right:9px;accent-color:var(--cinnabar);vertical-align:middle}
+.md-sub{margin:8px 0 2px;padding-left:24px}
+.md-mermaid{text-align:center;margin:0 0 22px;padding:14px 8px;background:var(--paper-soft);border-radius:4px;overflow-x:auto}
+.md-mermaid svg{max-width:100%}
+.md-mermaid-fallback{background:none;padding:0;margin:0;text-align:left}
+html[data-theme="dark"] .md-twrap th,
+html[data-theme="dark"] .md-twrap tr:nth-child(even) td{background:#232320}

@@ -10,6 +10,7 @@
     var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',cur);
     localStorage.setItem('theme',cur);
+    document.dispatchEvent(new CustomEvent('themechange'));
   });
 })();
 (function(){
