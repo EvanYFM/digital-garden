@@ -243,8 +243,9 @@ var MD=(function(){
     [].forEach.call(boxes,function(b){hydrateOne(b);});
   }
 
-  /* 日夜切换自动重绘：监听 base.js 派发的 themechange */
-  document.addEventListener('themechange',function(){
+  /* 日夜切换自动重绘：监听 base.js 派发的 themechange
+     （守卫：CI 安全回归在 node vm 无 DOM 环境加载本文件） */
+  if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('themechange',function(){
     if(mmState!==2)return;
     var t=currentTheme();
     if(t===mmTheme)return;
