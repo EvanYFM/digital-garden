@@ -201,8 +201,9 @@ var MD=(function(){
     s.onload=function(){
       try{
         window.mermaid.initialize({startOnLoad:false,theme:'base',
+          flowchart:{nodePadding:14,htmlLabels:true},
           themeVariables:themeVars(mmTheme),
-          securityLevel:'strict',fontFamily:'inherit'});
+          securityLevel:'strict',fontFamily:'ui-sans-serif,system-ui,-apple-system,'+'"PingFang SC","Microsoft YaHei",sans-serif'});
         mmState=2;
       }catch(e){mmState=-1;}
       mmQueue.forEach(function(f){f(mmState===2);});mmQueue=[];
@@ -237,10 +238,15 @@ var MD=(function(){
     });
   }
 
-  /* 扫描容器渲染 mermaid 占位（页面 innerHTML 后调用） */
+  /* 扫描容器渲染 mermaid 占位（页面 innerHTML 后调用）
+     等待 webfont 就绪：否则用 fallback 字体测量节点宽度，
+     真实字体到位后文字变宽溢出节点框（Windows 长标签必现） */
   function hydrate(root){
     var boxes=(root||document).querySelectorAll('.md-mermaid:not([data-done="1"])');
-    [].forEach.call(boxes,function(b){hydrateOne(b);});
+    if(!boxes.length)return;
+    var go=function(){[].forEach.call(boxes,function(b){hydrateOne(b);});};
+    if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go).catch(go);}
+    else go();
   }
 
   /* 日夜切换自动重绘：监听 base.js 派发的 themechange
@@ -250,7 +256,7 @@ var MD=(function(){
     var t=currentTheme();
     if(t===mmTheme)return;
     mmTheme=t;
-    try{window.mermaid.initialize({startOnLoad:false,theme:'base',themeVariables:themeVars(t),securityLevel:'strict',fontFamily:'inherit'});}catch(e){return;}
+    try{window.mermaid.initialize({startOnLoad:false,theme:'base',flowchart:{nodePadding:14,htmlLabels:true},themeVariables:themeVars(t),securityLevel:'strict',fontFamily:'ui-sans-serif,system-ui,-apple-system,'+'"PingFang SC","Microsoft YaHei",sans-serif'});}catch(e){return;}
     [].forEach.call(document.querySelectorAll('.md-mermaid[data-done="1"]'),function(b){
       b.removeAttribute('data-done');hydrateOne(b);
     });
