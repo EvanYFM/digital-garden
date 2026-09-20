@@ -152,6 +152,20 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
 
 /* 随记 · 种子 */
 .seedsec{margin-top:34px;padding-top:6px}
+.srcsec{margin-top:34px;border-top:1px solid var(--line)}
+.src-toggle{display:flex;align-items:baseline;width:100%;background:none;border:none;cursor:pointer;
+  padding:14px 0 4px;font-family:inherit;color:var(--ink);text-align:left}
+.src-toggle b{font-size:13px;letter-spacing:.12em;color:var(--gray)}
+.src-toggle em{font-style:normal;font-size:12px;color:var(--gray);margin-left:14px;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-caret{color:var(--gray);font-size:12px;transition:transform .25s}
+.src-toggle[aria-expanded="true"] .src-caret{transform:rotate(180deg)}
+.src-body{padding:10px 0 4px;display:flex;flex-direction:column;gap:10px}
+.src-body input,.src-body textarea{width:100%;background:var(--paper-soft);border:1px solid var(--line);
+  border-radius:4px;padding:10px 14px;font-family:inherit;font-size:13.5px;color:var(--ink);outline:none}
+.src-body input:focus,.src-body textarea:focus{border-color:var(--cinnabar)}
+.src-body textarea{resize:vertical;min-height:44px}
+.src-note{font-size:12px;color:var(--gray);opacity:.8}
 .seed-head{display:flex;align-items:baseline;gap:14px;font-size:10px;letter-spacing:.3em;
   color:var(--gray);text-transform:uppercase;padding-bottom:14px;border-bottom:1px solid var(--line);
   flex-wrap:wrap}
@@ -308,6 +322,14 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       <span class="hint" id="actHint"></span>
     </div>
 
+    <div class="srcsec" id="srcSec">
+      <button id="srcToggle" class="src-toggle" type="button" aria-expanded="false">出处 <b>/</b> SOURCE<em>记录这篇文章的原始材料——链接与关键引文，发布后展示在篇首</em><span class="src-caret">▾</span></button>
+      <div id="srcBody" class="src-body" hidden>
+        <input id="srcU" type="url" placeholder="原文链接 https://…" autocomplete="off">
+        <textarea id="srcQ" rows="2" placeholder="关键引文（可选）——摘一句原文，注明出处才立得住"></textarea>
+        <div class="src-note">出处是可选的：自己的思考不用填；引述外部观点时填上，读者能循链溯源。</div>
+      </div>
+    </div>
     <div class="seedsec">
       <div class="seed-head">随记 · 种子 <b>/</b> SEEDS<em>挂上孕育这篇文章的随记，发布后在篇末生成「种子」区块，链回原处</em></div>
       <div id="seedChips" class="seed-chips"></div>
@@ -355,6 +377,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   var $=function(id){return document.getElementById(id);};
   var titleIn=$('titleInput'),catSel=$('catSel'),stateSel=$('stateSel'),
       bodyTa=$('bodyTa'),pv=$('pv'),revInfo=$('revInfo'),
+      srcSec=$('srcSec'),srcToggle=$('srcToggle'),srcBody=$('srcBody'),srcU=$('srcU'),srcQ=$('srcQ'),
       tabEdit=$('tabEdit'),tabPv=$('tabPv'),actHint=$('actHint'),
       syncText=$('syncText'),syncHint=$('syncHint'),workList=$('workList');
   var editing=null,all={},hintTimer=null,pvMode=false;
@@ -385,8 +408,32 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     catSel.value=a?(a.cat||CATS[0]):CATS[0];
     stateSel.value=a?(a.state||'seed'):'seed';
     bodyTa.value=a?a.body||'':'';
+    srcU.value=a&&a.src?a.src.u||'':'';
+    srcQ.value=a&&a.src?a.src.q||'':'';
+    var hasSrc=!!(a&&a.src);
+    srcBody.hidden=!hasSrc;
+    srcToggle.setAttribute('aria-expanded',hasSrc?'true':'false');
+    updateSrcMark();
     metaUpdate();
     renderSeeds();
+  }
+  /* 出处折叠交互 */
+  srcToggle.addEventListener('click',function(){
+    var open=srcBody.hidden;
+    srcBody.hidden=!open;
+    srcToggle.setAttribute('aria-expanded',open?'true':'false');
+    if(open)srcU.focus();
+  });
+  function updateSrcMark(){
+    var has=!!(srcU.value.trim()||srcQ.value.trim());
+    srcToggle.classList.toggle('has-src',has);
+  }
+  srcU.addEventListener('input',updateSrcMark);
+  srcQ.addEventListener('input',updateSrcMark);
+  function readSrc(){
+    var u=srcU.value.trim(),q=srcQ.value.trim();
+    if(!u&&!q)return null;
+    return {u:u,q:q,t:(all[editing]&&all[editing].src&&all[editing].src.t)||Date.now()};
   }
   var wkDir=1,wkPage=0;
   function renderWorks(){
@@ -457,6 +504,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       ||(a.cat||'')!==catSel.value||(a.state||'')!==stateSel.value;
     a.title=titleIn.value.trim()||'无题';
     a.cat=catSel.value;a.state=stateSel.value;a.body=bodyTa.value;
+    var src=readSrc();
+    if(src)a.src=src;else delete a.src;
     if(changed||!a.rev){
       a.rev=(a.rev||0)+1;
       a.revisions=(a.revisions||[]).concat([{n:a.rev,t:now,chars:bodyTa.value.length}]);
@@ -489,6 +538,9 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     var now=Date.now(),id='u'+now+(impSeq?'i'+impSeq:'');impSeq++;
     all[id]={id:id,created:todayStr(),title:title,cat:cat,state:st,body:text,
       rev:1,updated:now,revisions:[{n:1,t:now,chars:text.length}]};
+    /* 出处：YAML 头 src_url / src_quote（Obsidian 上游直接写头字段） */
+    var iu=fm&&fm.src_url?fm.src_url:'',iq=fm&&fm.src_quote?fm.src_quote:'';
+    if(iu||iq)all[id].src={u:iu,q:iq,t:now};
     return id;
   }
   $('impBtn').addEventListener('click',function(){$('impFile').click();});

@@ -209,6 +209,23 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   html{scroll-behavior:auto}
   .rv{opacity:1;transform:none}
 }
+
+/* ---- 随记出处 · Phase 0 ---- */
+.frag-box{flex-wrap:wrap}
+.frag-acts{display:flex;gap:12px;align-items:center}
+.frag-acts #fragSrcToggle{background:none;border:none;cursor:pointer;font-family:inherit;
+  font-size:12.5px;color:var(--gray);padding:4px 8px;letter-spacing:.08em}
+.frag-acts #fragSrcToggle:hover{color:var(--cinnabar)}
+.frag-acts #fragSrcToggle.on{color:var(--cinnabar)}
+.frag-acts #fragSrcToggle .src-caret{display:inline-block;font-size:10px;transition:transform .25s}
+.frag-acts #fragSrcToggle[aria-expanded="true"] .src-caret{transform:rotate(180deg)}
+.frag-src{flex-basis:100%;display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.frag-src input{flex:1;min-width:220px;background:var(--paper-soft);border:1px solid var(--line);
+  border-radius:4px;padding:8px 12px;font-family:inherit;font-size:12.5px;color:var(--ink);outline:none}
+.frag-src input:focus{border-color:var(--cinnabar)}
+.fsrc{display:inline-block;margin-left:10px;font-size:12px;color:var(--gray);
+  text-decoration:none;border-bottom:1px dashed var(--line);padding-bottom:1px}
+.fsrc:hover{color:var(--cinnabar);border-bottom-color:var(--cinnabar)}
 </style>
 </head>
 <body>
@@ -350,7 +367,14 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     </div>
     <div class="frag-box rv d1">
       <textarea id="fragInput" rows="3" placeholder="此刻闪过的想法、读到的一句话、未成形的判断……写下来就算种下。"></textarea>
-      <button id="fragSave" type="button"><span class="rr"></span>种下</button>
+      <div class="frag-acts">
+        <button id="fragSrcToggle" type="button" aria-expanded="false" title="为这条随记记出处">出处 <span class="src-caret">▾</span></button>
+        <button id="fragSave" type="button"><span class="rr"></span>种下</button>
+      </div>
+      <div id="fragSrc" class="frag-src" hidden>
+        <input id="fragSrcU" type="url" placeholder="原文链接 https://…" autocomplete="off">
+        <input id="fragSrcQ" type="text" placeholder="引文或补充说明（可选）" autocomplete="off">
+      </div>
     </div>
     <div id="fragList"></div>
   </div>
@@ -428,6 +452,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       var grow=FRAG_GROWN[f.t]||grownBy(f.t);
       html+='<div class="frag" id="f'+f.t+'"><span class="fno">'+fmt(f.t)+'</span>'
         +'<span class="ftext">'+esc(f.text)
+        +(f.src&&f.src.u&&/^https?:\/\//i.test(f.src.u)?'<a class="fsrc" href="'+esc(f.src.u)+'" target="_blank" rel="noopener" title="'+esc(f.src.q||'查看出处')+'">源 ↗</a>':'')
         +(grow?'<a class="fgrow" href="'+grow.href+'">已长成 · '+esc(grow.title)+' →</a>':'')
         +'</span>'
         +'<a class="fup" href="write.html#grow='+f.t+'" title="把这条随记写成文章">升格 ✎</a>'
@@ -445,13 +470,28 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       });
     });
   }
+  var srcT=document.getElementById('fragSrcToggle'),
+      srcBox=document.getElementById('fragSrc'),
+      srcU=document.getElementById('fragSrcU'),
+      srcQ=document.getElementById('fragSrcQ');
+  srcT.addEventListener('click',function(){
+    var open=srcBox.hidden;
+    srcBox.hidden=!open;
+    srcT.setAttribute('aria-expanded',open?'true':'false');
+    srcT.classList.toggle('on',open);
+    if(open)srcU.focus();
+  });
   save.addEventListener('click',function(){
     var v=input.value.trim();
     if(!v){input.focus();return;}
     var arr=load();
-    arr.push({t:Date.now(),text:v});
+    var item={t:Date.now(),text:v};
+    var u=srcU.value.trim(),q=srcQ.value.trim();
+    if(u||q)item.src={u:u,q:q,t:Date.now()};
+    arr.push(item);
     persist(arr);
-    input.value='';
+    input.value='';srcU.value='';srcQ.value='';
+    srcBox.hidden=true;srcT.setAttribute('aria-expanded','false');srcT.classList.remove('on');
     render();
     if(GD.hasToken())syncFrag(arr).catch(function(){});
   });

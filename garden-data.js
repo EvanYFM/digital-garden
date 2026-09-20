@@ -119,7 +119,7 @@ var GD=(function(){
      把已发布文章写入 user-articles.json，Pages 约 1 分钟后全站可见 */
   function publicationSnapshot(x){
     return {id:x.id,title:x.title,cat:x.cat,state:x.state,created:x.created,
-      updated:x.updated,rev:x.rev,body:x.body,seeds:x.seeds||[]};
+      updated:x.updated,rev:x.rev,body:x.body,seeds:x.seeds||[],src:x.src||null};
   }
   function publicationFile(all){
     var articles=[],deletions=[];
