@@ -13,7 +13,7 @@
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <script src="base.js?v=20260918" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=20260918">
+<link rel="stylesheet" href="base.css?v=20260921b">
 <style>
 main{max-width:1080px;margin:0 auto;padding:0 48px}
 
@@ -391,7 +391,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 </footer>
 
 <script src="garden-data.js"></script>
-<script src="md.js?v=20260918b"></script>
+<script src="md.js?v=20260921"></script>
 <script>
 
 /* ===== 随记：碎片捕捉（本机 + 云端同步） ===== */
@@ -448,10 +448,18 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       return;
     }
     var html='';
+    /* 随记 [[概念]] → md-wl 占位（与 md.js 同构；概念索引到位后 linkWl 成链） */
+    function wlize(escaped){
+      return escaped.replace(/\[\[([^\]\n]+)\]\]/g,function(m,name){
+        var n=name.trim();
+        if(!n)return m;
+        return '<span class="md-wl" data-wl="'+n+'">'+n+'</span>';
+      });
+    }
     arr.slice().reverse().forEach(function(f){
       var grow=FRAG_GROWN[f.t]||grownBy(f.t);
       html+='<div class="frag" id="f'+f.t+'"><span class="fno">'+fmt(f.t)+'</span>'
-        +'<span class="ftext">'+esc(f.text)
+        +'<span class="ftext">'+wlize(esc(f.text))
         +(f.src&&f.src.u&&/^https?:\/\//i.test(f.src.u)?'<a class="fsrc" href="'+esc(f.src.u)+'" target="_blank" rel="noopener" title="'+esc(f.src.q||'查看出处')+'">源 ↗</a>':'')
         +(grow?'<a class="fgrow" href="'+grow.href+'">已长成 · '+esc(grow.title)+' →</a>':'')
         +'</span>'
@@ -459,6 +467,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
         +'<button class="fdel" data-id="'+f.t+'" type="button">移除</button></div>';
     });
     list.innerHTML=html;
+    if(window.MD&&MD.linkWl)MD.linkWl(list);
     list.querySelectorAll('.fdel').forEach(function(btn){
       btn.addEventListener('click',function(){
         var id=+btn.getAttribute('data-id');
@@ -500,6 +509,19 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   });
   render();
   if(window.GD&&GD.loadUserArticles)GD.loadUserArticles(function(m){userArts=m;render();});
+  /* 概念层：索引到位后重渲染随记卡（[[ ]] 占位成链），并入搜索池 */
+  window.__conceptPool=[];
+  if(window.GD&&GD.loadConcepts)GD.loadConcepts(function(dict){
+    var list=GD.conceptsArray(dict).filter(function(c){return !c.deleted;});
+    MD.setConcepts(list);
+    window.__conceptPool=list.map(function(c){
+      return {href:'concept.html#'+encodeURIComponent(c.id),title:c.name,cat:'概念',
+        date:'',rd:'',ts:0,sleep:0,x:c.def||'概念节点'};
+    });
+    if(window.__searchPool)window.__conceptPool.forEach(function(p){window.__searchPool.push(p);});
+    if(window.__conceptDocs)window.__conceptDocs(window.__conceptPool);
+    render();
+  });
   /* 打开页面：静默拉取云端随记并合并（v2 含墓碑，删除跨设备生效） */
   GD.pull('fragments.json').then(function(r){
     if(!r)return;
@@ -684,6 +706,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   ];
   var pool=STATIC.map(function(s){return {href:'article.html#'+s.id,title:s.t,cat:s.cat,
     date:s.date,rd:s.rd,ts:ts(s.date),sleep:ts(s.date),x:s.x};});
+  window.__searchPool=pool;  /* 概念加载后由随记模块并入（引用同数组） */
   function userItem(id,a){
     var body=String(a.body||'').replace(/^---[\s\S]*?---/,'');
     var para='';var lines=body.replace(/^#{1,6}[^\n]*$/gm,'').split(/\r?\n/);

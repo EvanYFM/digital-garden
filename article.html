@@ -13,7 +13,7 @@
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <script src="base.js?v=20260918" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=20260918">
+<link rel="stylesheet" href="base.css?v=20260921b">
 <style>
 /* ---------- 布局：左目录 / 右正文 ---------- */
 .layout{
@@ -321,7 +321,7 @@ html[data-theme="dark"] .src-block{background:#232320}
 <div class="print-foot" aria-hidden="true"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>
 
 <script src="garden-data.js"></script>
-<script src="md.js?v=20260918b"></script>
+<script src="md.js?v=20260921"></script>
 <script>
 /* 日夜切换 */
 
@@ -667,6 +667,11 @@ try{
     USER=all;
     Object.keys(USER).forEach(function(k){if(USER[k].deleted)delete USER[k];});
     if(/^#[u]\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search)){render();window.scrollTo(0,0);}
+  });
+  /* 概念层（Phase 1）：概念到位后注册索引并链接化全文 [[ ]] 占位 */
+  GD.loadConcepts(function(dict){
+    MD.setConcepts(GD.conceptsArray(dict));
+    MD.linkWl(document);
   });
 }catch(err){
   document.getElementById('articleBox').innerHTML=

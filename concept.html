@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>概念 · Concepts — 小马</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23b3402a'/%3E%3Ctext x='12' y='17.5' font-family='serif' font-size='14' font-weight='700' fill='%23f6f4ee' text-anchor='middle'%3E%E9%A9%AC%3C/text%3E%3C/svg%3E">
+<meta name="description" content="概念——知识的节点。文章与随记通过 [[双链]] 汇入，每个概念都是花园里可被反复引用的一株。">
+<meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script src="base.js?v=20260918" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css?v=20260921b">
+<style>
+main{max-width:880px;margin:0 auto;padding:0 48px}
+.page-head{padding:150px 0 70px}
+.crumb{font-size:11px;letter-spacing:.3em;color:var(--gray);margin-bottom:40px;text-transform:uppercase}
+.crumb b{font-weight:400;color:var(--cinnabar)}
+.page-head h1{font-family:var(--serif);font-size:clamp(40px,6vw,64px);font-weight:600;letter-spacing:.22em;line-height:1.2}
+.page-head .en-title{font-size:12px;letter-spacing:.44em;color:var(--gray);text-transform:uppercase;margin-top:22px}
+.lede{font-family:var(--serif);font-size:15.5px;line-height:2.2;color:var(--ink);opacity:.82;margin-top:30px}
+
+/* ---- 工具行 ---- */
+.tools{display:flex;gap:14px;align-items:center;margin-bottom:34px;flex-wrap:wrap}
+.tools input[type="search"]{flex:1;min-width:220px;background:none;border:none;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:15px;color:var(--ink);outline:none;padding:8px 2px;letter-spacing:.04em}
+.tools input[type="search"]:focus{border-bottom-color:var(--ink)}
+.cbtn{background:none;border:1px solid var(--line);border-radius:3px;padding:8px 18px;
+  font-family:inherit;font-size:12.5px;color:var(--ink);cursor:pointer;letter-spacing:.1em;transition:.3s}
+.cbtn:hover{border-color:var(--cinnabar);color:var(--cinnabar)}
+.cbtn.primary{border-color:var(--cinnabar);color:var(--cinnabar)}
+.cbtn:disabled{opacity:.4;cursor:default}
+.cbtn:disabled:hover{border-color:var(--line);color:var(--ink)}
+.hintline{font-size:12px;color:var(--gray);margin-left:auto}
+
+/* ---- 概念卡列表 ---- */
+.clist{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:60px}
+@media (max-width:720px){.clist{grid-template-columns:1fr}}
+.ccard{display:block;background:var(--paper-soft);border:1px solid var(--line);border-radius:6px;
+  padding:22px 24px;text-decoration:none;color:var(--ink);transition:border-color .4s,transform .4s var(--ease)}
+.ccard:hover{border-color:var(--cinnabar);transform:translateY(-2px)}
+.ccard .cname{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:8px}
+.ccard .cname i{font-style:normal;font-size:11.5px;color:var(--cinnabar);border:1px solid var(--cinnabar);
+  border-radius:2px;padding:1px 6px;margin-left:10px;vertical-align:2px;letter-spacing:.1em}
+.ccard .cdef{font-size:13.5px;line-height:1.9;color:var(--gray);margin-bottom:12px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ccard .cmeta{font-size:11.5px;color:var(--gray);letter-spacing:.08em}
+.ccard .cmeta b{font-weight:400;color:var(--ink)}
+.c-empty{grid-column:1/-1;text-align:center;padding:70px 0;color:var(--gray);font-family:var(--serif);font-size:14.5px}
+
+/* ---- 表单 ---- */
+.cform{background:var(--paper-soft);border:1px solid var(--line);border-radius:6px;padding:26px 28px;margin-bottom:50px}
+.cform h3{font-family:var(--serif);font-size:16px;letter-spacing:.14em;margin:0 0 18px;color:var(--ink)}
+.cform h3 b{font-weight:400;font-size:11px;color:var(--cinnabar);letter-spacing:.2em;margin-left:10px}
+.cform label{display:block;font-size:12px;color:var(--gray);letter-spacing:.1em;margin:14px 0 6px}
+.cform input[type="text"],.cform textarea{width:100%;background:none;border:none;border-bottom:1px solid var(--line);
+  font-family:inherit;font-size:14px;color:var(--ink);outline:none;padding:6px 2px}
+.cform input:focus,.cform textarea:focus{border-bottom-color:var(--cinnabar)}
+.cform textarea{resize:vertical;min-height:40px;line-height:1.8}
+.cform .frow{display:flex;gap:18px;justify-content:flex-end;margin-top:20px}
+
+/* ---- 详情 ---- */
+.cdetail{margin-bottom:50px}
+.cdetail .back{display:inline-block;font-size:12.5px;color:var(--gray);text-decoration:none;letter-spacing:.1em;margin-bottom:26px}
+.cdetail .back:hover{color:var(--cinnabar)}
+.cdetail h2{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:600;letter-spacing:.1em;margin:0 0 6px}
+.cdetail .caliases{font-size:13px;color:var(--gray);margin-bottom:22px;letter-spacing:.06em}
+.cdetail .caliases b{font-weight:400;color:var(--ink)}
+.cdetail .cdef-full{font-family:var(--serif);font-size:15.5px;line-height:2.2;color:var(--ink);opacity:.88;
+  border-left:2px solid var(--cinnabar);padding:4px 0 4px 20px;margin-bottom:40px}
+.cdetail h4{font-size:12px;letter-spacing:.22em;color:var(--gray);margin:0 0 16px;text-transform:uppercase}
+.reflist{margin-bottom:36px}
+.reflist a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:12px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.reflist a:hover{color:var(--cinnabar)}
+.reflist .rt{font-family:var(--serif);font-size:15px}
+.reflist .rd{font-size:11.5px;color:var(--gray);flex:none}
+.cacts{display:flex;gap:14px;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="seal">马</span>
+    <span class="brand-name">小马</span>
+  </a>
+  <nav>
+    <a href="notes.html">思考<span class="en">NOTES</span></a>
+    <a href="research.html">研究<span class="en">RESEARCH</span></a>
+    <a href="projects.html">项目<span class="en">PROJECTS</span></a>
+    <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="about.html">关于<span class="en">ABOUT</span></a>
+    </nav>
+  <button class="taiji" id="themeToggle" aria-label="切换日夜">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="ring" cx="12" cy="12" r="10"/>
+        <g class="disc">
+          <path class="half" d="M12,2 a10,10 0 0 1 0,20 a5,5 0 0 1 0,-10 a5,5 0 0 0 0,-10 z"/>
+          <circle class="d1" cx="12" cy="7" r="1.7"/>
+          <circle class="d2" cx="12" cy="17" r="1.7"/>
+        </g>
+        <circle class="still" cx="12" cy="12" r="1.8"/>
+      </svg>
+    </button>
+</header>
+
+<main>
+  <div class="page-head">
+    <p class="crumb rv">CONCEPTS <b>/</b> 概念</p>
+    <h1 class="rv d1">概 念</h1>
+    <p class="en-title rv d2">Concepts — Nodes of the Garden</p>
+    <p class="lede rv d3">概念是知识的节点。写作时用 <code style="font-size:.85em">[[双链]]</code> 提及，文章与随记就汇入这里——每条关系都通向原始材料。</p>
+  </div>
+
+  <div class="tools rv">
+    <input type="search" id="cSearch" placeholder="按名称、别名、定义过滤……" autocomplete="off">
+    <button class="cbtn primary" id="newBtn" type="button">＋ 新建概念</button>
+    <button class="cbtn" id="pubBtn" type="button" title="把概念发布到公开站点（读者端可见）">发布概念</button>
+    <span class="hintline" id="cHint"></span>
+  </div>
+
+  <div id="view"></div>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <p class="foot-motto">克制 · 清明 · 长期主义</p>
+    <p class="foot-note">
+      © 2026 小马 · 手工打磨，持续修正
+      <span class="en">Designed &amp; built with restraint</span>
+    </p>
+  </div>
+</footer>
+
+<script src="garden-data.js"></script>
+<script src="md.js?v=20260921"></script>
+<script>
+(function(){
+  var view=document.getElementById('view'),hintEl=document.getElementById('cHint'),
+      searchIn=document.getElementById('cSearch');
+  var all={},editing=null,own=false;
+
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function fmtT(ts){var d=new Date(Number(ts));if(isNaN(d))return '';
+    return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');}
+  function hint(t){hintEl.textContent=t;setTimeout(function(){if(hintEl.textContent===t)hintEl.textContent='';},6000);}
+  function persist(){GD.saveConceptsLocal(all);}
+  function arr(){return GD.conceptsArray(all).sort(function(a,b){return (b.updated||0)-(a.updated||0);});}
+
+  /* ---- 反查引用：扫描随记与文章正文的 [[name]] / [[alias]] ---- */
+  function refsOf(c){
+    var names=[c.name].concat(c.aliases||[]).map(function(n){return String(n).trim();}).filter(Boolean);
+    var out=[];
+    /* 用户文章 */
+    var arts={};
+    try{arts=JSON.parse(localStorage.getItem('userArticles')||'{}');}catch(e){}
+    Object.keys(arts).forEach(function(id){
+      var a=arts[id];if(a.deleted||!a.body)return;
+      var body=String(a.body);
+      names.forEach(function(n){
+        if(body.indexOf('[['+n+']]')>=0){out.push({k:id,title:a.title||'无题',d:a.updated||a.created||0,type:'article'});}
+      });
+    });
+    /* 随记 */
+    var frags=[];
+    try{frags=JSON.parse(localStorage.getItem('fragments')||'[]');}catch(e){}
+    frags.forEach(function(f){
+      if(!f.text)return;
+      names.forEach(function(n){
+        if(String(f.text).indexOf('[['+n+']]')>=0){out.push({k:'f'+f.t,title:String(f.text).slice(0,26),d:f.t,type:'frag'});}
+      });
+    });
+    out.sort(function(a,b){return b.d-a.d;});
+    /* 去重（同一来源被多个别名命中） */
+    var seen={},res=[];
+    out.forEach(function(x){if(!seen[x.k+x.title]){seen[x.k+x.title]=1;res.push(x);}});
+    return res;
+  }
+
+  /* ---------- 视图 ---------- */
+  function renderList(){
+    location.hash='';
+    var q=searchIn.value.trim().toLowerCase();
+    var list=arr().filter(function(c){
+      if(!q)return true;
+      return (c.name+' '+(c.aliases||[]).join(' ')+' '+(c.def||'')).toLowerCase().indexOf(q)>=0;
+    });
+    var html='';
+    if(!list.length){
+      html='<div class="clist"><div class="c-empty">还没有概念。在文章里写 <b style="color:var(--cinnabar)">[[概念名]]</b>，或点右上「新建概念」——第一株别嫌小。</div></div>';
+    }else{
+      html='<div class="clist">'+list.map(function(c){
+        var refs=refsOf(c).length;
+        return '<a class="ccard" href="#'+encodeURIComponent(c.id)+'">'
+          +'<div class="cname">'+esc(c.name)+'<i>概念</i></div>'
+          +(c.def?'<div class="cdef">'+esc(c.def)+'</div>':'')
+          +'<div class="cmeta"><b>'+refs+'</b> 处引用 · 别名 '+(c.aliases||[]).length+' · '+fmtT(c.updated)+'</div>'
+          +'</a>';
+      }).join('')+'</div>';
+    }
+    view.innerHTML=html;
+  }
+
+  function renderDetail(id){
+    var c=all[id];
+    if(!c||c.deleted){renderList();return;}
+    var refs=refsOf(c);
+    var html='<div class="cdetail">'
+      +'<a class="back" href="concept.html">← 返回概念列表</a>'
+      +'<h2>'+esc(c.name)+'</h2>'
+      +'<p class="caliases">别名 · <b>'+(c.aliases&&c.aliases.length?esc(c.aliases.join(' / ')):'无')+'</b></p>'
+      +(c.def?'<p class="cdef-full">'+esc(c.def)+'</p>':'')
+      +'<h4>被引用 · '+refs.length+' 处</h4>'
+      +'<div class="reflist">'
+      +(refs.length?refs.map(function(r){
+        var href=r.type==='article'?'article.html#'+encodeURIComponent(r.k):'notes.html#f'+r.k.slice(1);
+        return '<a href="'+href+'"><span class="rt">'+(r.type==='frag'?'随记 · ':'')+esc(r.title)+'</span><span class="rd">'+fmtT(r.d)+'</span></a>';
+      }).join(''):'<p class="c-empty" style="padding:30px 0">尚无引用——在文章或随记里写 [['+esc(c.name)+']] 便会汇入。</p>')
+      +'</div>'
+      +'<div class="cacts">'
+      +(own?'<button class="cbtn" id="editC" type="button">编辑</button><button class="cbtn" id="delC" type="button">删除</button>':'')
+      +'</div></div>';
+    view.innerHTML=html;
+    if(own){
+      document.getElementById('editC').addEventListener('click',function(){openForm(c);});
+      document.getElementById('delC').addEventListener('click',function(){
+        if(!confirm('删除概念「'+c.name+'」？文章中的 [[ ]] 将退回纯文本。'))return;
+        c.deleted=true;c.updated=Date.now();persist();
+        hint('已删除 · 记得「发布概念」同步到公开站点');
+        syncAll();renderList();
+      });
+    }
+  }
+
+  function openForm(c){
+    var isEdit=!!c;
+    view.innerHTML='<div class="cform">'
+      +'<h3>'+(isEdit?'编辑概念':'新建概念')+'<b>CONCEPT</b></h3>'
+      +'<label>名称 *</label><input type="text" id="fName" value="'+esc(c?c.name:'')+'" placeholder="例：美债期限溢价">'
+      +'<label>别名（逗号分隔，可选）</label><input type="text" id="fAlias" value="'+esc(c?(c.aliases||[]).join(', '):'')+'" placeholder="例：期限溢价, term premium">'
+      +'<label>一句话定义（可选）</label><textarea id="fDef" placeholder="这个概念是什么？用一句话立住它。">'+esc(c?c.def||'':'')+'</textarea>'
+      +'<div class="frow"><button class="cbtn" id="fCancel" type="button">取消</button>'
+      +'<button class="cbtn primary" id="fSave" type="button">保存</button></div></div>';
+    document.getElementById('fCancel').addEventListener('click',function(){render();});
+    document.getElementById('fSave').addEventListener('click',function(){
+      var name=document.getElementById('fName').value.trim();
+      if(!name){document.getElementById('fName').focus();return;}
+      var aliases=document.getElementById('fAlias').value.split(/[,，、]/).map(function(s){return s.trim();}).filter(Boolean);
+      var def=document.getElementById('fDef').value.trim();
+      if(isEdit){c.name=name;c.aliases=aliases;c.def=def;c.updated=Date.now();}
+      else{
+        var id='c'+Date.now();
+        all[id]={id:id,name:name,aliases:aliases,def:def,updated:Date.now()};
+      }
+      persist();hint(isEdit?'已更新 · 记得「发布概念」':'概念已种下 · 记得「发布概念」');
+      syncAll();render();
+    });
+  }
+
+  /* ---------- 同步 / 发布 ---------- */
+  function syncAll(){
+    if(!GD.hasToken())return;
+    GD.syncConcepts(all).then(function(m){
+      if(m){all=m;persist();render();}
+    }).catch(function(){});
+  }
+
+  document.getElementById('pubBtn').addEventListener('click',function(){
+    if(!GD.hasToken()){hint('未设置同步 Token——概念先存于本机');return;}
+    var b=this;b.disabled=true;hint('发布中…');
+    GD.publishConcepts(all).then(function(){
+      hint('已发布 · 公开站点约 1 分钟后可见');
+    }).catch(function(e){hint('发布失败：'+e.message);}).finally(function(){b.disabled=false;});
+  });
+  document.getElementById('newBtn').addEventListener('click',function(){openForm(null);});
+  searchIn.addEventListener('input',function(){if(!editing)renderList();});
+
+  function render(){
+    var m=/^#(c\d+)/i.exec(location.hash);
+    editing=m?m[1]:null;
+    if(editing)renderDetail(editing);else renderList();
+  }
+  window.addEventListener('hashchange',render);
+
+  /* 初始化 */
+  try{own=GD.hasToken()||!!localStorage.getItem('userArticles');}catch(e){}
+  GD.loadConcepts(function(m){
+    all=m;
+    MD.setConcepts(GD.conceptsArray(all));
+    render();
+  });
+})();
+</script>
+</body>
+</html>

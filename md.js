@@ -16,10 +16,12 @@ var MD=(function(){
     return /^(https?:\/\/|mailto:|#|\.\/|\/|(?:notes|article|now|review|review-edit|research|projects|about|jing|write)\.html(?:[?#]|$))/i.test(u);
   }
 
-  /* 行内加工（输入已转义）。顺序：码 → 粗斜 → 粗 → 斜 → 删除 → 图 → 链接 → 自动链接 */
+  /* 行内加工（输入已转义）。顺序：码（占位） → 粗斜 → 粗 → 斜 → 删除 → 图 → 链接 → 双链 → 还原码
+     行内代码先提取占位：后续粗体/链接/双链规则不得改动 <code> 内容（历史 quirk 修复） */
   function inline(s){
+    var codes=[];
     return s
-      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/`([^`]+)`/g,function(m,c){codes.push(c);return '\u0001'+(codes.length-1)+'\u0001';})
       .replace(/\*\*\*([^*]+)\*\*\*/g,'<strong><em>$1</em></strong>')
       .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
       .replace(/\*([^*]+)\*/g,'<em>$1</em>')
@@ -32,7 +34,50 @@ var MD=(function(){
         if(!safeUrl(u))return t;
         return '<a href="'+u+'">'+t+'</a>';
       })
-      .replace(/&lt;(https?:\/\/[^&\s]+)&gt;/g,'<a href="$1">$1</a>');
+      .replace(/&lt;(https?:\/\/[^&\s]+)&gt;/g,'<a href="$1">$1</a>')
+      /* [[概念]] 双链（Phase 1）：渲染为占位 span，hydrate 后由 linkWl 结合概念
+         索引决定是否成链——未建概念保持纯文本，不产生死链（准则 C2/C4）。
+         注意必须先于 wikilink 转义_name，data 属性用 esc 二次防护 */
+      .replace(/\[\[([^\]\n]+)\]\]/g,function(m,name){
+        var n=name.trim();
+        if(!n)return m;
+        return '<span class="md-wl" data-wl="'+esc(n)+'">'+esc(n)+'</span>';
+      })
+      .replace(/\u0001(\d+)\u0001/g,function(m,i){return '<code>'+codes[+i]+'</code>';});
+  }
+
+  /* ---------- 概念索引（Phase 1 概念层） ----------
+     MD.setConcepts(list)：页面加载概念数据后注册索引（name/别名 → 概念 id）。
+     MD.linkWl(root)：扫描 .md-wl 占位，命中索引则替换为概念页链接；
+     未命中保持纯文本占位（等待概念异步到位后可再调一次）。 */
+  var wlIndex={};
+  function setConcepts(list){
+    wlIndex={};
+    (list||[]).forEach(function(c){
+      if(!c||c.deleted||!c.name)return;
+      /* 原名与 esc 后各存一键：data-wl 属性值是 esc 过的（含 & 等字符时两者不同） */
+      wlIndex[c.name]=c.id;
+      wlIndex[esc(c.name)]=c.id;
+      (c.aliases||[]).forEach(function(a){
+        a=String(a).trim();
+        if(!a)return;
+        if(!wlIndex[a])wlIndex[a]=c.id;
+        if(!wlIndex[esc(a)])wlIndex[esc(a)]=c.id;
+      });
+    });
+  }
+  function linkWl(root){
+    var nodes=(root||document).querySelectorAll('.md-wl:not(.md-wl-done)');
+    [].forEach.call(nodes,function(sp){
+      sp.classList.add('md-wl-done');
+      var id=wlIndex[sp.getAttribute('data-wl')];
+      if(!id)return;
+      var a=document.createElement('a');
+      a.className='md-wllink';
+      a.href='concept.html#'+encodeURIComponent(id);
+      a.textContent=sp.textContent;
+      sp.parentNode.replaceChild(a,sp);
+    });
   }
 
   /* 任务列表项：- [ ] / - [x] → 复选框（纯展示禁点） */
@@ -243,10 +288,12 @@ var MD=(function(){
      真实字体到位后文字变宽溢出节点框（Windows 长标签必现） */
   function hydrate(root){
     var boxes=(root||document).querySelectorAll('.md-mermaid:not([data-done="1"])');
-    if(!boxes.length)return;
-    var go=function(){[].forEach.call(boxes,function(b){hydrateOne(b);});};
-    if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go).catch(go);}
-    else go();
+    if(boxes.length){
+      var go=function(){[].forEach.call(boxes,function(b){hydrateOne(b);});};
+      if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go).catch(go);}
+      else go();
+    }
+    if(typeof document!=='undefined')linkWl(root);
   }
 
   /* 日夜切换自动重绘：监听 base.js 派发的 themechange
@@ -262,5 +309,5 @@ var MD=(function(){
     });
   });
 
-  return {render:render,esc:esc,hydrate:hydrate};
+  return {render:render,esc:esc,hydrate:hydrate,setConcepts:setConcepts,linkWl:linkWl};
 })();

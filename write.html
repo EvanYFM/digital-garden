@@ -310,7 +310,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     <textarea id="bodyTa" placeholder="从一段话开始。## 是小标题，**是重点**，> 是引用——想到什么写什么。"></textarea>
     <div id="pv"></div>
     <div class="cheat">
-      语法 · <code>## 小标题</code> · <code>### 三级标题</code> · <code>**粗体**</code> · <code>*斜体*</code> · <code>`行内代码`</code> · <code>&gt; 引用</code> · <code>- 列表</code> · <code>1. 有序</code> · <code>[文字](链接)</code> · <code>--- 分隔线</code>
+      语法 · <code>[[概念]]</code> · <code>## 小标题</code> · <code>### 三级标题</code> · <code>**粗体**</code> · <code>*斜体*</code> · <code>`行内代码`</code> · <code>&gt; 引用</code> · <code>- 列表</code> · <code>1. 有序</code> · <code>[文字](链接)</code> · <code>--- 分隔线</code>
     </div>
     <div class="acts">
       <button id="saveBtn" type="button"><span class="rr"></span>保存草稿</button>
@@ -366,7 +366,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 </footer>
 
 <script src="garden-data.js"></script>
-<script src="md.js?v=20260918b"></script>
+<script src="md.js?v=20260921"></script>
 <script>
 
 /* ===== 写作台 ===== */
@@ -517,6 +517,17 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     return a;
   }
   $('saveBtn').addEventListener('click',function(){doSave(false);});
+  /* 概念层（Phase 1）：预览中 [[概念]] 成链——本地全量优先（含未发布草稿概念），
+     公开快照合并补远端；再同步私有仓刷新 */
+  function loadConceptsForPv(){
+    if(!window.GD||!GD.loadConcepts)return;
+    GD.loadConcepts(function(dict){
+      MD.setConcepts(GD.conceptsArray(dict));
+      MD.linkWl(pv);
+    });
+    if(GD.hasToken())GD.syncConcepts(GD.loadConceptsLocal()).catch(function(){});
+  }
+  loadConceptsForPv();
   /* ---------- 导入 .md：本地写好的 Markdown 一键成稿 ----------
      解析顺序：YAML 头（--- 包裹，可选 title/cat/state）→ 正文首个 # 一级标题做题名（剥离出正文）→ 文件名兜底；
      分类须命中 CATS 否则落默认；每篇直接存为草稿（rev 1），末次同步云端 */

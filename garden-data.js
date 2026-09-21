@@ -178,6 +178,56 @@ var GD=(function(){
     return {items:items,del:Object.keys(del).sort()};
   }
 
+  /* ============================================================
+     概念层（Phase 1）：concepts.json
+     本地 localStorage['concepts']（全量，含 deleted 墓碑）
+     私有仓 concepts.json：全量同步（sync）
+     公开仓 concepts.json：发布快照（过滤 deleted，读者端 fetch）
+     概念结构：{id, name, aliases:[], def, updated, deleted?}
+     ============================================================ */
+  var CKEY='concepts';
+  function loadConceptsLocal(){
+    try{return JSON.parse(localStorage.getItem(CKEY))||{};}catch(e){return {};}
+  }
+  function saveConceptsLocal(all){try{localStorage.setItem(CKEY,JSON.stringify(all));}catch(e){}}
+  function mergeConcepts(local,remote){
+    var out={},k;
+    for(k in remote)out[k]=remote[k];
+    for(k in local){
+      if(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0))out[k]=local[k];
+    }
+    return out;
+  }
+  /* 读者端发布快照：过滤墓碑，只留有效概念 */
+  function conceptsSnapshot(all){
+    var out={},k;
+    for(k in all)if(!all[k].deleted&&all[k].name)out[k]={id:all[k].id,name:all[k].name,
+      aliases:all[k].aliases||[],def:all[k].def||'',updated:all[k].updated||0};
+    return out;
+  }
+  function conceptsArray(all){
+    return Object.keys(all||{}).map(function(k){return all[k];});
+  }
+  /* 加载概念（本地 + 公开发布快照合并），cb(dict) */
+  function loadConcepts(cb){
+    var local=loadConceptsLocal();
+    fetch('concepts.json?t='+Date.now()).then(function(r){
+      return r.ok?r.json():null;
+    }).catch(function(){return null;}).then(function(pub){
+      var merged=mergeConcepts(local,pub||{});
+      saveConceptsLocal(merged);
+      cb(merged);
+    });
+  }
+  /* 同步到私有仓（全量含墓碑） */
+  function syncConcepts(all){
+    return sync('concepts.json',all,mergeConcepts);
+  }
+  /* 发布到公开仓（过滤墓碑快照） */
+  function publishConcepts(all){
+    return pushPublic('concepts.json',conceptsSnapshot(all));
+  }
+
   /* 加载用户文章（本地草稿 + 公开发布合并），cb(all) */
   function loadUserArticles(cb){
     var local={};
@@ -194,5 +244,8 @@ var GD=(function(){
   return {token:token,setToken:setToken,hasToken:hasToken,
     pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments,
     pushPublic:pushPublic,publicationFile:publicationFile,publicationSnapshot:publicationSnapshot,mergePublic:mergePublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
-    loadUserArticles:loadUserArticles};
+    loadUserArticles:loadUserArticles,
+    loadConceptsLocal:loadConceptsLocal,saveConceptsLocal:saveConceptsLocal,mergeConcepts:mergeConcepts,
+    conceptsSnapshot:conceptsSnapshot,conceptsArray:conceptsArray,loadConcepts:loadConcepts,
+    syncConcepts:syncConcepts,publishConcepts:publishConcepts};
 })();
