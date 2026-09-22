@@ -140,6 +140,9 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
 
 /* 动作行 */
 .acts{display:flex;align-items:center;gap:24px;padding:34px 0 10px;flex-wrap:wrap}
+.acts .clink{display:inline-flex;align-items:center;font-family:var(--serif);font-size:15px;
+  color:var(--gray);text-decoration:none;transition:color .3s}
+.acts .clink:hover{color:var(--cinnabar)}
 .acts button{display:inline-flex;align-items:center;gap:14px;background:none;border:none;
   cursor:pointer;font-family:var(--serif);font-size:14px;font-weight:600;letter-spacing:.2em;
   color:var(--ink);padding:4px 0;transition:opacity .4s}
@@ -265,7 +268,6 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     <a href="research.html">研究<span class="en">RESEARCH</span></a>
     <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
-    <a href="concept.html">概念<span class="en">CONCEPT</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
     </nav>
   <button class="taiji" id="themeToggle" aria-label="切换日夜">
@@ -320,6 +322,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       <input id="impFile" type="file" accept=".md,.markdown,.txt" hidden multiple>
       <button id="newBtn" type="button"><span class="rr rr-hollow"></span>另起一篇</button>
       <button id="delBtn" type="button" class="danger">删除</button>
+      <a class="clink" href="concept.html" title="遇到新知识点，先立概念再写文章——不经过文章也可以直接建">概念库 ↗</a>
       <span class="hint" id="actHint"></span>
     </div>
 

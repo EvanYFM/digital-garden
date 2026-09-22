@@ -63,6 +63,14 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
 .tags span:last-child{border-right:none}
 .tags span:hover{background:var(--paper-soft)}
 
+/* 概念库入口 */
+.kclink{display:flex;align-items:baseline;gap:6px;font-family:var(--serif);font-size:14px;
+  color:var(--ink);text-decoration:none;letter-spacing:.06em;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:13px 4px;margin-bottom:34px;transition:color .3s}
+.kclink span{font-size:12.5px;color:var(--gray);letter-spacing:.02em}
+.kclink:hover{color:var(--cinnabar)}
+
 /* 知识树 */
 .explore{padding:88px 0;border-top:1px solid var(--line)}
 .kt-root{border:1px solid var(--line);background:var(--paper-soft);
@@ -175,7 +183,6 @@ principles, line-ai, line-inv, ktree{scroll-margin-top:120px}
     <a class="cur" href="research.html">研究<span class="en">RESEARCH</span></a>
     <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
-    <a href="concept.html">概念<span class="en">CONCEPT</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
     </nav>
   <button class="taiji" id="themeToggle" aria-label="切换日夜">
@@ -281,6 +288,8 @@ principles, line-ai, line-inv, ktree{scroll-margin-top:120px}
       两条主线贯穿始终：<b>向内认识自己</b>（个体发展），<b>向外理解世界</b>（外界探索）。
       不为收藏学科，只为认识自我与世界。点击任一层，展开该层主要概念与注释。
     </p>
+
+    <a class="kclink rv d1" href="concept.html">概念库 · CONCEPT <span>——遇到新的知识点，先立一个概念：它是什么，和什么相邻 ↗</span></a>
 
     <div class="kt-root rv d1">
       <span class="lab">根目录 · Three Root Questions</span>
