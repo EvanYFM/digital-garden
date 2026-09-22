@@ -51,6 +51,16 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 .ccard .cmeta b{font-weight:400;color:var(--ink)}
 .c-empty{grid-column:1/-1;text-align:center;padding:70px 0;color:var(--gray);font-family:var(--serif);font-size:14.5px}
 
+/* ---- 待建概念区 ---- */
+.pending{background:var(--paper-soft);border:1px dashed var(--line);border-radius:6px;padding:20px 24px;margin-bottom:60px}
+.pending h4{font-size:12px;letter-spacing:.22em;color:var(--gray);margin:0 0 12px;text-transform:uppercase}
+.pending h4 b{font-weight:400;color:var(--cinnabar)}
+.pending .prow{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:9px 0;border-bottom:1px solid var(--line)}
+.pending .prow:last-child{border-bottom:none}
+.pending .pname{font-family:var(--serif);font-size:14.5px}
+.pending .pfrom{font-size:11px;color:var(--gray);margin-left:10px}
+
 /* ---- 表单 ---- */
 .cform{background:var(--paper-soft);border:1px solid var(--line);border-radius:6px;padding:26px 28px;margin-bottom:50px}
 .cform h3{font-family:var(--serif);font-size:16px;letter-spacing:.14em;margin:0 0 18px;color:var(--ink)}
@@ -93,6 +103,7 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
     <a href="research.html">研究<span class="en">RESEARCH</span></a>
     <a href="projects.html">项目<span class="en">PROJECTS</span></a>
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
+    <a href="concept.html">概念<span class="en">CONCEPT</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
     </nav>
   <button class="taiji" id="themeToggle" aria-label="切换日夜">
@@ -181,6 +192,36 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
     return res;
   }
 
+  /* ---- 待建概念：文中 [[ ]] 提及但未建的名字（引用不自动建概念，此处收口） ---- */
+  function pendingNames(){
+    var known={},names={},re=/\[\[([^\]\n]+)\]\]/g;
+    arr().forEach(function(c){known[c.name]=1;(c.aliases||[]).forEach(function(a){known[String(a).trim()]=1;});});
+    function scan(text,where){
+      var m;re.lastIndex=0;
+      while((m=re.exec(String(text||'')))){
+        var n=m[1].trim();
+        if(n&&!known[n]&&!names[n])names[n]={name:n,from:where};
+      }
+    }
+    var arts={};try{arts=JSON.parse(localStorage.getItem('userArticles')||'{}');}catch(e){}
+    Object.keys(arts).forEach(function(id){
+      var a=arts[id];if(!a.deleted&&a.body)scan(a.body,a.title||'文章');
+    });
+    var frags=[];try{frags=JSON.parse(localStorage.getItem('fragments')||'[]');}catch(e){}
+    frags.forEach(function(f){if(f.text)scan(f.text,'随记');});
+    return Object.keys(names).map(function(k){return names[k];});
+  }
+  function renderPending(){
+    var pend=pendingNames();
+    if(!pend.length)return '';
+    return '<div class="pending"><h4>待建 · <b>'+pend.length+'</b> 个文中提及的概念</h4>'
+      +pend.map(function(p,i){
+        return '<div class="prow"><span class="pname">'+esc(p.name)
+          +'<span class="pfrom">出自 '+esc(p.from)+'</span></span>'
+          +'<button class="cbtn" data-pend="'+i+'" type="button">一键建</button></div>';
+      }).join('')+'</div>';
+  }
+
   /* ---------- 视图 ---------- */
   function renderList(){
     location.hash='';
@@ -202,7 +243,17 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
           +'</a>';
       }).join('')+'</div>';
     }
-    view.innerHTML=html;
+    view.innerHTML=html+renderPending();
+    view.querySelectorAll('[data-pend]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var p=pendingNames()[Number(btn.getAttribute('data-pend'))];
+        if(!p)return;
+        var id='c'+Date.now();
+        all[id]={id:id,name:p.name,aliases:[],def:'',updated:Date.now()};
+        persist();hint('概念「'+p.name+'」已种下 · 记得「发布概念」');
+        syncAll();renderList();
+      });
+    });
   }
 
   function renderDetail(id){
