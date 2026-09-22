@@ -138,12 +138,12 @@ var GD=(function(){
     return {generated:Date.now(),articles:Object.keys(map).sort().filter(function(k){return !(k in del);}).map(function(k){return map[k];}),
       deletions:Object.keys(del).sort().map(function(k){return {id:k,updated:del[k]};})};
   }
-  function pushPublic(path,obj){
+  function pushPublic(path,obj,merge){
     if(!hasToken())return Promise.reject(new Error('未设置同步 Token'));
     function attempt(retry){
       return apiRepo('digital-garden','GET',path).then(function(j){
         var remote=j?JSON.parse(b64d(j.content)):{};
-        var merged=mergePublic(obj,remote);
+        var merged=(merge||mergePublic)(obj,remote);
         var body={message:'publish '+path,content:b64e(JSON.stringify(merged))};
         if(j)body.sha=j.sha;
         return apiRepo('digital-garden','PUT',path,body).then(function(){return merged;});
@@ -187,14 +187,49 @@ var GD=(function(){
      ============================================================ */
   var CKEY='concepts';
   function loadConceptsLocal(){
-    try{return JSON.parse(localStorage.getItem(CKEY))||{};}catch(e){return {};}
+    try{
+      var d=JSON.parse(localStorage.getItem(CKEY))||{};
+      /* 污染自愈：sync 曾误存 {data:…, ok:true} 包装——解包并把顶层概念并入 */
+      if(d&&typeof d.data==='object'&&d.data!==null&&!Array.isArray(d.data)){
+        for(var k in d){
+          if(k!=='data'&&d[k]&&typeof d[k]==='object'&&d[k].name)d.data[k]=d[k];
+        }
+        return d.data;
+      }
+      return d;
+    }catch(e){return {};}
   }
   function saveConceptsLocal(all){try{localStorage.setItem(CKEY,JSON.stringify(all));}catch(e){}}
+  function okConcept(v){
+    return v&&typeof v==='object'&&!Array.isArray(v)&&typeof v.name==='string'&&!!v.name;
+  }
   function mergeConcepts(local,remote){
+    /* 远端污染自愈：曾写入 {data:…, ok:true} 包装——解包 */
+    if(remote&&typeof remote.data==='object'&&remote.data!==null&&!Array.isArray(remote.data)){
+      for(var pk in remote)if(pk!=='data'&&okConcept(remote[pk]))remote.data[pk]=remote[pk];
+      remote=remote.data;
+    }
     var out={},k;
-    for(k in remote)out[k]=remote[k];
+    for(k in remote)if(okConcept(remote[k]))out[k]=remote[k];
     for(k in local){
-      if(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0))out[k]=local[k];
+      if(okConcept(local[k])&&(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0)))out[k]=local[k];
+    }
+    return dedupeConcepts(out);
+  }
+  /* 同名去重：名字是概念的主键——同名只留 updated 最新的一条，其余置墓碑（防重复建卡） */
+  function dedupeConcepts(all){
+    var best={},k;
+    for(k in all){
+      if(!okConcept(all[k])||all[k].deleted)continue;
+      var key=String(all[k].name).trim();
+      if(!best[key]||Number(all[k].updated||0)>Number(best[key].updated||0))best[key]=all[k];
+    }
+    var out={};
+    for(k in all){
+      var c=all[k];
+      if(!okConcept(c)){continue;}
+      if(c.deleted||best[String(c.name).trim()]===c){out[k]=c;}
+      else out[k]=Object.assign({},c,{deleted:true});
     }
     return out;
   }
@@ -206,7 +241,7 @@ var GD=(function(){
     return out;
   }
   function conceptsArray(all){
-    return Object.keys(all||{}).map(function(k){return all[k];});
+    return Object.keys(all||{}).map(function(k){return all[k];}).filter(function(c){return c&&!c.deleted;});
   }
   /* 加载概念（本地 + 公开发布快照合并），cb(dict) */
   function loadConcepts(cb){
@@ -225,7 +260,7 @@ var GD=(function(){
   }
   /* 发布到公开仓（过滤墓碑快照） */
   function publishConcepts(all){
-    return pushPublic('concepts.json',conceptsSnapshot(all));
+    return pushPublic('concepts.json',conceptsSnapshot(all),mergeConcepts);
   }
 
   /* ============================================================
@@ -237,14 +272,31 @@ var GD=(function(){
      ============================================================ */
   var RKEY='relations';
   function loadRelationsLocal(){
-    try{return JSON.parse(localStorage.getItem(RKEY))||{};}catch(e){return {};}
+    try{
+      var d=JSON.parse(localStorage.getItem(RKEY))||{};
+      if(d&&typeof d.data==='object'&&d.data!==null&&!Array.isArray(d.data)){
+        for(var k in d){
+          if(k!=='data'&&d[k]&&typeof d[k]==='object'&&d[k].from)d.data[k]=d[k];
+        }
+        return d.data;
+      }
+      return d;
+    }catch(e){return {};}
   }
   function saveRelationsLocal(all){try{localStorage.setItem(RKEY,JSON.stringify(all));}catch(e){}}
+  function okRelation(v){
+    return v&&typeof v==='object'&&!Array.isArray(v)&&typeof v.why==='string'&&!!v.why
+      &&typeof v.from==='string'&&typeof v.to==='string'&&!!v.from&&!!v.to;
+  }
   function mergeRelations(local,remote){
+    if(remote&&typeof remote.data==='object'&&remote.data!==null&&!Array.isArray(remote.data)){
+      for(var pk in remote)if(pk!=='data'&&okRelation(remote[pk]))remote.data[pk]=remote[pk];
+      remote=remote.data;
+    }
     var out={},k;
-    for(k in remote)out[k]=remote[k];
+    for(k in remote)if(okRelation(remote[k]))out[k]=remote[k];
     for(k in local){
-      if(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0))out[k]=local[k];
+      if(okRelation(local[k])&&(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0)))out[k]=local[k];
     }
     return out;
   }
@@ -278,7 +330,7 @@ var GD=(function(){
     return sync('relations.json',rels,mergeRelations);
   }
   function publishRelations(rels,concepts){
-    return pushPublic('relations.json',relationsSnapshot(rels,concepts));
+    return pushPublic('relations.json',relationsSnapshot(rels,concepts),mergeRelations);
   }
 
   /* 加载用户文章（本地草稿 + 公开发布合并），cb(all) */
@@ -299,7 +351,7 @@ var GD=(function(){
     pushPublic:pushPublic,publicationFile:publicationFile,publicationSnapshot:publicationSnapshot,mergePublic:mergePublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
     loadUserArticles:loadUserArticles,
     loadConceptsLocal:loadConceptsLocal,saveConceptsLocal:saveConceptsLocal,mergeConcepts:mergeConcepts,
-    conceptsSnapshot:conceptsSnapshot,conceptsArray:conceptsArray,loadConcepts:loadConcepts,
+    conceptsSnapshot:conceptsSnapshot,conceptsArray:conceptsArray,loadConcepts:loadConcepts,dedupeConcepts:dedupeConcepts,
     syncConcepts:syncConcepts,publishConcepts:publishConcepts,
     loadRelationsLocal:loadRelationsLocal,saveRelationsLocal:saveRelationsLocal,
     mergeRelations:mergeRelations,relationsSnapshot:relationsSnapshot,

@@ -177,7 +177,7 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   </div>
 </footer>
 
-<script src="garden-data.js?v=20260922"></script>
+<script src="garden-data.js?v=20260922c"></script>
 <script src="md.js?v=20260921"></script>
 <script>
 (function(){
@@ -426,10 +426,14 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   function syncAll(){
     if(!GD.hasToken())return;
     GD.syncConcepts(all).then(function(m){
-      if(m){all=m;persist();}
+      /* GD.sync 返回 {data:…, ok:true} 包装——解包再赋值 */
+      var d=(m&&m.data)?m.data:m;
+      if(d){all=d;persist();}
       return GD.syncRelations(rels);
     }).then(function(m){
-      if(m){rels=m;persistR();render();}
+      var d=(m&&m.data)?m.data:m;
+      if(d){rels=d;persistR();}
+      render();
     }).catch(function(){});
   }
 
