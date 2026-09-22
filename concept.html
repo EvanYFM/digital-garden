@@ -51,6 +51,25 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 .ccard .cmeta b{font-weight:400;color:var(--ink)}
 .c-empty{grid-column:1/-1;text-align:center;padding:70px 0;color:var(--gray);font-family:var(--serif);font-size:14.5px}
 
+/* ---- 邻域 · RELATED ---- */
+.nbhd{margin-top:50px}
+.nbhd h4{font-size:12px;letter-spacing:.22em;color:var(--gray);text-transform:uppercase;margin:0 0 6px}
+.nbhd h4 b{color:var(--cinnabar);font-weight:normal}
+.nlist{border-top:1px solid var(--line)}
+.nrow{display:flex;align-items:baseline;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);position:relative}
+.nname{font-family:var(--serif);font-size:16px;color:var(--ink);text-decoration:none;white-space:nowrap;transition:color .3s}
+.nname:hover{color:var(--cinnabar)}
+.ndir{font-size:10.5px;letter-spacing:.2em;color:var(--gray);white-space:nowrap}
+.nwhy{margin:0;font-size:13.5px;line-height:1.8;color:var(--gray);flex:1}
+.nsrc{font-size:11px;color:var(--cinnabar);text-decoration:none;white-space:nowrap}
+.nacts{display:none;position:absolute;right:0;top:50%;transform:translateY(-50%);background:var(--paper);padding-left:14px}
+.nrow:hover .nacts{display:inline-flex;gap:10px}
+.nedit,.ndel{background:none;border:none;cursor:pointer;font-size:12px;color:var(--gray);padding:2px}
+.nedit:hover,.ndel:hover{color:var(--cinnabar)}
+.nadd{margin-top:22px}
+.rform select{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:4px;
+  padding:11px 12px;font-family:var(--serif);font-size:15px;color:var(--ink);margin:8px 0 20px}
+
 /* ---- Token 指引 ---- */
 .tokhint{font-size:12.5px;line-height:1.9;color:var(--gray);background:var(--paper-soft);
   border-left:2px solid var(--cinnabar);padding:12px 16px;margin-bottom:26px}
@@ -151,19 +170,20 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   </div>
 </footer>
 
-<script src="garden-data.js"></script>
+<script src="garden-data.js?v=20260922"></script>
 <script src="md.js?v=20260921"></script>
 <script>
 (function(){
   var view=document.getElementById('view'),hintEl=document.getElementById('cHint'),
       searchIn=document.getElementById('cSearch');
-  var all={},editing=null,own=false;
+  var all={},rels={},editing=null,own=false;
 
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function fmtT(ts){var d=new Date(Number(ts));if(isNaN(d))return '';
     return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');}
   function hint(t){hintEl.textContent=t;setTimeout(function(){if(hintEl.textContent===t)hintEl.textContent='';},6000);}
   function persist(){GD.saveConceptsLocal(all);}
+  function persistR(){GD.saveRelationsLocal(rels);}
   function arr(){return GD.conceptsArray(all).sort(function(a,b){return (b.updated||0)-(a.updated||0);});}
 
   /* ---- 反查引用：扫描随记与文章正文的 [[name]] / [[alias]] ---- */
@@ -257,6 +277,77 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
     });
   }
 
+  /* ---------- 关系层（Phase 2）：单概念邻域视图 ---------- */
+  function relHtml(id,c){
+    var edges=[];
+    for(var k in rels){
+      var e=rels[k];
+      if(e.deleted)continue;
+      if(e.from===id&&all[e.to]&&!all[e.to].deleted)edges.push({e:e,other:e.to,dir:'→'});
+      else if(e.to===id&&all[e.from]&&!all[e.from].deleted)edges.push({e:e,other:e.from,dir:'←'});
+    }
+    edges.sort(function(a,b){return b.e.updated-a.e.updated;});
+    var html='<div class="nbhd rv"><h4>邻域 · RELATED <b>'+edges.length+'</b></h4>';
+    html+=edges.length?'<div class="nlist">'+edges.map(function(x){
+      var o=all[x.other];
+      return '<div class="nrow">'
+        +'<a class="nname" href="concept.html#'+esc(x.other)+'">'+esc(o.name)+'</a>'
+        +'<span class="ndir">'+(x.dir==='→'?'指向':'来自')+'</span>'
+        +'<p class="nwhy">'+esc(x.e.why)+'</p>'
+        +(x.e.src&&x.e.src.u?'<a class="nsrc" href="'+esc(x.e.src.u)+'" target="_blank" rel="noopener">出处↗</a>':'')
+        +(own?'<span class="nacts"><button class="nedit" data-redge="'+esc(x.e.id)+'" type="button">改</button><button class="ndel" data-redge="'+esc(x.e.id)+'" type="button">删</button></span>':'')
+        +'</div>';
+    }).join('')+'</div>'
+      :'<p class="c-empty">尚无关联概念——概念不是孤岛，把它放进网络里才立得住。</p>';
+    html+=(own?'<button class="cbtn nadd" id="relAdd" type="button">＋ 关联概念</button>':'')+'</div>';
+    return html;
+  }
+  function openRelForm(id,edge){
+    var opts=[];
+    for(var k in all){
+      if(k===id||all[k].deleted||!all[k].name)continue;
+      opts.push('<option value="'+esc(k)+'"'+(edge&&edge.to===k?' selected':'')+'>'+esc(all[k].name)+'</option>');
+    }
+    if(!opts.length){hint('先再建一个概念，才能建立关联');return;}
+    view.innerHTML='<div class="cform rform">'
+      +'<h3>'+(edge?'编辑关系':'关联概念')+'<b>RELATED</b></h3>'
+      +'<label>关联到</label><select id="rTo">'+opts.join('')+'</select>'
+      +'<label>为什么相关 *</label><textarea id="rWhy" rows="2" placeholder="这条关系为什么成立？一句话说清。空泛的连线不如不连。">'+esc(edge?edge.why:'')+'</textarea>'
+      +'<label>出处链接（可选）</label><input type="url" id="rSrcU" value="'+esc(edge&&edge.src?edge.src.u||'':'')+'" placeholder="这条关系来自哪里 https://…">'
+      +'<div class="frow"><button class="cbtn" id="rCancel" type="button">取消</button>'
+      +'<button class="cbtn primary" id="rSave" type="button">保存</button></div></div>';
+    document.getElementById('rCancel').addEventListener('click',function(){render();});
+    document.getElementById('rSave').addEventListener('click',function(){
+      var to=document.getElementById('rTo').value;
+      var why=document.getElementById('rWhy').value.trim();
+      if(!why){document.getElementById('rWhy').focus();return;}
+      var u=document.getElementById('rSrcU').value.trim();
+      var src=u?{u:u}:null;
+      if(edge){edge.to=to;edge.why=why;edge.src=src;edge.updated=Date.now();}
+      else{
+        var rid='r'+Date.now();
+        rels[rid]={id:rid,from:id,to:to,why:why,src:src,updated:Date.now()};
+      }
+      persistR();hint(edge?'关系已更新 · 记得「发布概念」':'已连上 · 记得「发布概念」');
+      syncAll();render();
+    });
+  }
+  function bindRel(id){
+    var add=document.getElementById('relAdd');
+    if(add)add.addEventListener('click',function(){openRelForm(id,null);});
+    view.querySelectorAll('[data-redge]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var e=rels[btn.getAttribute('data-redge')];
+        if(!e)return;
+        if(btn.className==='ndel'){
+          if(!confirm('删除这条关联？'))return;
+          e.deleted=true;e.updated=Date.now();persistR();
+          hint('已删除关联 · 记得「发布概念」');syncAll();render();
+        }else openRelForm(id,e);
+      });
+    });
+  }
+
   function renderDetail(id){
     var c=all[id];
     if(!c||c.deleted){renderList();return;}
@@ -275,8 +366,9 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
       +'</div>'
       +'<div class="cacts">'
       +(own?'<button class="cbtn" id="editC" type="button">编辑</button><button class="cbtn" id="delC" type="button">删除</button>':'')
-      +'</div></div>';
+      +'</div>'+relHtml(id,c)+'</div>';
     view.innerHTML=html;
+    bindRel(id);
     if(own){
       document.getElementById('editC').addEventListener('click',function(){openForm(c);});
       document.getElementById('delC').addEventListener('click',function(){
@@ -324,7 +416,10 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   function syncAll(){
     if(!GD.hasToken())return;
     GD.syncConcepts(all).then(function(m){
-      if(m){all=m;persist();render();}
+      if(m){all=m;persist();}
+      return GD.syncRelations(rels);
+    }).then(function(m){
+      if(m){rels=m;persistR();render();}
     }).catch(function(){});
   }
 
@@ -332,7 +427,9 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
     if(!GD.hasToken()){hint('未设置同步 Token——概念先存于本机');return;}
     var b=this;b.disabled=true;hint('发布中…');
     GD.publishConcepts(all).then(function(){
-      hint('已发布 · 公开站点约 1 分钟后可见');
+      return GD.publishRelations(rels,all);
+    }).then(function(){
+      hint('概念与关系已发布 · 公开站点约 1 分钟后可见');
     }).catch(function(e){hint('发布失败：'+e.message);}).finally(function(){b.disabled=false;});
   });
   document.getElementById('newBtn').addEventListener('click',function(){openForm(null);});
@@ -347,8 +444,8 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 
   /* 初始化 */
   try{own=GD.hasToken()||!!localStorage.getItem('userArticles');}catch(e){}
-  GD.loadConcepts(function(m){
-    all=m;
+  GD.loadRelations(function(m){
+    all=m.concepts;rels=m.rels;
     MD.setConcepts(GD.conceptsArray(all));
     render();
   });

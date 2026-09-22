@@ -228,6 +228,59 @@ var GD=(function(){
     return pushPublic('concepts.json',conceptsSnapshot(all));
   }
 
+  /* ============================================================
+     关系层（Phase 2）：relations.json
+     本地 localStorage['relations']（全量，含 deleted 墓碑）
+     私有仓 relations.json：全量同步；公开仓：发布快照
+     边结构：{id, from, to, why, src:{u?,q?}, updated, deleted?}
+     from/to 存概念 id；每边强制 why（这条关系为什么成立）
+     ============================================================ */
+  var RKEY='relations';
+  function loadRelationsLocal(){
+    try{return JSON.parse(localStorage.getItem(RKEY))||{};}catch(e){return {};}
+  }
+  function saveRelationsLocal(all){try{localStorage.setItem(RKEY,JSON.stringify(all));}catch(e){}}
+  function mergeRelations(local,remote){
+    var out={},k;
+    for(k in remote)out[k]=remote[k];
+    for(k in local){
+      if(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0))out[k]=local[k];
+    }
+    return out;
+  }
+  /* 公开快照：过滤墓碑 + 过滤 why 为空 + 双方概念仍是公开有效概念 */
+  function relationsSnapshot(rels,concepts){
+    var out={},k,e;
+    for(k in rels){
+      e=rels[k];
+      if(e.deleted||!e.why||!e.from||!e.to)continue;
+      var a=concepts[e.from],b=concepts[e.to];
+      if(!a||a.deleted||!b||b.deleted)continue;
+      out[k]={id:e.id,from:e.from,to:e.to,why:e.why,
+        src:e.src||{},updated:e.updated||0};
+    }
+    return out;
+  }
+  /* 加载关系（本地 + 公开快照合并），cb({rels:dict, concepts:dict}) */
+  function loadRelations(cb){
+    loadConcepts(function(concepts){
+      var local=loadRelationsLocal();
+      fetch('relations.json?t='+Date.now()).then(function(r){
+        return r.ok?r.json():null;
+      }).catch(function(){return null;}).then(function(pub){
+        var merged=mergeRelations(local,pub||{});
+        saveRelationsLocal(merged);
+        cb({rels:merged,concepts:concepts});
+      });
+    });
+  }
+  function syncRelations(rels){
+    return sync('relations.json',rels,mergeRelations);
+  }
+  function publishRelations(rels,concepts){
+    return pushPublic('relations.json',relationsSnapshot(rels,concepts));
+  }
+
   /* 加载用户文章（本地草稿 + 公开发布合并），cb(all) */
   function loadUserArticles(cb){
     var local={};
@@ -247,5 +300,8 @@ var GD=(function(){
     loadUserArticles:loadUserArticles,
     loadConceptsLocal:loadConceptsLocal,saveConceptsLocal:saveConceptsLocal,mergeConcepts:mergeConcepts,
     conceptsSnapshot:conceptsSnapshot,conceptsArray:conceptsArray,loadConcepts:loadConcepts,
-    syncConcepts:syncConcepts,publishConcepts:publishConcepts};
+    syncConcepts:syncConcepts,publishConcepts:publishConcepts,
+    loadRelationsLocal:loadRelationsLocal,saveRelationsLocal:saveRelationsLocal,
+    mergeRelations:mergeRelations,relationsSnapshot:relationsSnapshot,
+    loadRelations:loadRelations,syncRelations:syncRelations,publishRelations:publishRelations};
 })();
