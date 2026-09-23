@@ -18,7 +18,7 @@
 | 产物结构断言（**强**） | `macro-workstation/scripts/ci-check-pages.mjs` (76 行) | 不只查语法：把内联渲染器放进 `vm` + 假 DOM **真跑一遍**，断言渲染出「数据健康」面板且无 `NaN` |
 | 发布守护（**强**） | `macro-workstation/scripts/publish-guards.mjs` (23 行) | 公开产物**白名单**（不在名单内即拒发）、凭证正则扫描（`github_pat_` / 私钥头）、禁止历史回退、禁止符号链接 |
 | 公开产物隐私守门 | `check_public_artifacts.py` | 防交易记录 / Token 进公开仓 |
-| **验证后发布**（正确范式） | `futures-workstation-deploy2/.github/workflows/deploy.yml` | `deploy: needs: build`，build 阶段先 `node --check` + `check_public_artifacts.py` 才允许发布 |
+| **验证后发布的代码已写好** | `futures-workstation` 与 `digital-garden` 的 `deploy.yml` | 两个仓都写了 `deploy: needs: build`，build 阶段先校验再发布。**结构完全正确 —— 但被未设置的 `PAGES_DEPLOY_ENABLED` 变量关掉，从未生效**（见 G1） |
 | 模板回归围栏 | `ci-check-pages.mjs` 内嵌断言 | 防 Google Fonts 回归、防 `hashchange` 监听丢失 |
 | **规则文件已建立** | `macro-workstation/AGENTS.md`（112 行，2026-09-22 新增） | 明确双仓架构——「本仓为唯一真相源，公开仓只含构建产物、**禁止直接修改**」；含 4 条硬性规则 |
 | **发布 SOP 已文档化** | `macro-workstation/docs/data-update-guide.md`（171 行） | 含本机网络限制下的 REST 发布 5 步、CRLF/LF 陷阱、DOM 级验证要求 |
@@ -34,7 +34,7 @@
 
 | # | 缺口 | 证据 |
 |---|---|---|
-| **G1** | **发布仓无 deploy 门禁** | `macro-workstation-site`（GitHub `c4eb4f7`）只有 `site-check.yml`，**无 deploy workflow、无 `needs:` 依赖**，Pages 直服 main → push 即上线，site-check 失败不拦任何事。对照 `futures-workstation-deploy2` 的 `deploy: needs: build` 是正确范式 |
+| **G1** | **门禁写了，但被一个未设置的变量关掉了（比缺门禁更危险）** | 三个公开站点的 Pages 全是 `build_type=legacy`、`source=main/` → **全部是分支直发，push 即上线**。`futures-workstation` 与 `digital-garden` 的 `deploy.yml` 都已写对（`deploy: needs: build`），但 build job 带 `if: vars.PAGES_DEPLOY_ENABLED == 'true'`，而**该变量在三个仓中都不存在** → 每次运行结论都是 `completed/skipped`，`deploy.yml` 是**从未生效的死代码，保护力为零**。`macro-workstation-site` 更彻底：连 `deploy.yml` 都没有，只有事后报警的 `site-check.yml` |
 | **G2** | **发布路径已完全脱离自动化门禁（最严重）** | 本机封 `github.com:443` → `publish-pages.mjs` **不可用** → 发布退化为 **5 步手工流程**（`docs/data-update-guide.md` 第五节）：① 手工 `import` `publish-guards.mjs` 跑守卫 ② `cp -a dist/pages/.` ③ 手工 `git add` + `git commit` ④ **REST Git Data API 推送**（blobs→trees→commits→PATCH refs）⑤ 比对 tree sha。**四道守护（白名单 / 凭证扫描 / 历史保护 / 树一致性）全部落在手工调用的第 1、5 步上，跳过不会有任何提示**；REST 推送绕过 `git push`，任何钩子与分支保护都拦不住 |
 | **G3** | **CI 门禁列表与 npm 脚本不同源** | `npm test` 跑 **5** 个测试文件，`check.yml` 只跑 **3** 个 → `tests/futu-quote.test.mjs`（155 行）与 `tests/rendered-html.test.mjs`（16KB）**在 CI 中从不运行**。同类：`trading-system-fresh/tests/verify_tdx_converters.py` 不匹配 `-p 'test_*.py'`，同样不跑 |
 | **G4** | **类型与 lint 从未被调用** | 有 `eslint.config.mjs`、TS 5.9、`strict: true`、`npm run lint`，但 `check.yml`（仅 4 步）从不调用 eslint，也从不跑 `tsc --noEmit` |
