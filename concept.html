@@ -119,6 +119,18 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 .reflist .rt{font-family:var(--serif);font-size:15px}
 .reflist .rd{font-size:11.5px;color:var(--gray);flex:none}
 .cacts{display:flex;gap:14px;margin-top:30px}
+/* 页脚（Phase1 建页时漏抄——补齐与全站一致） */
+#view{min-height:52vh}
+footer{border-top:1px solid var(--line);margin-top:70px}
+.foot-inner{max-width:880px;margin:0 auto;padding:56px 48px 44px;display:flex;
+  justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.foot-motto{font-family:var(--serif);font-size:14px;letter-spacing:.42em;color:var(--gray)}
+.foot-note{font-size:11px;color:var(--gray);letter-spacing:.14em;text-align:right}
+.foot-note .en{display:block;font-size:10px;letter-spacing:.2em;margin-top:6px;opacity:.7;text-transform:uppercase}
+@media (max-width:760px){
+  .foot-inner{padding:40px 22px 34px;flex-direction:column;align-items:flex-start}
+  .foot-note{text-align:left}
+}
 </style>
 </head>
 <body>
@@ -425,14 +437,12 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   /* ---------- 同步 / 发布 ---------- */
   function syncAll(){
     if(!GD.hasToken())return;
-    GD.syncConcepts(all).then(function(m){
-      /* GD.sync 返回 {data:…, ok:true} 包装——解包再赋值 */
-      var d=(m&&m.data)?m.data:m;
-      if(d){all=d;persist();}
-      return GD.syncRelations(rels);
-    }).then(function(m){
-      var d=(m&&m.data)?m.data:m;
-      if(d){rels=d;persistR();}
+    /* 概念与关系是独立文件——并行同步，等待时间减半 */
+    Promise.all([GD.syncConcepts(all),GD.syncRelations(rels)]).then(function(rs){
+      var dc=(rs[0]&&rs[0].data)?rs[0].data:rs[0];
+      var dr=(rs[1]&&rs[1].data)?rs[1].data:rs[1];
+      if(dc){all=dc;persist();}
+      if(dr){rels=dr;persistR();}
       render();
     }).catch(function(){});
   }
@@ -440,9 +450,7 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
   document.getElementById('pubBtn').addEventListener('click',function(){
     if(!GD.hasToken()){hint('未设置同步 Token——概念先存于本机');return;}
     var b=this;b.disabled=true;hint('发布中…');
-    GD.publishConcepts(all).then(function(){
-      return GD.publishRelations(rels,all);
-    }).then(function(){
+    Promise.all([GD.publishConcepts(all),GD.publishRelations(rels,all)]).then(function(){
       hint('概念与关系已发布 · 公开站点约 1 分钟后可见');
     }).catch(function(e){
       var m=e.message||'';
@@ -468,6 +476,13 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 
   /* 初始化 */
   try{own=GD.hasToken()||!!localStorage.getItem('userArticles');}catch(e){}
+  /* 首屏先用本机数据立即渲染——页脚与列表即刻就位，网络合并完成后再刷新一次 */
+  try{
+    all=GD.dedupeConcepts(GD.loadConceptsLocal());
+    rels=GD.loadRelationsLocal();
+    MD.setConcepts(GD.conceptsArray(all));
+    render();
+  }catch(e){}
   GD.loadRelations(function(m){
     all=m.concepts;rels=m.rels;
     MD.setConcepts(GD.conceptsArray(all));
