@@ -327,6 +327,8 @@ var GD=(function(){
     if(!(v&&typeof v==='object'&&!Array.isArray(v)))return false;
     if(v.kind==='concept')return typeof v.name==='string'&&!!v.name&&typeof v.why==='string'&&!!v.why;
     if(v.kind==='relation')return typeof v.from==='string'&&!!v.from&&typeof v.to==='string'&&!!v.to&&typeof v.why==='string'&&!!v.why;
+    /* rewrite：指向已有关系的描述改写建议 */
+    if(v.kind==='rewrite')return typeof v.target==='string'&&!!v.target&&typeof v.why==='string'&&!!v.why;
     return false;
   }
   function loadCandidatesLocal(){

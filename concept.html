@@ -493,15 +493,23 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     if(!list.length)return '';
     return '<div class="cands"><h4>agent 候选 · <b>'+list.length+'</b> 条待审<i>站外抽取 · 30 天内有效 · 接受才入图</i></h4>'
       +list.map(function(c){
+        var isRw=c.kind==='rewrite';
+        var rwE=isRw?rels[c.target]:null;
         var head=c.kind==='concept'
           ?'<span class="ctitle">'+esc(c.name)+'</span>'
             +(c.aliases&&c.aliases.length?'<span style="color:var(--gray);font-size:11px;margin-left:10px">'+esc(c.aliases.join(' · '))+'</span>':'')
-          :'<span class="ctitle">'+esc(nameOf(c.from))+' <span style="color:var(--cinnabar)">→</span> '+esc(nameOf(c.to))+'</span>';
+          :'<span class="ctitle">'
+            +(isRw?(rwE?esc(nameOf(rwE.from))+' <span style="color:var(--cinnabar)">→</span> '+esc(nameOf(rwE.to)):'（原关系已不存在）')
+              :esc(nameOf(c.from))+' <span style="color:var(--cinnabar)">→</span> '+esc(nameOf(c.to)))
+            +'</span>';
+        var body=isRw
+          ?'<div class="cwhy2"><b style="font-weight:400;color:var(--gray)">现述：</b>'+esc(rwE?rwE.why:'')+'</div>'
+           +'<div class="cwhy2" style="margin-top:4px"><b style="font-weight:400;color:var(--cinnabar)">建议：</b>'+esc(c.why)+'</div>'
+          :'<div class="cwhy2">'+esc(c.why)+'</div>'
+            +(c.kind==='concept'&&c.def?'<div class="cdef2">'+esc(c.def)+'</div>':'');
         return '<div class="cand">'
-          +'<div><span class="ckind">'+(c.kind==='concept'?'新概念':'关系')+'</span>'+head+'</div>'
-          +'<div class="cwhy2">'+esc(c.why)+'</div>'
-          +(c.kind==='concept'&&c.def?'<div class="cdef2">'+esc(c.def)+'</div>':'')
-          +candSrc(c)
+          +'<div><span class="ckind">'+(c.kind==='concept'?'新概念':(isRw?'改写建议':'关系'))+'</span>'+head+'</div>'
+          +body+candSrc(c)
           +'<div class="cbtns">'
           +'<button class="cbtn primary" data-cacc="'+c.id+'" type="button">接受</button>'
           +'<button class="cbtn" data-crw="'+c.id+'" type="button">改写</button>'
@@ -524,6 +532,17 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     if(c.kind==='concept'){
       /* 概念候选：带预填打开新建表单，人确认（可改）后才真正入图 */
       openForm({id:null,name:c.name,def:c.def||'',aliases:c.aliases||[],fromPending:true,fromCand:c.id});
+      return;
+    }
+    if(c.kind==='rewrite'){
+      /* 改写建议：更新既有关系描述，不新建边 */
+      var e2=rels[c.target];
+      if(!e2||e2.deleted){hint('原关系已不存在——请拒绝或改写');return;}
+      e2.why=c.why;e2.updated=Date.now();
+      c.deleted=true;c.accepted=true;c.updated=Date.now();
+      persistR();GD.saveCandidatesLocal(cands);
+      hint('关系描述已按建议改写 · 记得「同步云端」');
+      syncAll();syncCands();render();
       return;
     }
     if(!all[c.from]||all[c.from].deleted||!all[c.to]||all[c.to].deleted){
