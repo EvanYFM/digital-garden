@@ -188,7 +188,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     <input type="search" id="cSearch" placeholder="按名称、别名、定义过滤……" autocomplete="off">
     <a class="csync" id="syncLink" href="now.html" title="概念同步与发布依赖 GitHub Token——在此配置"></a>
     <button class="cbtn primary" id="newBtn" type="button">＋ 新建概念</button>
-    <button class="cbtn" id="pubBtn" type="button" title="把概念发布到公开站点（读者端可见）">发布概念</button>
+    <button class="cbtn" id="pubBtn" type="button" title="概念与关系存入私有仓并同步到公开站点">同步云端</button>
     <span class="hintline" id="cHint"></span>
   </div>
 
@@ -381,7 +381,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         var rid='r'+Date.now();
         rels[rid]={id:rid,from:id,to:to,why:why,src:src,updated:Date.now()};
       }
-      persistR();hint(edge?'关系已更新 · 记得「发布概念」':'已连上 · 记得「发布概念」');
+      persistR();hint(edge?'关系已更新 · 记得「同步云端」':'已连上 · 记得「同步云端」');
       syncAll();render();
     });
   }
@@ -395,7 +395,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         if(btn.className==='ndel'){
           if(!confirm('删除这条关联？'))return;
           e.deleted=true;e.updated=Date.now();persistR();
-          hint('已删除关联 · 记得「发布概念」');syncAll();render();
+          hint('已删除关联 · 记得「同步云端」');syncAll();render();
         }else openRelForm(id,e);
       });
     });
@@ -427,7 +427,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       document.getElementById('delC').addEventListener('click',function(){
         if(!confirm('删除概念「'+c.name+'」？文章中的 [[ ]] 将退回纯文本。'))return;
         c.deleted=true;c.updated=Date.now();persist();
-        hint('已删除 · 记得「发布概念」同步到公开站点');
+        hint('已删除 · 记得「同步云端」同步到公开站点');
         syncAll();renderList();
       });
     }
@@ -437,7 +437,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   function tokenHint(){
     return hasToken?'':'<p class="tokhint">云端同步未开启：概念暂存于本机浏览器，换设备或清理数据会丢。'
       +'到 <a href="now.html">现在页 · 同步设置</a> 配置 GitHub Token（需授权 digital-garden-data 与 digital-garden 两仓）后，'
-      +'点「发布概念」即可存入私有仓、公开可见。</p>';
+      +'点「同步云端」即可存入私有仓、公开可见。</p>';
   }
 
   function openForm(c){
@@ -465,7 +465,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
         }
       }
       persist();
-      hint(isEdit?'已更新 · 点右上「发布概念」才会上云':'已保存到本机 · 点右上「发布概念」才会上云');
+      hint(isEdit?'已更新 · 点右上「同步云端」才会上云':'已保存到本机 · 点右上「同步云端」才会上云');
       syncAll();
       location.hash='#'+((isEdit&&!c.fromPending)?c.id:id);
       render();
@@ -533,7 +533,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     rels[rid]={id:rid,from:c.from,to:c.to,why:c.why,src:(c.src&&c.src.u)?{u:c.src.u}:null,by:'agent',updated:Date.now()};
     c.deleted=true;c.accepted=true;c.updated=Date.now();
     persistR();GD.saveCandidatesLocal(cands);
-    hint('已采纳关系 · 候选入图 · 记得「发布概念」');
+    hint('已采纳关系 · 候选入图 · 记得「同步云端」');
     syncAll();syncCands();
     location.hash='#'+encodeURIComponent(c.from);render();
   }
