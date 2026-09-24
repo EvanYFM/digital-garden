@@ -344,9 +344,11 @@ var GD=(function(){
   function saveCandidatesLocal(d){try{localStorage.setItem(CDKEY,JSON.stringify(d));}catch(e){}}
   function mergeCandidates(local,remote){
     var out={},k,now=Date.now();
-    for(k in remote)if(okCand(remote[k]))out[k]=remote[k];
+    /* 结构级保留：合法条目 + 未知类型透传（前向兼容——旧客户端的合并不得清除新类型的候选） */
+    function keep(v){return v&&typeof v==='object'&&!Array.isArray(v)&&(okCand(v)||(typeof v.id==='string'&&!!v.id));}
+    for(k in remote)if(keep(remote[k]))out[k]=remote[k];
     for(k in local){
-      if(okCand(local[k])&&(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0)))out[k]=local[k];
+      if(keep(local[k])&&(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0)))out[k]=local[k];
     }
     for(k in out){
       var c=out[k];
