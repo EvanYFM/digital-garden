@@ -2,3 +2,6 @@
 redesign/
 *.tmp
 .tmp*
+
+# 预览产物（生成物不入库）
+preview/*.html

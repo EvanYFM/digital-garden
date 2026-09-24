@@ -314,6 +314,61 @@ var GD=(function(){
     return out;
   }
   /* 加载关系（本地 + 公开快照合并），cb({rels:dict, concepts:dict}) */
+  /* ============================================================
+     候选层（Phase 3）：candidates.json —— agent 站外抽取的候选概念/关系
+     只走本地 + 私有仓（候选不进公开站）；30 天过期自动归档防积压
+     条目：{ id:'cd'+ts, kind:'concept'|'relation',
+             concept: name/def/aliases[]   relation: from/to
+             why（agent 依据，必填）, src:{u,q,t}, created, updated,
+             by:'agent', deleted, accepted, expired }
+     ============================================================ */
+  var CDKEY='candidates',CAND_TTL=30*86400*1000;
+  function okCand(v){
+    if(!(v&&typeof v==='object'&&!Array.isArray(v)))return false;
+    if(v.kind==='concept')return typeof v.name==='string'&&!!v.name&&typeof v.why==='string'&&!!v.why;
+    if(v.kind==='relation')return typeof v.from==='string'&&!!v.from&&typeof v.to==='string'&&!!v.to&&typeof v.why==='string'&&!!v.why;
+    return false;
+  }
+  function loadCandidatesLocal(){
+    try{
+      var d=JSON.parse(localStorage.getItem(CDKEY))||{};
+      if(d&&typeof d.data==='object'&&d.data!==null&&!Array.isArray(d.data)){
+        for(var k in d){if(k!=='data'&&d[k]&&typeof d[k]==='object'&&d[k].kind)d.data[k]=d[k];}
+        return d.data;
+      }
+      return d;
+    }catch(e){return {};}
+  }
+  function saveCandidatesLocal(d){try{localStorage.setItem(CDKEY,JSON.stringify(d));}catch(e){}}
+  function mergeCandidates(local,remote){
+    var out={},k,now=Date.now();
+    for(k in remote)if(okCand(remote[k]))out[k]=remote[k];
+    for(k in local){
+      if(okCand(local[k])&&(!out[k]||Number(local[k].updated||0)>=Number(out[k].updated||0)))out[k]=local[k];
+    }
+    for(k in out){
+      var c=out[k];
+      if(!c.deleted&&now-Number(c.created||0)>CAND_TTL)out[k]=Object.assign({},c,{deleted:true,expired:true});
+    }
+    return out;
+  }
+  function candidatesSnapshot(cs){
+    var out={},k;
+    for(k in cs){
+      var c=cs[k];
+      if(c&&!c.deleted&&okCand(c))out[k]={id:c.id,kind:c.kind,name:c.name||'',def:c.def||'',aliases:c.aliases||[],
+        from:c.from||'',to:c.to||'',why:c.why,src:c.src||{},created:c.created||0,updated:c.updated||0,by:c.by||'agent'};
+    }
+    return out;
+  }
+  function loadCandidates(cb){
+    var local=loadCandidatesLocal();
+    local=mergeCandidates(local,{});
+    saveCandidatesLocal(local);
+    cb(local);
+  }
+  function syncCandidates(cs){return sync('candidates.json',cs,mergeCandidates);}
+
   function loadRelations(cb){
     loadConcepts(function(concepts){
       var local=loadRelationsLocal();
@@ -355,5 +410,8 @@ var GD=(function(){
     syncConcepts:syncConcepts,publishConcepts:publishConcepts,
     loadRelationsLocal:loadRelationsLocal,saveRelationsLocal:saveRelationsLocal,
     mergeRelations:mergeRelations,relationsSnapshot:relationsSnapshot,
-    loadRelations:loadRelations,syncRelations:syncRelations,publishRelations:publishRelations};
+    loadRelations:loadRelations,syncRelations:syncRelations,publishRelations:publishRelations,
+    loadCandidatesLocal:loadCandidatesLocal,saveCandidatesLocal:saveCandidatesLocal,
+    mergeCandidates:mergeCandidates,candidatesSnapshot:candidatesSnapshot,
+    loadCandidates:loadCandidates,syncCandidates:syncCandidates};
 })();

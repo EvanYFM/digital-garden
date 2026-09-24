@@ -119,6 +119,22 @@ main{max-width:880px;margin:0 auto;padding:0 48px}
 .reflist .rt{font-family:var(--serif);font-size:15px}
 .reflist .rd{font-size:11.5px;color:var(--gray);flex:none}
 .cacts{display:flex;gap:14px;margin-top:30px}
+/* ---- agent 候选审阅（Phase 3）---- */
+.cands{margin-bottom:60px}
+.cands h4{font-size:12px;letter-spacing:.22em;color:var(--gray);margin:0 0 14px;text-transform:uppercase}
+.cands h4 b{font-weight:400;color:var(--cinnabar)}
+.cands h4 i{font-style:normal;font-weight:300;color:var(--gray);margin-left:14px;letter-spacing:.08em}
+.cand{border:1px solid var(--line);border-left:3px solid var(--cinnabar);background:var(--paper);
+  padding:18px 22px;margin-bottom:12px}
+.cand .ckind{font-size:9.5px;letter-spacing:.24em;color:var(--cinnabar);text-transform:uppercase;margin-right:12px}
+.cand .ctitle{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.04em}
+.cand .cwhy2{font-size:13px;line-height:2;color:var(--charcoal);margin-top:8px}
+.cand .cdef2{font-size:12.5px;line-height:1.9;color:var(--gray);margin-top:4px}
+.cand .csrc2{font-size:11px;color:var(--gray);letter-spacing:.08em;margin-top:6px}
+.cand .csrc2 a{color:var(--gray)}
+.cand .cbtns{display:flex;gap:10px;margin-top:14px}
+.cand .crwbox textarea,.cand .crwbox input{width:100%;margin-top:8px}
+
 /* 页脚（Phase1 建页时漏抄——补齐与全站一致） */
 #view{min-height:52vh}
 footer{border-top:1px solid var(--line);margin-top:70px}
@@ -195,7 +211,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 (function(){
   var view=document.getElementById('view'),hintEl=document.getElementById('cHint'),
       searchIn=document.getElementById('cSearch');
-  var all={},rels={},editing=null,own=false;
+  var all={},rels={},cands={},editing=null,own=false;
 
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function fmtT(ts){var d=new Date(Number(ts));if(isNaN(d))return '';
@@ -286,7 +302,25 @@ footer{border-top:1px solid var(--line);margin-top:70px}
           +'</a>';
       }).join('')+'</div>';
     }
-    view.innerHTML=tokenHint()+html+renderPending();
+    view.innerHTML=tokenHint()+html+renderPending()+renderCands();
+    view.querySelectorAll('[data-cacc]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var c=cands[btn.getAttribute('data-cacc')];
+        if(c)acceptCand(c);
+      });
+    });
+    view.querySelectorAll('[data-crw]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var c=cands[btn.getAttribute('data-crw')];
+        if(c)rewriteCand(c);
+      });
+    });
+    view.querySelectorAll('[data-crej]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var c=cands[btn.getAttribute('data-crej')];
+        if(c)rejectCand(c);
+      });
+    });
     view.querySelectorAll('[data-pend]').forEach(function(btn){
       btn.addEventListener('click',function(){
         var p=pendingNames()[Number(btn.getAttribute('data-pend'))];
@@ -425,6 +459,10 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       else{
         var id='c'+Date.now();
         all[id]={id:id,name:name,aliases:aliases,def:def,updated:Date.now()};
+        if(c&&c.fromCand){
+          var cd=cands[c.fromCand];
+          if(cd){cd.deleted=true;cd.accepted=true;cd.updated=Date.now();GD.saveCandidatesLocal(cands);syncCands();}
+        }
       }
       persist();
       hint(isEdit?'已更新 · 点右上「发布概念」才会上云':'已保存到本机 · 点右上「发布概念」才会上云');
@@ -435,6 +473,101 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   }
 
   /* ---------- 同步 / 发布 ---------- */
+  /* ---- 候选层（Phase 3）：agent 候选审阅 —— AI 提候选，人裁决（C3）---- */
+  function candsArr(){
+    var o=[],k;
+    for(k in cands){var c=cands[k];if(c&&!c.deleted)o.push(c);}
+    return o.sort(function(a,b){return (b.created||0)-(a.created||0);});
+  }
+  function nameOf(id){var c=all[id];return c&&c.name?c.name:'（概念已不存在）';}
+  function candSrc(c){
+    if(!c.src||(!c.src.u&&!c.src.q))return '';
+    var inner=c.src.q?esc(String(c.src.q).slice(0,42)):'来源材料';
+    return c.src.u
+      ?'<div class="csrc2">出处：<a href="'+esc(c.src.u)+'" target="_blank" rel="noopener">'+inner+'</a></div>'
+      :'<div class="csrc2">出处：'+inner+'</div>';
+  }
+  function renderCands(){
+    if(!own)return '';
+    var list=candsArr();
+    if(!list.length)return '';
+    return '<div class="cands"><h4>agent 候选 · <b>'+list.length+'</b> 条待审<i>站外抽取 · 30 天内有效 · 接受才入图</i></h4>'
+      +list.map(function(c){
+        var head=c.kind==='concept'
+          ?'<span class="ctitle">'+esc(c.name)+'</span>'
+            +(c.aliases&&c.aliases.length?'<span style="color:var(--gray);font-size:11px;margin-left:10px">'+esc(c.aliases.join(' · '))+'</span>':'')
+          :'<span class="ctitle">'+esc(nameOf(c.from))+' <span style="color:var(--cinnabar)">→</span> '+esc(nameOf(c.to))+'</span>';
+        return '<div class="cand">'
+          +'<div><span class="ckind">'+(c.kind==='concept'?'新概念':'关系')+'</span>'+head+'</div>'
+          +'<div class="cwhy2">'+esc(c.why)+'</div>'
+          +(c.kind==='concept'&&c.def?'<div class="cdef2">'+esc(c.def)+'</div>':'')
+          +candSrc(c)
+          +'<div class="cbtns">'
+          +'<button class="cbtn primary" data-cacc="'+c.id+'" type="button">接受</button>'
+          +'<button class="cbtn" data-crw="'+c.id+'" type="button">改写</button>'
+          +'<button class="cbtn" data-crej="'+c.id+'" type="button">拒绝</button>'
+          +'</div><div class="crwbox" id="crw-'+c.id+'"></div></div>';
+      }).join('')+'</div>';
+  }
+  function syncCands(){
+    if(!GD.hasToken())return;
+    GD.syncCandidates(cands).then(function(m){
+      var d=(m&&m.data)?m.data:m;
+      if(d){cands=d;GD.saveCandidatesLocal(cands);}
+      render();
+    }).catch(function(){
+      /* 同步失败不影响本地裁决生效 */
+      render();
+    });
+  }
+  function acceptCand(c){
+    if(c.kind==='concept'){
+      /* 概念候选：带预填打开新建表单，人确认（可改）后才真正入图 */
+      openForm({id:null,name:c.name,def:c.def||'',aliases:c.aliases||[],fromPending:true,fromCand:c.id});
+      return;
+    }
+    if(!all[c.from]||all[c.from].deleted||!all[c.to]||all[c.to].deleted){
+      hint('候选关系的一端概念已不存在——请拒绝或改写');return;
+    }
+    var rid='r'+Date.now();
+    rels[rid]={id:rid,from:c.from,to:c.to,why:c.why,src:(c.src&&c.src.u)?{u:c.src.u}:null,by:'agent',updated:Date.now()};
+    c.deleted=true;c.accepted=true;c.updated=Date.now();
+    persistR();GD.saveCandidatesLocal(cands);
+    hint('已采纳关系 · 候选入图 · 记得「发布概念」');
+    syncAll();syncCands();
+    location.hash='#'+encodeURIComponent(c.from);render();
+  }
+  function rewriteCand(c){
+    var box=document.getElementById('crw-'+c.id);
+    if(!box)return;
+    if(box.innerHTML){box.innerHTML='';return;}
+    if(c.kind==='concept'){
+      box.innerHTML='<input type="text" id="crwN-'+c.id+'" value="'+esc(c.name)+'">'
+        +'<textarea id="crwW-'+c.id+'" rows="2">'+esc(c.def||'')+'</textarea>'
+        +'<button class="cbtn primary" data-crws="'+c.id+'" type="button">更新候选</button>';
+    }else{
+      box.innerHTML='<textarea id="crwW-'+c.id+'" rows="2">'+esc(c.why)+'</textarea>'
+        +'<button class="cbtn primary" data-crws="'+c.id+'" type="button">更新候选</button>';
+    }
+    document.querySelector('[data-crws="'+c.id+'"]').addEventListener('click',function(){
+      var w=document.getElementById('crwW-'+c.id);
+      if(c.kind==='concept'){
+        var n=document.getElementById('crwN-'+c.id);
+        if(n&&n.value.trim())c.name=n.value.trim();
+        if(w)c.def=w.value.trim();
+      }else{
+        if(w&&w.value.trim())c.why=w.value.trim();
+      }
+      c.updated=Date.now();GD.saveCandidatesLocal(cands);
+      hint('候选已改写');syncCands();
+    });
+  }
+  function rejectCand(c){
+    c.deleted=true;c.updated=Date.now();
+    GD.saveCandidatesLocal(cands);
+    hint('已拒绝候选');syncCands();render();
+  }
+
   function syncAll(){
     if(!GD.hasToken())return;
     /* 概念与关系是独立文件——并行同步，等待时间减半 */
@@ -480,6 +613,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
   try{
     all=GD.dedupeConcepts(GD.loadConceptsLocal());
     rels=GD.loadRelationsLocal();
+    cands=GD.mergeCandidates(GD.loadCandidatesLocal(),{});
+    GD.saveCandidatesLocal(cands);
     MD.setConcepts(GD.conceptsArray(all));
     render();
   }catch(e){}
@@ -488,6 +623,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
     MD.setConcepts(GD.conceptsArray(all));
     render();
   });
+  if(GD.hasToken())syncCands();
 })();
 </script>
 </body>
