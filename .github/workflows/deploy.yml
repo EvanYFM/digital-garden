@@ -23,6 +23,11 @@ jobs:
           node --test scripts/security-sync.test.js
           node scripts/build-search-index.js
           git diff --exit-code -- search-index.json
+      - name: Cache-bust asset versions
+        run: |
+          # 静态日期版本参数统一替换为 commit SHA——CDN 不再给旧 JS
+          sed -i -E "s/v=20[0-9]{6}[a-z]?/v=${GITHUB_SHA}/g" *.html
+          grep -o "v=[0-9a-f]\{40\}" *.html | sort -u | wc -l
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
         with:
           path: .
