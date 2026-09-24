@@ -346,7 +346,7 @@ footer{border-top:1px solid var(--line);margin-top:70px}
       return '<div class="nrow">'
         +'<a class="nname" href="concept.html#'+esc(x.other)+'">'+esc(o.name)+'</a>'
         +'<span class="ndir">'+(x.dir==='→'?'指向':'来自')+'</span>'
-        +'<p class="nwhy">'+esc(x.e.why)+'</p>'
+        +'<p class="nwhy">'+esc(x.e.why)+(x.e.by==='agent'?'<i style="font-style:normal;font-size:9.5px;letter-spacing:.18em;color:var(--cinnabar);margin-left:10px">AGENT</i>':'')+'</p>'
         +(x.e.src&&x.e.src.u?'<a class="nsrc" href="'+esc(x.e.src.u)+'" target="_blank" rel="noopener">出处↗</a>':'')
         +(own?'<span class="nacts"><button class="nedit" data-redge="'+esc(x.e.id)+'" type="button">改</button><button class="ndel" data-redge="'+esc(x.e.id)+'" type="button">删</button></span>':'')
         +'</div>';
