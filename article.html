@@ -63,7 +63,7 @@
   transition:transform .45s var(--ease)}
 .toc-fold:hover .sq{transform:scale(.75)}
 
-/* 目录收起态：目录列塌缩为 0，正文与上下篇整体居中，恢复入口 fixed 常驻左上 */
+/* 目录收起态：目录列塌缩为 0，正文与上下篇整体居中；恢复入口 fixed 于左上 */
 .layout.no-toc{grid-template-columns:0 minmax(0,1fr);gap:0}
 .layout.no-toc .toc{padding-top:0;overflow:visible}
 .layout.no-toc .toc::before{display:none}
@@ -76,7 +76,7 @@
   background:var(--paper);border:1px solid var(--line);padding:10px 14px;
   transition:color .4s,border-color .4s;
 }
-.layout.no-toc .toc-restore{display:inline-flex}
+.layout.no-toc ~ .toc-restore{display:inline-flex}
 .toc-restore:hover{color:var(--ink);border-color:var(--ink)}
 .toc-restore .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
 @media (max-width:960px){.toc-restore{display:none!important}}
@@ -375,7 +375,6 @@ html[data-theme="dark"] .src-block{background:#232320}
   <!-- 左侧 sticky 目录：墨点随阅读游走 -->
   <aside class="toc">
     <div class="toc-inner" id="tocBox"></div>
-    <a class="toc-restore" href="#" id="tocRestore"><span class="sq"></span>展开目录</a>
   </aside>
 
   <!-- 正文 / 上一篇下一篇：由 JS 根据 ?id= 渲染 -->
@@ -384,6 +383,9 @@ html[data-theme="dark"] .src-block{background:#232320}
     <nav class="pn" id="pnBox"></nav>
   </div>
 </div>
+
+<!-- 目录收起后的恢复入口：fixed 定位，layout 的兄弟节点，不占 grid 流 -->
+<a class="toc-restore" href="#" id="tocRestore"><span class="sq"></span>展开目录</a>
 
 <footer>
   <div class="foot-inner">
