@@ -51,6 +51,81 @@
 .toc-back:hover{color:var(--ink)}
 .toc-back .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
 
+/* ---------- 目录收起 / 展开开关（位于目录文字上方） ---------- */
+.toc-fold{
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
+  font-size:11px;letter-spacing:.24em;color:var(--gray);text-decoration:none;
+  background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;
+  transition:color .4s;
+}
+.toc-fold:hover{color:var(--ink)}
+.toc-fold .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%;flex:none;
+  transition:transform .45s var(--ease)}
+.toc-fold:hover .sq{transform:scale(.75)}
+
+/* 目录收起态：目录列塌缩为 0，正文与上下篇整体居中，恢复入口 fixed 常驻左上 */
+.layout.no-toc{grid-template-columns:0 minmax(0,1fr);gap:0}
+.layout.no-toc .toc{padding-top:0;overflow:visible}
+.layout.no-toc .toc::before{display:none}
+.layout.no-toc .toc-inner{display:none}
+.layout.no-toc .article,.layout.no-toc .pn{margin-left:auto;margin-right:auto}
+.toc-restore{
+  position:fixed;left:22px;top:88px;z-index:60;
+  display:none;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.24em;color:var(--gray);text-decoration:none;
+  background:var(--paper);border:1px solid var(--line);padding:10px 14px;
+  transition:color .4s,border-color .4s;
+}
+.layout.no-toc .toc-restore{display:inline-flex}
+.toc-restore:hover{color:var(--ink);border-color:var(--ink)}
+.toc-restore .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
+@media (max-width:960px){.toc-restore{display:none!important}}
+
+/* ---------- 页宽两档：适中（默认 660）/ 铺满（1080，行字更多） ---------- */
+html.rw-wide .article{max-width:1080px}
+html.rw-wide .pn{max-width:1080px}
+html.rw-wide .layout{max-width:1600px}
+html.rw-wide .article p{font-size:15.5px}
+
+/* ---------- 沉浸阅读：全屏 + 隐去目录 / 顶栏 / 页脚 / 上下篇 ---------- */
+html.imm header{display:none}
+html.imm footer{display:none}
+html.imm .pn{display:none}
+html.imm .uacts{display:none}
+/* 目录不可整个 display:none——会让正文 div 滑入 0 宽的首列；改为留壳藏内容 */
+html.imm .toc{padding-top:0;overflow:visible}
+html.imm .toc::before{display:none}
+html.imm .toc-inner{display:none}
+html.imm .toc-restore{display:none!important}
+html.imm .layout{grid-template-columns:0 minmax(0,1fr);gap:0}
+html.imm .article,html.imm .pn{margin-left:auto;margin-right:auto}
+html.imm .article{padding-top:12vh}
+html.imm .endmark{margin-bottom:14vh}
+/* 沉浸退出：右下角浮动，悬停显形 */
+.imm-exit{
+  position:fixed;right:22px;bottom:22px;z-index:70;display:none;
+  align-items:center;gap:10px;padding:10px 16px;
+  font-size:11px;letter-spacing:.22em;color:var(--gray);
+  background:var(--paper);border:1px solid var(--line);cursor:pointer;
+  font-family:var(--sans);opacity:.35;transition:opacity .4s,color .4s,border-color .4s;
+}
+html.imm .imm-exit{display:inline-flex}
+.imm-exit:hover{opacity:1;color:var(--ink);border-color:var(--ink)}
+.imm-exit .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
+@media print{.imm-exit,.toc-restore{display:none!important}}
+
+/* ---------- 阅读控制按钮：页宽 / 沉浸（顶栏太极旁） ---------- */
+.rbtn{
+  border:none;background:transparent;cursor:pointer;padding:0;flex:none;
+  font-family:var(--serif);font-size:13px;font-weight:700;color:var(--ink);
+  width:24px;height:24px;line-height:1;letter-spacing:0;
+  opacity:.5;transition:opacity .4s,transform .45s var(--ease);
+}
+.rbtn:hover{opacity:1}
+.rbtn:active{transform:scale(.85)}
+.rbtn.off{opacity:.28}
+.rbtn[disabled]{pointer-events:none}
+
 /* ---------- 正文 ---------- */
 .article{padding:min(44vh,440px) 0 40px;max-width:660px;position:relative}
 .crumb{font-size:11px;letter-spacing:.3em;color:var(--gray);margin-bottom:44px;
@@ -280,6 +355,8 @@ html[data-theme="dark"] .src-block{background:#232320}
     <a href="review.html">复盘<span class="en">REVIEW</span></a>
     <a href="about.html">关于<span class="en">ABOUT</span></a>
     </nav>
+  <button class="rbtn" id="rwBtn" type="button" title="页面宽度：适中 / 铺满" aria-label="切换页面宽度">宽</button>
+  <button class="rbtn" id="immBtn" type="button" title="沉浸阅读（全屏，隐去目录与顶栏；Esc 退出）" aria-label="进入沉浸阅读">沉</button>
   <button class="taiji" id="themeToggle" aria-label="切换日夜">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle class="ring" cx="12" cy="12" r="10"/>
@@ -298,6 +375,7 @@ html[data-theme="dark"] .src-block{background:#232320}
   <!-- 左侧 sticky 目录：墨点随阅读游走 -->
   <aside class="toc">
     <div class="toc-inner" id="tocBox"></div>
+    <a class="toc-restore" href="#" id="tocRestore"><span class="sq"></span>展开目录</a>
   </aside>
 
   <!-- 正文 / 上一篇下一篇：由 JS 根据 ?id= 渲染 -->
@@ -317,6 +395,9 @@ html[data-theme="dark"] .src-block{background:#232320}
   </div>
 </footer>
 
+<!-- 沉浸阅读退出（仅沉浸态可见，右下角） -->
+<button class="imm-exit" id="immExit" type="button"><span class="sq"></span>退出沉浸 ESC</button>
+
 <!-- 打印专属页眉页脚（屏幕不显示） -->
 <div class="print-head" aria-hidden="true"><span>小马 · 数字花园</span><span id="printTitle"></span></div>
 <div class="print-foot" aria-hidden="true"><span class="ln"></span><span class="sq"></span><span class="ln"></span></div>
@@ -325,6 +406,67 @@ html[data-theme="dark"] .src-block{background:#232320}
 <script src="md.js?v=20260921"></script>
 <script>
 /* 日夜切换 */
+
+/* ===== 阅读控制：目录收起 / 页宽两档 / 沉浸阅读 ===== */
+(function(){
+  var layout=document.querySelector('.layout');
+  var KEY_TOC='gdTocHide',KEY_W='gdReadWidth';
+
+  /* 目录收起：收起后正文居中，恢复入口 fixed 左上（沉浸态下不可用，目录整体已隐藏） */
+  function applyToc(hide){
+    if(layout)layout.classList.toggle('no-toc',hide);
+    try{localStorage.setItem(KEY_TOC,hide?'1':'0');}catch(e){}
+  }
+  document.addEventListener('click',function(e){
+    var f=e.target.closest&&e.target.closest('#tocFold');
+    if(f){e.preventDefault();applyToc(true);return;}
+    var r=e.target.closest&&e.target.closest('#tocRestore');
+    if(r){e.preventDefault();applyToc(false);return;}
+  });
+  try{if(localStorage.getItem(KEY_TOC)==='1')applyToc(true);}catch(e){}
+
+  /* 页宽：适中（660）/ 铺满（1080，每行字更多），偏好持久化 */
+  var rw=document.getElementById('rwBtn');
+  function applyW(w){
+    document.documentElement.classList.toggle('rw-wide',w==='full');
+    if(rw){
+      rw.classList.toggle('off',w!=='full');
+      rw.title=w==='full'?'页面宽度：铺满中 · 点击恢复适中':'页面宽度：适中 · 点击铺满（每行容纳更多字）';
+    }
+    try{localStorage.setItem(KEY_W,w);}catch(e){}
+  }
+  if(rw)rw.addEventListener('click',function(){
+    applyW(document.documentElement.classList.contains('rw-wide')?'mid':'full');
+  });
+  var savedW='mid';
+  try{savedW=localStorage.getItem(KEY_W)||'mid';}catch(e){}
+  applyW(savedW==='full'?'full':'mid');
+
+  /* 沉浸阅读：请求全屏 + 隐去目录 / 顶栏 / 页脚 / 上下篇；
+     若环境拒绝全屏（iframe 预览等），CSS 沉浸态依然完整生效 */
+  var immBtn=document.getElementById('immBtn'),immExit=document.getElementById('immExit');
+  function enter(){
+    document.documentElement.classList.add('imm');
+    var d=document.documentElement,p=null;
+    try{p=d.requestFullscreen&&d.requestFullscreen();}catch(e){}
+    if(p&&p.catch)p.catch(function(){});
+  }
+  function exit(){
+    document.documentElement.classList.remove('imm');
+    if(document.fullscreenElement&&document.exitFullscreen){
+      var p=document.exitFullscreen();if(p&&p.catch)p.catch(function(){});
+    }
+  }
+  if(immBtn)immBtn.addEventListener('click',enter);
+  if(immExit)immExit.addEventListener('click',exit);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&document.documentElement.classList.contains('imm'))exit();
+  });
+  /* 浏览器原生退出全屏（F11 / Esc）时同步退出沉浸态 */
+  document.addEventListener('fullscreenchange',function(){
+    if(!document.fullscreenElement)document.documentElement.classList.remove('imm');
+  });
+})();
 
 /* ===== 文章数据 ===== */
 var ARTICLES={
@@ -479,7 +621,7 @@ function render(){
 
   /* 目录 */
   var toc=document.getElementById('tocBox');
-  var tocHTML='';
+  var tocHTML='<button class="toc-fold" id="tocFold" type="button" title="收起目录，正文居中"><span class="sq"></span>收起目录</button>';
   a.chapters.forEach(function(c,i){
     tocHTML+='<a href="#s'+(i+1)+'" data-spy="s'+(i+1)+'"><span class="no">'+c.no+'</span>'+esc(c.zh)+'</a>';
   });
@@ -584,7 +726,7 @@ function renderUser(id,a){
 
   /* 目录：从 Markdown 的 ## 标题自动生成 */
   var toc=document.getElementById('tocBox');
-  var tocHTML='',n=0;
+  var tocHTML='<button class="toc-fold" id="tocFold" type="button" title="收起目录，正文居中"><span class="sq"></span>收起目录</button>',n=0;
   box.querySelectorAll('.md-body h2').forEach(function(h){
     n++;h.id='s'+n;
     tocHTML+='<a href="#s'+n+'"><span class="no">'+n+'</span>'+esc(h.textContent)+'</a>';
