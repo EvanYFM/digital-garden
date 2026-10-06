@@ -14,7 +14,7 @@
 <script src="base.js?v=20260918" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="base.css?v=20260921b">
+<link rel="stylesheet" href="base.css?v=20261006u">
 <style>
 main{max-width:1080px;margin:0 auto;padding:0 48px}
 
@@ -51,8 +51,8 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   flex:none;transition:background .5s}
 .now-strip:hover .nr{background:var(--cinnabar)}
 .now-strip .nt{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.14em;flex:none}
-.now-strip .nd{font-size:12px;color:var(--gray);letter-spacing:.08em;flex:1}
-.now-strip .na{font-size:11px;letter-spacing:.24em;color:var(--gray);flex:none;
+.now-strip .nd{font-size:14px;color:var(--charcoal);letter-spacing:.03em;line-height:1.8;flex:1}
+.now-strip .na{font-size:12px;letter-spacing:.12em;color:var(--charcoal);flex:none;
   transition:color .4s,transform .5s var(--ease)}
 .now-strip:hover .na{color:var(--ink);transform:translateX(4px)}
 .now-strip + .now-strip{border-top:none}
@@ -198,7 +198,8 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   main{padding:0 22px}
   .row{grid-template-columns:1fr;gap:8px}
   .row .date{text-align:left}
-  .now-strip{flex-wrap:wrap;gap:12px 16px}
+  .now-strip{display:grid;grid-template-columns:10px 1fr auto;gap:12px 16px}
+  .now-strip .nd{grid-column:2/-1;grid-row:2}
   .frag-box{flex-wrap:wrap;gap:12px}
   .frag{flex-wrap:wrap;gap:8px}
   .index-head .count{line-height:2.4}

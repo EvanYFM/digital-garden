@@ -15,7 +15,8 @@
   var style=document.createElement('style');
   style.textContent=[
     '.bgm-btn{display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;',
-    '  padding:0;color:var(--ink);opacity:.6;transition:opacity .4s;flex:none;margin-left:48px;margin-right:28px}',
+    '  padding:0;color:var(--ink);opacity:.6;transition:opacity .4s;flex:none;width:44px;min-height:44px;margin-left:32px;margin-right:12px}',
+    '@media(max-width:960px){body>header .bgm-btn{grid-column:2;grid-row:1;margin:0}}',
     '.bgm-btn:hover{opacity:1}',
     '.bgm-btn .note{font-family:var(--sans);font-size:13px;line-height:1;opacity:.55;',
     '  transform:translateY(-1px)}',

@@ -14,7 +14,7 @@
 <script src="base.js?v=20260918" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="base.css?v=20260921b">
+<link rel="stylesheet" href="base.css?v=20261006u">
 <style>
 /* ---------- 布局：左目录 / 右正文 ---------- */
 .layout{
@@ -148,11 +148,15 @@ html.imm #immBtn .i-com{display:block}
   letter-spacing:.05em;line-height:1.6;margin-bottom:30px;
 }
 .art-meta{
-  display:flex;flex-wrap:wrap;gap:0;font-size:11px;color:var(--gray);
+  display:flex;flex-wrap:wrap;gap:0;font-size:12px;color:var(--charcoal);
   letter-spacing:.16em;padding:20px 0;border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);margin-bottom:72px;
 }
 .art-meta span+i, .art-meta i{font-style:normal;color:var(--cinnabar);margin:0 12px}
+@media(max-width:760px){
+  .art-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+  .art-meta i{display:none}
+}
 .article h2{
   font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:.1em;
   margin:88px 0 32px;display:flex;align-items:baseline;gap:18px;

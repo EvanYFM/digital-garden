@@ -13,6 +13,7 @@
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <script src="base.js?v=20260918" defer></script>
+<link rel="stylesheet" href="base.css?v=20261006u">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -205,7 +206,8 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
 
 /* 我的作品 */
 .works{padding:44px 0 0;margin-top:26px;border-top:1px solid var(--line)}
-.works-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px}
+.works-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:20px}
+.works-head>span{flex-wrap:wrap}
 .works h3{font-size:10px;letter-spacing:.34em;color:var(--gray);text-transform:uppercase;
   margin-bottom:8px}
 .works h3 b{font-weight:400;color:var(--cinnabar)}
@@ -243,6 +245,8 @@ footer{border-top:1px solid var(--line);margin-top:70px}
 .rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
 
 @media (max-width:760px){
+  .work{flex-wrap:wrap}
+  .work .wt{flex-basis:100%;min-width:0}
   header{padding:20px 22px}
   nav{gap:16px}
   nav a .en{display:none}
