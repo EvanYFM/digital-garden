@@ -242,7 +242,9 @@ var MD=(function(){
     if(mmState===1)return;
     mmState=1;mmTheme=currentTheme();
     var s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+    /* 版本锁定：浮动标签曾自动升级 11.17 导致渲染器变更（htmlLabels 废弃）
+       引发 Windows 文字溢出——升级须重新验证后再改此版本号 */
+    s.src='https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js';
     s.onload=function(){
       try{
         window.mermaid.initialize({startOnLoad:false,theme:'base',
