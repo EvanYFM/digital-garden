@@ -246,7 +246,12 @@ var MD=(function(){
     s.onload=function(){
       try{
         window.mermaid.initialize({startOnLoad:false,theme:'base',
-          flowchart:{nodePadding:14,htmlLabels:true},
+          /* htmlLabels:false（顶层，mermaid@11.12+ flowchart 内已废弃）→
+             SVG text 渲染：测量与渲染同一元素，规避 foreignObject div
+             继承页面 CSS（letter-spacing/字重）与 Windows 字体测量差异
+             导致的文字溢出/截断节点框（2026-10-06 成年人世界模型必现） */
+          htmlLabels:false,
+          flowchart:{nodePadding:14},
           themeVariables:themeVars(mmTheme),
           securityLevel:'strict',fontFamily:'ui-sans-serif,system-ui,-apple-system,'+'"PingFang SC","Microsoft YaHei",sans-serif'});
         mmState=2;
@@ -303,7 +308,7 @@ var MD=(function(){
     var t=currentTheme();
     if(t===mmTheme)return;
     mmTheme=t;
-    try{window.mermaid.initialize({startOnLoad:false,theme:'base',flowchart:{nodePadding:14,htmlLabels:true},themeVariables:themeVars(t),securityLevel:'strict',fontFamily:'ui-sans-serif,system-ui,-apple-system,'+'"PingFang SC","Microsoft YaHei",sans-serif'});}catch(e){return;}
+    try{window.mermaid.initialize({startOnLoad:false,theme:'base',htmlLabels:false,flowchart:{nodePadding:14},themeVariables:themeVars(t),securityLevel:'strict',fontFamily:'ui-sans-serif,system-ui,-apple-system,'+'"PingFang SC","Microsoft YaHei",sans-serif'});}catch(e){return;}
     [].forEach.call(document.querySelectorAll('.md-mermaid[data-done="1"]'),function(b){
       b.removeAttribute('data-done');hydrateOne(b);
     });
