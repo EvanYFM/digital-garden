@@ -127,7 +127,7 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   letter-spacing:.2em;color:var(--gray);padding:0;flex:none;transition:color .4s}
 .sortbtn:hover{color:var(--ink)}
 
-/* ===== 复盘工作台：新建按钮 · 动态条目 · md 正文展开 ===== */
+/* ===== 复盘工作台：新建按钮 · 动态条目（点击进入全文页） ===== */
 .rev-row-dyn{cursor:pointer}
 .rev-ops{position:absolute;right:-2px;top:0;display:flex;gap:4px;opacity:0;transition:opacity .4s}
 .row.rev-row-dyn:hover .rev-ops{opacity:1}
@@ -135,30 +135,7 @@ main{max-width:1080px;margin:0 auto;padding:0 48px}
   padding:0 6px;line-height:1.4;transition:color .4s}
 .rev-ops button:hover{color:var(--ink)}
 .rev-ops button.del:hover{color:var(--cinnabar)}
-.rev-body{display:none;grid-column:1/-1;padding:6px 0 26px;cursor:auto}
-.rev-body.open{display:block}
-.rev-body .meta{display:block;font-size:10.5px;color:var(--gray);letter-spacing:.2em;
-  margin-bottom:16px}
 .rev-empty{padding:40px 0 10px;font-size:12px;letter-spacing:.18em;color:var(--gray)}
-/* 展开的 md 正文（预览排版与编辑台一致） */
-.rev-body .md-body p{margin:0 0 14px;font-family:var(--serif);font-size:14.5px;line-height:2.2;
-  color:var(--charcoal);letter-spacing:.04em}
-.rev-body .md-body h2{font-family:var(--serif);font-size:18px;font-weight:600;
-  margin:30px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
-.rev-body .md-body h2:first-child{margin-top:0;border-top:none;padding-top:0}
-.rev-body .md-body h3{font-family:var(--serif);font-size:15.5px;font-weight:600;margin:24px 0 6px}
-.rev-body .md-body ul,.rev-body .md-body ol{margin:0 0 14px;padding-left:24px}
-.rev-body .md-body li{margin-bottom:8px;font-family:var(--serif);font-size:14px;line-height:2}
-.rev-body .md-body blockquote{margin:22px 0;padding:2px 0 2px 18px;border-left:2px solid var(--cinnabar);
-  font-family:var(--serif);font-size:14px;line-height:2.1;color:var(--charcoal)}
-.rev-body .md-body code{font-family:ui-monospace,monospace;font-size:12.5px;
-  background:var(--paper-soft,#efece4);border-radius:3px;padding:2px 6px}
-.rev-body .md-body pre{background:var(--paper-soft,#efece4);border-radius:4px;
-  padding:14px 18px;overflow:auto;margin:0 0 14px}
-.rev-body .md-body pre code{background:none;padding:0}
-.rev-body .md-body hr{border:none;border-top:1px solid var(--line);margin:28px 0}
-.rev-body .md-body a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--cinnabar)}
-.rev-body .md-body strong{font-weight:600}
 @media(max-width:720px){.rev-ops{opacity:1}}
 .pager{display:flex;align-items:center;justify-content:center;gap:28px;padding:34px 0 10px}
 .pager button{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;
@@ -538,13 +515,11 @@ build();
       var ops=canEdit?'<span class="rev-ops">'
         +'<button type="button" data-edit="'+it.id+'" title="修改">✎</button>'
         +'<button type="button" data-del="'+it.id+'" class="del" title="删除">✕</button></span>':'';
+      /* 点击进入复盘全文页（与思考文章同形式：目录/加宽/沉浸阅读）；✎ ✕ 在上方拦截 */
       return '<div class="row rv in rev-row-dyn" data-row="'+it.id+'">'
         +'<h4>'+esc(it.title)+ops+'</h4>'
         +'<span class="cat">'+esc(it.cat)+'</span>'
-        +'<span class="date">'+fmt(it.ts)+'</span>'
-        +'<div class="rev-body"><span class="meta">'+esc(it.cat)+' · '+fmt(it.ts)
-        +(it.updated?' · 修订 '+fmt(it.updated):'')+'</span>'
-        +'<div class="md-body">'+(typeof MD!=='undefined'?MD.render(it.body||''):esc(it.body||''))+'</div></div></div>';
+        +'<span class="date">'+fmt(it.ts)+'</span></div>';
     }).join('');
     pagerEl.style.display=pages>1?'flex':'none';
     info.textContent=(page+1)+' / '+pages;
@@ -568,7 +543,7 @@ build();
       return;
     }
     var r=e.target.closest('.rev-row-dyn');
-    if(r){r.querySelector('.rev-body').classList.toggle('open');}
+    if(r){location.href='review-article.html#'+r.getAttribute('data-row');}
   });
 
   function syncNow(){
