@@ -55,7 +55,9 @@
 .toc-fold{
   display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
   font-size:11px;letter-spacing:.24em;color:var(--gray);text-decoration:none;
-  background:none;border:none;cursor:pointer;font-family:var(--sans);padding:0;
+  background:none;border:none;cursor:pointer;font-family:var(--sans);
+  /* 与 .toc a / .toc-back 同距：圆点与「返回思考」圆点同一条竖线 */
+  padding:0 0 0 20px;
   transition:color .4s;
 }
 .toc-fold:hover{color:var(--ink)}
@@ -249,6 +251,11 @@ a.seed .t:hover{color:var(--ink)}
   padding:0;transition:color .4s}
 .uacts a:hover,.uacts button:hover{color:var(--cinnabar)}
 .uacts i{width:1px;height:12px;background:var(--line)}
+/* 回到顶部 · 朱砂圆点（符号同篇末印记，自 endmark 横线行移入） */
+.uacts .utop{width:9px;height:9px;flex:none;border:1px solid var(--cinnabar);border-radius:50%;
+  transition:transform .6s var(--ease),background .6s var(--ease)}
+.uacts .utop:hover{background:var(--cinnabar)}
+.uacts .utop.closing{transform:scale(.25);background:var(--cinnabar)}
 
 /* ---------- 上一篇 / 下一篇 ---------- */
 .pn{
@@ -742,7 +749,8 @@ function renderUser(id,a){
   if(own){
     html+='<div class="uacts rv"><a href="write.html#'+id+'">✎ 编辑此文</a><i></i>'
       +'<button id="delArt" type="button">删除</button><i></i>'
-      +'<a href="write.html">写作台 →</a></div>';
+      +'<a href="write.html">写作台 →</a><i></i>'
+      +'<button class="utop" type="button" title="回到顶部" aria-label="回到页面顶部"></button></div>';
   }
   /* 种子区块：孕育本文的随记（编辑器挂载，链回随记锚点） */
   if(a.seeds&&a.seeds.length){
@@ -754,7 +762,7 @@ function renderUser(id,a){
     });
     html+='</div>';
   }
-  html+='<div class="endmark rv"><span class="ln"></span><button class="sq" type="button" title="回到顶部" aria-label="回到页面顶部"></button><span class="ln"></span></div>';
+  /* 用户文章不再输出 endmark 横线行——回到顶部朱砂按钮已并入 .uacts 操作条 */
   box.innerHTML=html;
   MD.hydrate(box);
 
@@ -831,7 +839,20 @@ function spy(){
 
 /* 渲染：出错时降级显示默认文章，绝不留白 */
 try{
-  render();
+  /* #u 路由：USER 未到位前 getId() 兜底返回 a0，会先渲染成静态汇率笔记
+     再等公开数据重渲染——从思考页点任何用户文章都先闪一下 a0。
+     改为：本地草稿里有则先即时渲染，否则清空静态兜底等待，绝不闪错文。 */
+  var mUser=/^#u\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search);
+  if(!mUser)render();
+  else{
+    var loc={};
+    try{loc=JSON.parse(localStorage.getItem('userArticles'))||{};}catch(e){}
+    Object.keys(loc).forEach(function(k){if(loc[k].deleted)delete loc[k];});
+    USER=loc;
+    var want=(/^#(u\d+)$/i.exec(location.hash)||/[?&]id=(u\d+)/i.exec(location.search)||[])[1];
+    if(want&&USER[want])render();
+    else document.getElementById('articleBox').innerHTML='';
+  }
   window.addEventListener('hashchange',function(){
     /* 只有 #a数字 / #u数字 形式的锚点才切换文章；#s1 等章节锚点交给浏览器滚动 */
     if(/^#[au]\d+$/i.test(location.hash)){
@@ -843,7 +864,7 @@ try{
   GD.loadUserArticles(function(all){
     USER=all;
     Object.keys(USER).forEach(function(k){if(USER[k].deleted)delete USER[k];});
-    if(/^#[u]\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search)){render();window.scrollTo(0,0);}
+    if(mUser){render();window.scrollTo(0,0);}
   });
   /* 概念层（Phase 1）：概念到位后注册索引并链接化全文 [[ ]] 占位 */
   GD.loadConcepts(function(dict){
@@ -861,7 +882,7 @@ try{
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* 篇末朱砂圆环：点击收缩为点，页归顶（收放呼应） */
   document.addEventListener('click',function(e){
-    var q=e.target.closest&&e.target.closest('.endmark .sq');
+    var q=e.target.closest&&e.target.closest('.endmark .sq,.uacts .utop');
     if(!q||q.classList.contains('closing'))return;
     q.classList.add('closing');
     window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});

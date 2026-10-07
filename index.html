@@ -137,7 +137,9 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 }
 .hero .statement em{font-style:normal;color:var(--cinnabar)}
 .scroll-hint{
-  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  /* 居中不依赖 transform：.rv 揭示动画会覆盖 transform（translateY），
+     此前 translateX(-50%) 被同优先级后置的 .rv 规则顶掉导致按钮右偏 */
+  position:absolute;bottom:20px;left:0;right:0;margin:0 auto;width:max-content;
   color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.12em;
 }
 
