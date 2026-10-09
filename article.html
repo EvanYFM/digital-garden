@@ -766,12 +766,15 @@ function renderUser(id,a){
   box.innerHTML=html;
   MD.hydrate(box);
 
-  /* 目录：从 Markdown 的 ## 标题自动生成 */
+  /* 目录：从 Markdown 标题自动生成（# 与 ## 都算章节——作者两种写法都常用，2026-10-09 Q3 工单）
+     例外：正文以 h1 开头 = 文章题名（与页面大标题重复），不入目录 */
   var toc=document.getElementById('tocBox');
   var tocHTML='<button class="toc-fold" id="tocFold" type="button" title="收起目录，正文居中"><span class="sq"></span>收起目录</button>',n=0;
-  box.querySelectorAll('.md-body h2').forEach(function(h){
+  var mdBody=box.querySelector('.md-body'),hs=mdBody?[].slice.call(mdBody.querySelectorAll('h1, h2')):[];
+  if(hs.length&&hs[0].tagName==='H1'&&mdBody.firstElementChild===hs[0])hs.shift();
+  hs.forEach(function(h){
     n++;h.id='s'+n;
-    tocHTML+='<a href="#s'+n+'"><span class="no">'+n+'</span>'+esc(h.textContent)+'</a>';
+    tocHTML+='<a href="#s'+n+'" data-spy="s'+n+'"><span class="no">'+n+'</span>'+esc(h.textContent)+'</a>';
   });
   tocHTML+='<a class="toc-back" href="notes.html"><span class="sq"></span>返回思考</a>';
   toc.innerHTML=tocHTML;
