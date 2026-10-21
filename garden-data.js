@@ -15,6 +15,34 @@ var GD=(function(){
   function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
   function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))));}
 
+  /* 附件：二进制文件 → 公开仓 attachments/ 目录。
+     上传即公开（无草稿期）；正文用 ![说明](./attachments/…) 引用，
+     ./ 前缀在 md.js safeUrl 白名单内。返回可直接插入正文的相对路径。 */
+  function uploadAttachment(file){
+    if(!hasToken())return Promise.reject(new Error('未设置同步 Token'));
+    return new Promise(function(res,rej){
+      var rd=new FileReader();
+      rd.onload=function(){
+        try{
+          var bytes=new Uint8Array(rd.result),bin='',CH=32768;
+          for(var i=0;i<bytes.length;i+=CH)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));
+          var path='attachments/'+Date.now()+'-'+sanitizeFileName(file.name);
+          apiRepo('digital-garden','PUT',path,{
+            message:'attach '+path,content:btoa(bin)
+          }).then(function(){res('./'+path);}).catch(rej);
+        }catch(e){rej(e);}
+      };
+      rd.onerror=function(){rej(new Error('读取文件失败'));};
+      rd.readAsArrayBuffer(file);
+    });
+  }
+  function sanitizeFileName(n){
+    var s=String(n||'').replace(/\.(png|jpe?g|webp)$/i,'').replace(/[\\/:*?"<>|\s]+/g,'-')
+      .replace(/[^\u4e00-\u9fff\w.-]/g,'').replace(/^-+|-+$/g,'').slice(0,40);
+    var ext=(String(n||'').match(/\.(png|jpe?g|webp)$/i)||[])[0]||'.png';
+    return (s||'图')+ext.toLowerCase();
+  }
+
   function api(method,path,body){
     return apiRepo(REPO,method,path,body);
   }
@@ -406,6 +434,7 @@ var GD=(function(){
   }
 
   return {token:token,setToken:setToken,hasToken:hasToken,
+    uploadAttachment:uploadAttachment,
     pull:pull,sync:sync,mergeNow:mergeNow,mergeFragments:mergeFragments,
     pushPublic:pushPublic,publicationFile:publicationFile,publicationSnapshot:publicationSnapshot,mergePublic:mergePublic,mergeArticles:mergeArticles,mergeReviews:mergeReviews,
     loadUserArticles:loadUserArticles,

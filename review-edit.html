@@ -123,6 +123,7 @@ main{max-width:860px;margin:0 auto;padding:0 48px}
   padding:26px 0}
 #bodyTa::placeholder{color:var(--gray);opacity:.55}
 #pv{display:none;min-height:440px;padding:26px 0;overflow-wrap:break-word}
+#pv .md-img{display:block;max-width:100%;height:auto;margin:18px auto;border-radius:2px}
 
 /* 预览区排版（与文章页 Markdown 正文同风格） */
 #pv h2{font-family:var(--serif);font-size:clamp(20px,3vw,26px);font-weight:600;
@@ -246,6 +247,8 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     <button id="syncBtn" type="button" title="手动立即同步到 GitHub 私有仓（保存时也会自动同步）"><span class="rr-hollow rr"></span>同步云端</button>
     <button id="impBtn" type="button" title="从本地 Markdown 文件导入，支持可选的 YAML 头（title / cat / date）"><span class="rr-hollow rr"></span>导入 .md</button>
     <input id="impFile" type="file" accept=".md,.markdown,.txt" hidden>
+    <button id="imgBtn" type="button" title="上传图片附件到花园（PNG/JPG/WebP，≤2MB/张），并在光标处插入引用"><span class="rr-hollow rr"></span>插图</button>
+    <input id="imgFile" type="file" accept=".png,.jpg,.jpeg,.webp" hidden multiple>
     <button id="delBtn" type="button" class="danger" hidden>删除此篇</button>
     <span class="hint" id="actHint"></span>
   </div>
@@ -405,6 +408,43 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     rd.onload=function(){importMd(rd.result,f.name);};
     rd.onerror=function(){hint('读取 '+f.name+' 失败');};
     rd.readAsText(f);
+  });
+
+  /* ---------- 插图：图片附件上传 + 光标处插入 ---------- */
+  var IMG_MAX=2*1024*1024,imgBusy=false;
+  function insertAtCursor(ta,text){
+    var s=ta.selectionStart||0,e=ta.selectionEnd||0,head=ta.value.slice(0,s),tail=ta.value.slice(e);
+    ta.value=head+text+tail;
+    var pos=(head+text).length;
+    ta.focus();ta.setSelectionRange(pos,pos);
+    if(pvMode)renderPv();
+  }
+  $('imgBtn').addEventListener('click',function(){
+    if(imgBusy)return;
+    if(!GD.hasToken()){hint('插图需要同步 Token——请先到「复盘」页设置');return;}
+    $('imgFile').click();
+  });
+  var imgFile=$('imgFile');
+  imgFile.addEventListener('change',function(){
+    var files=[].slice.call(imgFile.files||[]);
+    imgFile.value='';
+    if(!files.length)return;
+    imgBusy=true;
+    (function next(){
+      var f=files.shift();
+      if(!f){imgBusy=false;return;}
+      if(!/\.(png|jpe?g|webp)$/i.test(f.name)){hint('⚠ '+f.name+' 不是 PNG/JPG/WebP，已跳过');next();return;}
+      if(f.size>IMG_MAX){hint('⚠ '+f.name+' 超过 2MB（'+(f.size/1048576).toFixed(1)+'MB），已跳过');next();return;}
+      hint('正在上传 '+f.name+' …');
+      GD.uploadAttachment(f).then(function(path){
+        insertAtCursor(bodyTa,'!['+f.name.replace(/\.(png|jpe?g|webp)$/i,'')+']('+path+')\n');
+        hint('已插入 '+f.name+'——保存后生效');
+        next();
+      }).catch(function(e){
+        hint('⚠ '+f.name+' 上传失败（'+e.message+'）');
+        next();
+      });
+    })();
   });
 
   function hint(s){
