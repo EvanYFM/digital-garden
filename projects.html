@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23b3402a'/%3E%3Ctext x='12' y='17.5' font-family='serif' font-size='14' font-weight='700' fill='%23f6f4ee' text-anchor='middle'%3E%E9%A9%AC%3C/text%3E%3C/svg%3E">
-<meta name="description" content="项目——宏观交易工作台、期货研究工作站、A 股行业轮动仪表盘。让数据自己说话。">
+<meta name="description" content="项目——宏观交易工作台、投研全景（期货研究 + A 股行业轮动）。让数据自己说话。">
 <meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
@@ -135,8 +135,7 @@ p1, p2, p3{scroll-margin-top:120px}
   <!-- 侧边目录 · 章节快跳 -->
   <nav class="toc" aria-label="页面章节">
     <a href="#p1"><span>交易工作台</span><i></i></a>
-    <a href="#p2"><span>研究工作站</span><i></i></a>
-    <a href="#p3"><span>轮动仪表盘</span><i></i></a>
+    <a href="#p2"><span>投研全景</span><i></i></a>
     </nav>
   <div class="page-head">
     <p class="crumb rv">INDEX <b>/</b> 项目 PROJECTS</p>
@@ -174,15 +173,16 @@ p1, p2, p3{scroll-margin-top:120px}
   <div class="proj rv d1" id="p2">
     <span class="pno">二</span>
     <div>
-      <h3>期货研究工作站</h3>
-      <span class="pen">China Futures Research Workstation</span>
+      <h3>投研全景</h3>
+      <span class="pen">Panoramic Investment Research</span>
       <p class="pdesc">
-        中国期货品种全景：跟踪<b>内资、外资、"家人"三方持仓与保证金流向</b>，
-        以三方强共振、资金潮汐、席位贡献组织盘面；所有快照按披露日独立固化，
-        旧来源不冒充当日事实。决策链路完整：快照 → 人工确认 → 交易日志 → 退出结果 → 五日归因。
+        以<b>全景视角</b>组织的投研工作台：期货端跟踪内资、外资、"家人"三方持仓与保证金流向，
+        以三方强共振、资金潮汐、席位贡献组织盘面；快照按披露日独立固化，旧来源不冒充当日事实。
+        A 股端并入<b>行业轮动仪表盘</b>：申万一级行业热力、中信五大风格指数、北向资金与市场风格评价——
+        不为预测，只让数据自己说话。决策链路完整：快照 → 人工确认 → 交易日志 → 退出结果 → 五日归因。
       </p>
       <div class="pmeta">
-        <span>总览 · 品种详情 · 历史回看 · 决策与交易</span>
+        <span>期货研究 · A 股轮动 · 历史回看 · 决策与交易</span>
         <span>非投资建议</span>
       </div>
     </div>
@@ -192,29 +192,7 @@ p1, p2, p3{scroll-margin-top:120px}
     </div>
   </div>
 
-  <!-- 项目三 -->
-  <div class="proj rv d2" id="p3">
-    <span class="pno">三</span>
-    <div>
-      <h3>A 股行业轮动仪表盘</h3>
-      <span class="pen">A-Share Industry Rotation Dashboard</span>
-      <p class="pdesc">
-        每日自动生成的单文件仪表盘：申万一级行业热力、中信五大风格指数、
-        北向资金流向与市场风格评价。暗色金融终端美学，红涨绿跌；
-        目的不是预测，而是让数据在每天收盘后<b>自己说话</b>。
-      </p>
-      <div class="pmeta">
-        <span>自动化任务 · 每日收盘后生成</span>
-        <span>HTML 单文件</span>
-      </div>
-    </div>
-    <div class="status">
-      <span class="dot"></span><span class="st">自动运行</span>
-      <span class="where">F:/automations/outputs</span>
-    </div>
-  </div>
-
-  <p class="tail rv d3"><b>注</b>　前两个工作台已部署上线；它们的方法论会在「研究」与「思考」栏目中展开。</p>
+  <p class="tail rv d3"><b>注</b>　两个工作台均已部署上线；A 股行业轮动仪表盘已并入投研全景。方法论在「研究」与「思考」栏目中展开。</p>
 </main>
 
 <footer>
