@@ -325,7 +325,7 @@ loop, ws, reclog{scroll-margin-top:120px}
 (function(){
   var KEY='nowEntries';
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
-  var FIELDS=['energy','focusState','feeling','dailyFocus','notesLife','notesInvest','notesThink','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
+  var FIELDS=['energy','focusState','feeling','outcome1','outcome2','outcome3','done1','done2','done3','deepWork1','deepWork2','inbox','notesLife','notesInvest','notesThink','deepHours','doneCount','fragCount','sleepHours','focusScore','eodDone','eodWaste','dailyFocus','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
   var list=document.getElementById('nowlogList');
   var sec=document.getElementById('nowlogSec');
   var countEl=document.getElementById('nowCount');
@@ -360,7 +360,9 @@ loop, ws, reclog{scroll-margin-top:120px}
     return FIELDS.some(function(k){return rec[k]&&String(rec[k]).trim();});
   }
   function excerpt(rec){
-    var t=(rec.dailyFocus||'').trim()
+    var t=(rec.eodDone||'').trim()
+      ||(rec.dailyFocus||'').trim()
+      ||(rec.outcome1||'').trim()
       ||(rec.notesLife||'').trim()||(rec.notesInvest||'').trim()||(rec.notesThink||'').trim()
       ||(rec.aliveMoment||'').trim()||(rec.tomorrowChange||'').trim();
     if(!t)t='已记录状态与方向，未写具体事项';

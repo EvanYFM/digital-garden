@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23b3402a'/%3E%3Ctext x='12' y='17.5' font-family='serif' font-size='14' font-weight='700' fill='%23f6f4ee' text-anchor='middle'%3E%E9%A9%AC%3C/text%3E%3C/svg%3E">
-<meta name="description" content="此刻——每天只回答一个问题：今天唯一需要推进的事，是什么。（私密页）">
+<meta name="description" content="此刻——早晨定成果，白天深度工作，晚上三分钟复盘专注。（私密页）">
 <meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141412" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
@@ -92,6 +92,54 @@ body.ro .field input,body.ro .field textarea{cursor:default}
   letter-spacing:.24em;color:var(--charcoal)}
 .fields-head em{font-style:normal;letter-spacing:.14em}
 .fields-head::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* 日间操作系统：今日成果 / 深度工作 / 晚间复盘 */
+.oc-row{display:flex;gap:18px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line)}
+.oc-row:first-of-type{padding-top:26px}
+.oc-row input[type=checkbox]{appearance:none;-webkit-appearance:none;width:17px;height:17px;
+  border:1px solid var(--line-strong);flex:none;cursor:pointer;position:relative;background:none;
+  margin:0;transition:border-color .4s,background .4s}
+.oc-row input[type=checkbox]:hover{border-color:var(--ink)}
+.oc-row input[type=checkbox]:checked{border-color:var(--cinnabar);background:var(--cinnabar)}
+.oc-row input[type=checkbox]:checked::after{content:"✓";position:absolute;inset:0;
+  color:var(--paper);font-size:11px;line-height:15px;text-align:center;font-weight:700}
+body.ro .oc-row input[type=checkbox]{cursor:default;opacity:.75}
+.oc-row .ot{flex:1;background:none;border:none;outline:none;font-family:var(--serif);
+  font-size:16.5px;line-height:1.9;letter-spacing:.05em;color:var(--ink);padding:0;
+  transition:color .4s}
+.oc-row.done .ot{color:var(--gray);text-decoration:line-through;
+  text-decoration-color:var(--line-strong)}
+.dw-stack{display:flex;flex-direction:column;gap:24px;padding:26px 0 8px}
+.dw-stack input{width:100%;background:none;border:none;outline:none;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:16.5px;line-height:2;letter-spacing:.05em;color:var(--ink);
+  padding:0 0 9px;transition:border-color .5s}
+.dw-stack input:focus{border-bottom-color:var(--ink)}
+.osref{margin:18px 0 14px;border:1px solid var(--line)}
+.osref summary{cursor:pointer;list-style:none;padding:14px 20px;font-family:var(--sans);
+  font-size:11px;letter-spacing:.24em;color:var(--gray);display:flex;align-items:baseline;
+  gap:12px;user-select:none}
+.osref summary::-webkit-details-marker{display:none}
+.osref summary::before{content:"＋";font-family:var(--serif);color:var(--cinnabar);font-size:13px}
+.osref[open] summary::before{content:"−"}
+.osref-body{padding:2px 20px 16px}
+.osref-body p{font-size:12.5px;line-height:2.1;color:var(--gray);letter-spacing:.04em;margin:0 0 10px}
+.osref-body b{font-family:var(--serif);color:var(--charcoal);letter-spacing:.12em;margin-right:6px}
+.eod-row{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line);padding-top:26px}
+.em{padding:0 22px 30px;border-left:1px solid var(--line)}
+.em:first-child{border-left:none;padding-left:0}
+.em label{display:block;font-size:10px;letter-spacing:.26em;color:var(--gray);
+  text-transform:uppercase;margin-bottom:14px}
+.em input{width:100%;background:none;border:none;border-bottom:1px solid var(--line);outline:none;
+  font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.08em;color:var(--ink);
+  padding:4px 0 10px}
+.em input:focus{border-bottom-color:var(--ink)}
+.em input[readonly]{border-bottom:none;color:var(--charcoal);cursor:default}
+@media (max-width:760px){
+  .eod-row{grid-template-columns:repeat(2,1fr)}
+  .em{border-left:none;border-top:1px solid var(--line);padding:16px 0 22px}
+  .em:nth-child(-n+2){border-top:none}
+  .oc-row{gap:12px}
+}
 
 /* 保存 / 备份 */
 .save-row{display:flex;align-items:center;gap:24px;padding:48px 0 24px;flex-wrap:wrap}
@@ -252,8 +300,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <p class="en-title rv d2">Now — The Only Thing That Matters Today</p>
     <p class="lede rv d3">
       不被信息碎片与外界情绪裹挟。<br>
-      每天只回答一个问题：今天唯一需要推进的事，是什么。<br>
-      其余的，有感悟就写，没有就留白。
+      早晨先回答：今晚睡前，我希望看到哪几个真实存在的成果。<br>
+      白天，念头进 Inbox，不切任务；晚上，三分钟复盘今天的专注去了哪里。
     </p>
   </div>
 
@@ -284,11 +332,39 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </div>
   </div>
 
-  <!-- 字段：一个问题 + 三栏随感（有则写，无则不写） -->
+  <!-- 字段：日间操作系统（成果 / 深度块 / Inbox）+ 三栏随感 + 晚间复盘 -->
   <div class="fields">
-    <div class="field big rv d1">
-      <label><span class="zh">今日唯一重点</span>THE ONE THING</label>
-      <textarea data-key="dailyFocus" rows="2" placeholder="今天只做一件事……"></textarea>
+    <div class="fields-head rv d1"><span class="zh">今日成果</span>TODAY<em>成果而非活动 · 1–3 个</em></div>
+    <div class="oc-row rv d1">
+      <input type="checkbox" data-key="done1" aria-label="成果一已完成">
+      <input class="ot" data-key="outcome1" placeholder="① 睡前希望看到它真实存在……" autocomplete="off">
+    </div>
+    <div class="oc-row rv d1">
+      <input type="checkbox" data-key="done2" aria-label="成果二已完成">
+      <input class="ot" data-key="outcome2" placeholder="②" autocomplete="off">
+    </div>
+    <div class="oc-row rv d1">
+      <input type="checkbox" data-key="done3" aria-label="成果三已完成">
+      <input class="ot" data-key="outcome3" placeholder="③" autocomplete="off">
+    </div>
+
+    <div class="fields-head rv d1"><span class="zh">深度工作</span>DEEP WORK<em>两块 · 各 60–90 分钟 · 每块一个明确成果</em></div>
+    <div class="dw-stack rv d1">
+      <input data-key="deepWork1" placeholder="上午 · 09:30–11:00 · ______" autocomplete="off">
+      <input data-key="deepWork2" placeholder="下午 · 14:30–16:00 · ______" autocomplete="off">
+    </div>
+    <details class="osref rv d2">
+      <summary>参考 · 一天只分三种时间</summary>
+      <div class="osref-body">
+        <p><b>Deep</b>手机不在桌面，微信退出，浏览器只留当前任务所需窗口——AI 只在遇到明确问题时调用，不漫无目的地开。</p>
+        <p><b>Shallow</b>消息、行情、新闻、邮件集中到固定窗口（如 11:30 / 17:00 / 21:00，每次 20–30 分钟）。不是"不能看"，是"到点再看"——允许碎片存在，但不给碎片随时侵入的权限。</p>
+        <p><b>Free</b>运动、散步、电影，不是失败。深度块中冒出的新念头，一律进 Inbox，不切任务。</p>
+      </div>
+    </details>
+
+    <div class="field rv d1">
+      <label><span class="zh">收件箱</span>INBOX<em>念头只进这里，不切任务</em></label>
+      <textarea data-key="inbox" rows="2" placeholder="深度块中冒出的念头，先记下来，回头再决定……"></textarea>
     </div>
 
     <div class="fields-head rv d1"><span class="zh">随感</span>REFLECTIONS<em>有则写，无则不写</em></div>
@@ -306,6 +382,10 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     </div>
 
     <!-- 旧版字段：仅当历史记录里写过内容时才显示，新记录不再出现 -->
+    <div class="field legacy rv d3">
+      <label><span class="zh">今日唯一重点</span>THE ONE THING</label>
+      <textarea data-key="dailyFocus" rows="2" placeholder="今天只做一件事……"></textarea>
+    </div>
     <div class="field legacy rv d3">
       <label><span class="zh">阶段方向</span>DIRECTION</label>
       <textarea data-key="direction" rows="3" placeholder="三十天尺度上，我在往哪里走……"></textarea>
@@ -325,6 +405,23 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <div class="field legacy rv d3">
       <label><span class="zh">明天只修正一点</span>ONE FIX</label>
       <input data-key="tomorrowChange" placeholder="只改一个变量……" autocomplete="off">
+    </div>
+
+    <div class="fields-head rv d1"><span class="zh">晚间复盘</span>END OF DAY<em>三分钟 · 五个数字与两问</em></div>
+    <div class="eod-row rv d1">
+      <div class="em"><label>Deep Work</label><input data-key="deepHours" placeholder="— h" autocomplete="off"></div>
+      <div class="em"><label>完成</label><input data-key="doneCount" placeholder="— / 3" readonly tabindex="-1"></div>
+      <div class="em"><label>碎片化</label><input data-key="fragCount" placeholder="— 次" autocomplete="off"></div>
+      <div class="em"><label>昨晚睡眠</label><input data-key="sleepHours" placeholder="— h" autocomplete="off"></div>
+      <div class="em"><label>专注感</label><input data-key="focusScore" placeholder="1 – 5" autocomplete="off"></div>
+    </div>
+    <div class="field rv d1" style="padding-top:34px">
+      <label><span class="zh">今天真正完成了什么</span>DONE</label>
+      <textarea data-key="eodDone" rows="2" placeholder="晚上回头看，真实存在的成果……"></textarea>
+    </div>
+    <div class="field rv d2">
+      <label><span class="zh">时间主要浪费在哪里</span>WASTE</label>
+      <textarea data-key="eodWaste" rows="2" placeholder="什么打断了我？时间去了哪里……"></textarea>
     </div>
   </div>
 
@@ -401,8 +498,8 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   var KEY='nowEntries';
   var formDirty=false,editBase=0;
   var WD=['周日','周一','周二','周三','周四','周五','周六'];
-  var FIELDS=['energy','focusState','feeling','dailyFocus','notesLife','notesInvest','notesThink','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
-  var LEGACY=['direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
+  var FIELDS=['energy','focusState','feeling','outcome1','outcome2','outcome3','done1','done2','done3','deepWork1','deepWork2','inbox','notesLife','notesInvest','notesThink','deepHours','doneCount','fragCount','sleepHours','focusScore','eodDone','eodWaste','dailyFocus','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
+  var LEGACY=['dailyFocus','direction','nextAction','aliveMoment','oldPattern','tomorrowChange'];
 
   function todayStr(){
     var d=new Date();
@@ -420,7 +517,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   var seed={};
   seed[todayStr()]={
     energy:'平稳',focusState:'单点',feeling:'清醒且平静',
-    dailyFocus:'',notesLife:'',notesInvest:'',notesThink:''
+    notesLife:'',notesInvest:'',notesThink:''
   };
 
   var entries=Object.assign({},seed,load());
@@ -442,13 +539,39 @@ footer{border-top:1px solid var(--line);margin-top:40px}
 
   function isReadOnly(){return selected!==today;}
 
+  /* 晚间复盘：完成 n/3 由今日成果勾选自动计算 */
+  function syncDoneCount(){
+    var n=0;
+    ['done1','done2','done3'].forEach(function(k){
+      var el=document.querySelector('[data-key="'+k+'"]');
+      if(el&&el.checked)n++;
+    });
+    var dc=document.querySelector('[data-key="doneCount"]');
+    if(dc)dc.value=n?n+' / 3':'';
+  }
+  function paintOutcomeRows(){
+    ['done1','done2','done3'].forEach(function(k){
+      var el=document.querySelector('[data-key="'+k+'"]');
+      if(!el)return;
+      var row=el.closest('.oc-row');
+      if(row)row.classList.toggle('done',el.checked);
+    });
+  }
+
   function render(){
     dateLabel.innerHTML=fmt(selected);
     var data=entries[selected]||{};
     document.querySelectorAll('[data-key]').forEach(function(el){
-      el.value=data[el.getAttribute('data-key')]||'';
-      el.readOnly=isReadOnly();
+      if(el.type==='checkbox'){
+        el.checked=data[el.getAttribute('data-key')]==='1';
+        el.disabled=isReadOnly();
+      }else{
+        el.value=data[el.getAttribute('data-key')]||'';
+        el.readOnly=isReadOnly();
+      }
     });
+    paintOutcomeRows();
+    syncDoneCount();
     /* 旧版字段：历史记录里写过才显示 */
     LEGACY.forEach(function(k){
       var f=document.querySelector('.field.legacy [data-key="'+k+'"]');
@@ -498,13 +621,16 @@ footer{border-top:1px solid var(--line);margin-top:40px}
   }
 
   document.querySelectorAll('[data-key]').forEach(function(el){
-    el.addEventListener('input',function(){markDirty(true);});
+    el.addEventListener(el.type==='checkbox'?'change':'input',function(){
+      if(el.type==='checkbox'){paintOutcomeRows();syncDoneCount();}
+      markDirty(true);
+    });
   });
 
   saveBtn.addEventListener('click',function(){
     var data={};
     document.querySelectorAll('[data-key]').forEach(function(el){
-      data[el.getAttribute('data-key')]=el.value;
+      data[el.getAttribute('data-key')]=el.type==='checkbox'?(el.checked?'1':''):el.value;
     });
     data._baseUpdated=formDirty?editBase:Number((entries[selected]||{}).updated||0);
     data._conflicts=(entries[selected]||{})._conflicts||[];
