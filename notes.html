@@ -569,7 +569,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     return Object.keys(userMap).filter(function(id){return !userMap[id].deleted;})
       .map(function(id){
         var a=userMap[id],d=String(a.created||'').split('-');
-        return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+        return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'通识',
           cls:'gd '+(a.state==='ever'?'gd-ever':a.state==='grow'?'gd-grow':'gd-seed'),
           ts:d.length===3?new Date(+d[0],+d[1]-1,+d[2]).getTime():(a.updated||0)};
       });
@@ -608,7 +608,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       Object.keys(m||{}).forEach(function(id){
         var a=m[id];if(a.deleted)return;
         var d=String(a.created||'').split('-');
-        qDocs.push({href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+        qDocs.push({href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'通识',
           date:d.length===3?d[0]+' · '+d[1]+' · '+d[2]:'',
           ts:d.length===3?new Date(+d[0],+d[1]-1,+d[2]).getTime():(a.updated||0),
           body:String(a.body||'').replace(/<[^>]+>/g,' ')});
@@ -733,7 +733,7 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     if(!para)para=(a.title||'')+'——全文见文章页。';
     if(para.length>110)para=para.slice(0,110)+'……';
     var p=String(a.created||'').split('-');
-    return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'随想',
+    return {href:'article.html#'+id,title:a.title||'无题',cat:a.cat||'通识',
       date:p.length===3?p[0]+' · '+p[1]+' · '+p[2]:'',rd:'约 '+Math.max(1,Math.round(String(a.body||'').length/450))+' 分钟',
       ts:p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():(a.updated||0),
       sleep:Number(a.updated||a.ts||0)||(p.length===3?new Date(+p[0],+p[1]-1,+p[2]).getTime():0),x:para};

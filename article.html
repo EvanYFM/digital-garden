@@ -748,10 +748,10 @@ function renderUser(id,a){
 
   var box=document.getElementById('articleBox');
   var html='';
-  html+='<p class="crumb rv">思考 NOTES <b>/</b> '+esc(a.cat||'随想')+'</p>';
+  html+='<p class="crumb rv">思考 NOTES <b>/</b> '+esc(a.cat||'通识')+'</p>';
   html+='<h1 class="rv d1">'+esc(a.title||'无题')+'</h1>';
   html+='<div class="art-meta rv d2">'
-      +'<span>'+esc(a.cat||'随想')+'</span><i>·</i>'
+      +'<span>'+esc(a.cat||'通识')+'</span><i>·</i>'
       +'<span>'+fmtDate(a.created)+'</span><i>·</i>'
       +'<span>第 '+(a.rev||1)+' 次修订</span><i>·</i>'
       +'<span>约 '+Math.max(1,Math.round(String(a.body||'').replace(/\s/g,'').length/400))+' 分钟</span></div>';

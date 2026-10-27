@@ -443,7 +443,7 @@ footer{border-top:1px solid var(--line);margin-top:40px}
       var ds=d.getFullYear()+' · '+String(d.getMonth()+1).padStart(2,'0')+' · '+String(d.getDate()).padStart(2,'0');
       return '<a href="article.html#'+esc(a.id)+'">'
         +'<h3><span class="dot"></span>'+esc(a.title||'无题')+'</h3>'
-        +'<span class="gmeta">'+esc(a.cat||'随想')+'<br>'+ds+'</span></a>';
+        +'<span class="gmeta">'+esc(a.cat||'通识')+'<br>'+ds+'</span></a>';
     }).join('');
     box.hidden=false;
   });
