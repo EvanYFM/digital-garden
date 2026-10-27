@@ -173,6 +173,16 @@ section{padding:60px 0;border-top:1px solid var(--line)}
 .entry .desc{font-size:15px;color:var(--charcoal);line-height:1.8;max-width:40em}
 .entry .meta{text-align:right;font-size:12px;color:var(--gray);letter-spacing:.12em;line-height:2}
 .entry .meta .cat{color:var(--charcoal)}
+.growth{margin-top:84px}
+.growth-list a{display:flex;justify-content:space-between;align-items:baseline;gap:24px;
+  padding:16px 2px;border-bottom:1px solid var(--line);text-decoration:none}
+.growth-list a:first-child{border-top:1px solid var(--line)}
+.growth-list h3{font-size:15.5px;font-weight:500;letter-spacing:.04em;color:var(--ink);
+  display:flex;align-items:baseline;gap:10px}
+.growth-list h3 .dot{width:5px;height:5px;border-radius:50%;background:var(--cinnabar);flex:none;
+  transform:translateY(-2px)}
+.growth-list .gmeta{font-size:11px;letter-spacing:.18em;color:var(--gray);flex:none;text-align:right;line-height:1.9}
+.growth-list a:hover h3{color:var(--cinnabar)}
 .more-link{
   display:inline-flex;align-items:center;gap:16px;margin-top:48px;
   font-size:12px;letter-spacing:.3em;color:var(--ink);text-decoration:none;
@@ -344,6 +354,17 @@ footer{border-top:1px solid var(--line);margin-top:40px}
     <a class="more-link rv d3" href="notes.html">
       <span class="sq"></span>全部思考 · ALL NOTES
     </a>
+
+    <!-- 最近生长：自动跟最新发布的文章（无数据/JS 未跑时整块隐藏） -->
+    <div class="growth rv d3" id="growthBox" hidden>
+      <div class="sec-head">
+        <span class="sec-num">·</span>
+        <h2 class="sec-title">最近生长</h2>
+        <span class="sec-en">Recent Growth</span>
+        <span class="sec-line"></span>
+      </div>
+      <div class="growth-list" id="growthList"></div>
+    </div>
   </section>
 
   <!-- 关注方向 -->
@@ -403,7 +424,30 @@ footer{border-top:1px solid var(--line);margin-top:40px}
 </footer>
 
 <script>
-
+/* 最近生长：最近发布的 3 篇文章（user-articles.json 公开集，无数据时整块不出现） */
+(function(){
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  fetch('user-articles.json?t='+Date.now()).then(function(r){return r.ok?r.json():null;})
+    .catch(function(){return null;}).then(function(pub){
+    if(!pub||!pub.articles||!pub.articles.length)return;
+    var del={};
+    (pub.deletions||[]).forEach(function(d){del[typeof d==='string'?d:d.id]=1;});
+    var arts=pub.articles.filter(function(a){return a&&a.id&&!a.deleted&&!del[a.id];})
+      .sort(function(a,b){return (b.updated||b.created||0)-(a.updated||a.created||0);})
+      .slice(0,3);
+    if(!arts.length)return;
+    var box=document.getElementById('growthBox'),list=document.getElementById('growthList');
+    if(!box||!list)return;
+    list.innerHTML=arts.map(function(a){
+      var d=new Date(a.updated||a.created||0);
+      var ds=d.getFullYear()+' · '+String(d.getMonth()+1).padStart(2,'0')+' · '+String(d.getDate()).padStart(2,'0');
+      return '<a href="article.html#'+esc(a.id)+'">'
+        +'<h3><span class="dot"></span>'+esc(a.title||'无题')+'</h3>'
+        +'<span class="gmeta">'+esc(a.cat||'随想')+'<br>'+ds+'</span></a>';
+    }).join('');
+    box.hidden=false;
+  });
+})();
 </script>
 <script src="bgm.js"></script>
 </body>

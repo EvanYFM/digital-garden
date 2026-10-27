@@ -34,7 +34,9 @@
 
   /* 音频 */
   var audio=new Audio('assets/bgm.mp3');
-  audio.loop=true;audio.preload='auto';audio.volume=0.55;
+  audio.loop=true;
+  /* preload auto→metadata：7MB 音频不再随每次浏览整段预载，点开才拉全量 */
+  audio.preload='metadata';audio.volume=0.55;
 
   /* 跨页续播：换页/隐藏前存进度；新页面恢复到同一位置再继续 */
   function saveTime(){
@@ -99,7 +101,12 @@
   /* 唯一的播放入口：点击 ♪ 按钮。进入网站不自动播放 */
   btn.addEventListener('click',function(){
     if(audio.paused){start();}
-    else{audio.pause();}
+    else{
+      /* 主动暂停 = 用户不想听了：清掉会话标记，站内换页不再自动续播（修 bug）。
+         只在点击分支清——pause 事件在移动端页面卸载时也可能触发，那里不能清 */
+      try{sessionStorage.removeItem('bgm_started');}catch(e){}
+      audio.pause();
+    }
   });
 
   /* 本次标签页内已经播过 → 换页回来自动接续；首次进入保持安静 */

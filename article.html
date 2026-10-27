@@ -82,6 +82,8 @@
 .toc-restore:hover{color:var(--ink);border-color:var(--ink)}
 .toc-restore .sq{width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
 @media (max-width:960px){.toc-restore{display:none!important}}
+/* 手机目录按钮：桌面隐藏（≤960px 的开屏规则里启用） */
+.toc-mob{display:none}
 
 /* ---------- 页宽两档：适中（默认 660）/ 铺满（1080，行字更多） ---------- */
 html.rw-wide .article{max-width:1080px}
@@ -332,9 +334,25 @@ footer{border-top:1px solid var(--line)}
 .d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
 
 @media (max-width:960px){
-  .layout{grid-template-columns:1fr;gap:0}
+  /* minmax(0,1fr)：防表格/图的最小内容宽把整条栅格拉出屏外（手机横向溢出修复） */
+  .layout{grid-template-columns:minmax(0,1fr);gap:0}
   .toc{display:none}
   .article{padding-top:160px}
+  /* 手机目录：右下角浮动按钮 + 滑出面板（桌面不渲染按钮，见 .toc-mob 默认 display:none） */
+  .toc-mob{
+    display:block;position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:61;
+    width:48px;height:48px;border-radius:50%;
+    border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:11px;letter-spacing:.08em;cursor:pointer;
+    box-shadow:0 2px 14px rgba(28,28,26,.14);
+  }
+  .toc.mopen{
+    display:block;position:fixed;left:0;right:0;top:0;max-height:72vh;overflow-y:auto;
+    background:var(--paper);z-index:60;padding:30px 24px 22px;
+    border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(28,28,26,.10);
+  }
+  .toc.mopen .toc-inner{position:static}
+  .toc.mopen::before{display:none}
 }
 @media (max-width:760px){
   header{padding:20px 22px}
@@ -418,6 +436,9 @@ html[data-theme="dark"] .src-block{background:#232320}
 
 <!-- 目录收起后的恢复入口：fixed 定位，layout 的兄弟节点，不占 grid 流 -->
 <a class="toc-restore" href="#" id="tocRestore"><span class="sq"></span>展开目录</a>
+
+<!-- 手机目录入口：≤960px 才显示，点击滑出本页章节列表 -->
+<button class="toc-mob" id="tocMob" type="button" aria-expanded="false" title="本页目录">目录</button>
 
 <footer>
   <div class="foot-inner">
@@ -732,7 +753,8 @@ function renderUser(id,a){
   html+='<div class="art-meta rv d2">'
       +'<span>'+esc(a.cat||'随想')+'</span><i>·</i>'
       +'<span>'+fmtDate(a.created)+'</span><i>·</i>'
-      +'<span>第 '+(a.rev||1)+' 次修订</span></div>';
+      +'<span>第 '+(a.rev||1)+' 次修订</span><i>·</i>'
+      +'<span>约 '+Math.max(1,Math.round(String(a.body||'').replace(/\s/g,'').length/400))+' 分钟</span></div>';
   if(a.src&&(a.src.u||a.src.q)){
     var su=String(a.src.u||''),sq=String(a.src.q||'');
     var safe=/^https?:\/\//i.test(su);
@@ -841,9 +863,25 @@ function spy(){
   update();
 }
 
+/* 手机目录按钮：≤960px 显示，点击滑出章节面板；点章节后自动收起 */
+(function(){
+  var btn=document.getElementById('tocMob'),toc=document.querySelector('.toc');
+  if(!btn||!toc)return;
+  btn.addEventListener('click',function(){
+    var open=toc.classList.toggle('mopen');
+    btn.setAttribute('aria-expanded',open?'true':'false');
+    btn.textContent=open?'收起':'目录';
+  });
+  toc.addEventListener('click',function(e){
+    if(e.target.closest('a')&&toc.classList.contains('mopen')){
+      toc.classList.remove('mopen');
+      btn.setAttribute('aria-expanded','false');btn.textContent='目录';
+    }
+  });
+})();
+
 /* 渲染：出错时降级显示默认文章，绝不留白 */
-try{
-  /* #u 路由：USER 未到位前 getId() 兜底返回 a0，会先渲染成静态汇率笔记
+try{  /* #u 路由：USER 未到位前 getId() 兜底返回 a0，会先渲染成静态汇率笔记
      再等公开数据重渲染——从思考页点任何用户文章都先闪一下 a0。
      改为：本地草稿里有则先即时渲染，否则清空静态兜底等待，绝不闪错文。 */
   var mUser=/^#u\d+$/i.test(location.hash)||/[?&]id=u\d+/i.test(location.search);
@@ -855,7 +893,10 @@ try{
     USER=loc;
     var want=(/^#(u\d+)$/i.exec(location.hash)||/[?&]id=(u\d+)/i.exec(location.search)||[])[1];
     if(want&&USER[want])render();
-    else document.getElementById('articleBox').innerHTML='';
+    else document.getElementById('articleBox').innerHTML=
+      '<p class="crumb rv in">思考 NOTES <b>/</b> 正在载入</p>'
+      +'<h1 class="rv in" style="font-size:22px;letter-spacing:.2em;color:var(--gray)">载入中……</h1>'
+      +'<p class="rv in" style="font-size:13px;color:var(--gray)">网络较慢时请稍候片刻。</p>';
   }
   window.addEventListener('hashchange',function(){
     /* 只有 #a数字 / #u数字 形式的锚点才切换文章；#s1 等章节锚点交给浏览器滚动 */
@@ -868,7 +909,20 @@ try{
   GD.loadUserArticles(function(all){
     USER=all;
     Object.keys(USER).forEach(function(k){if(USER[k].deleted)delete USER[k];});
-    if(mUser){render();window.scrollTo(0,0);}
+    if(!mUser)return;
+    var want2=(/^#(u\d+)$/i.exec(location.hash)||/[?&]id=(u\d+)/i.exec(location.search)||[])[1];
+    if(want2&&!USER[want2]){
+      /* 数据已到位但仍无此文 → 404 态（错链/已删除），不留白、不闪静态兜底文 */
+      document.getElementById('articleBox').innerHTML=
+        '<p class="crumb rv in">思考 NOTES <b>/</b> 未找到</p>'
+        +'<h1 class="rv in" style="font-size:26px;letter-spacing:.2em">这篇文章不存在</h1>'
+        +'<p class="rv in" style="font-size:13px;color:var(--gray);line-height:2.1">'
+        +'链接可能已失效，或文章尚未发布。<br>'
+        +'返回 <a href="notes.html" style="color:var(--ink);border-bottom:1px solid var(--line)">思考列表</a>'
+        +' 或 <a href="index.html" style="color:var(--ink);border-bottom:1px solid var(--line)">回到首页</a>。</p>';
+    }else{
+      render();window.scrollTo(0,0);
+    }
   });
   /* 概念层（Phase 1）：概念到位后注册索引并链接化全文 [[ ]] 占位 */
   GD.loadConcepts(function(dict){

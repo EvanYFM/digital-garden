@@ -178,9 +178,50 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   .acts{gap:16px}
   .foot-inner{padding:44px 22px 36px;flex-direction:column;align-items:flex-start}
 }
+/* ===== 匿名访客门：本地无 Token、无记录且未解锁时，遮住编辑台 ===== */
+.gate{position:fixed;inset:0;z-index:200;background:var(--paper);
+  display:flex;align-items:center;justify-content:center;text-align:center}
+.gate[hidden]{display:none}
+.no-gate .gate{display:none}
+.gate-inner{max-width:340px;padding:0 24px}
+.gate .gt{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:.3em;color:var(--ink);margin:0 0 14px}
+.gate .gsub{font-size:11px;letter-spacing:.3em;color:var(--gray);margin:0 0 48px}
+.gate input{width:200px;background:none;border:none;border-bottom:1px solid var(--line-strong);
+  border-radius:0;padding:8px 0;font-family:var(--sans);font-size:14px;letter-spacing:.4em;
+  text-align:center;text-indent:.4em;color:var(--ink);outline:none}
+.gate input:focus{border-bottom-color:var(--ink)}
+.gate .grow{display:flex;justify-content:center;margin-top:36px}
+.gate button{background:none;border:none;cursor:pointer;font-family:var(--sans);
+  font-size:12px;letter-spacing:.34em;color:var(--ink);padding:8px 18px}
+.gate button:hover{text-decoration:underline;text-underline-offset:5px}
+.gate .gmsg{margin-top:24px;font-size:11px;letter-spacing:.2em;color:var(--cinnabar);min-height:1.5em}
+.gate .galt{margin-top:44px;font-size:11px;letter-spacing:.2em}
+.gate .galt a{color:var(--gray);text-decoration:none}
+.gate .galt a:hover{color:var(--ink)}
 </style>
+<script>
+/* 门预检（同步跑在 head，作者设备不闪门） */
+try{
+  var _rv=JSON.parse(localStorage.getItem('reviewEntries')||'{}');
+  if(localStorage.getItem('gd_token')||localStorage.getItem('gd_now_unlocked')==='1'
+    ||Object.keys(_rv).length>0)document.documentElement.classList.add('no-gate');
+}catch(e){}
+</script>
 </head>
 <body>
+
+<!-- 匿名访客门：有 Token / 本地记录 / 已解锁的设备由 head 预检加 .no-gate 隐藏 -->
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <p class="gt">复 盘 编 辑</p>
+    <p class="gsub">这是作者的私人工具页 · 输入密码进入</p>
+    <input type="password" inputmode="numeric" maxlength="6" id="gateInput"
+      placeholder="······" autocomplete="off" aria-label="密码">
+    <div class="grow"><button id="gateBtn" type="button">进 入</button></div>
+    <p class="gmsg" id="gateMsg"></p>
+    <p class="galt"><a href="review.html">← 去看复盘</a></p>
+  </div>
+</div>
 
 <header>
   <a class="brand" href="index.html">
@@ -268,8 +309,22 @@ footer{border-top:1px solid var(--line);margin-top:60px}
 <script src="md.js?v=20260921"></script>
 <script>
 /* ===== 复盘编辑台 =====
-   数据：localStorage 'reviewEntries' {items,del} → GD.sync('reviews.json') 私有仓跨设备同步
-   URL：无 id 新建；?id=rxxx 编辑既有条目 */
+   数据：localStorage 'reviewEntries' {items,del} → GD.sync('reviews.json') 私有仓跨设备同步 */
+/* 匿名门（与「此刻」页共用钥匙：解锁一次全站通行） */
+(function(){
+  var GKEY='gd_now_unlocked',PASS='120517';
+  var gate=document.getElementById('gate');
+  if(!gate)return;
+  var gIn=document.getElementById('gateInput'),gMsg=document.getElementById('gateMsg');
+  function gTry(){
+    if(gIn.value===PASS){try{localStorage.setItem(GKEY,'1');}catch(e){}gate.hidden=true;}
+    else{gMsg.textContent='密码不对';gIn.value='';gIn.focus();}
+  }
+  document.getElementById('gateBtn').addEventListener('click',gTry);
+  gIn.addEventListener('keydown',function(e){if(e.key==='Enter')gTry();});
+  if(!document.documentElement.classList.contains('no-gate'))gIn.focus();
+})();
+/* URL：无 id 新建；?id=rxxx 编辑既有条目 */
 (function(){
   var KEY='reviewEntries';
   var $=function(id){return document.getElementById(id);};

@@ -275,11 +275,11 @@ footer{border-top:1px solid var(--line);margin-top:60px}
     </p>
   </div>
 
-  <!-- 此刻 NOW 入口 -->
-  <a class="now-strip rv" href="now.html">
+  <!-- 此刻 NOW 入口（作者私人区块：公开导航里的唯一私有入口，访客点进去会见到密码页） -->
+  <a class="now-strip rv" href="now.html" title="作者的私人区块，进入需密码">
     <span class="nr"></span>
     <span class="nt">此刻 · NOW</span>
-    <span class="nd">回到今天唯一需要推进的事 —— 每日记录，供日后复盘</span>
+    <span class="nd">作者每日记录的私人区块 —— 回到今天唯一需要推进的事</span>
     <span class="na">进入 →</span>
   </a>
 
@@ -429,6 +429,12 @@ footer{border-top:1px solid var(--line);margin-top:60px}
   }
   function persist(arr){localStorage.setItem(KEY,JSON.stringify(arr));}
   function persistDel(del){localStorage.setItem('fragDel',JSON.stringify(del));}
+  /* 作者态判定：有同步 Token 或本机已种过随记 = 作者；纯访客隐藏输入框（列表仍公开） */
+  var canEdit=!!(window.GD&&GD.hasToken&&GD.hasToken())||load().length>0;
+  if(!canEdit){
+    var fbox=document.querySelector('.frag-box');
+    if(fbox)fbox.style.display='none';
+  }
   function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function fmt(ts){
     var d=new Date(ts);
@@ -465,8 +471,9 @@ footer{border-top:1px solid var(--line);margin-top:60px}
         +(f.src&&f.src.u&&/^https?:\/\//i.test(f.src.u)?'<a class="fsrc" href="'+esc(f.src.u)+'" target="_blank" rel="noopener" title="'+esc(f.src.q||'查看出处')+'">源 ↗</a>':'')
         +(grow?'<a class="fgrow" href="'+grow.href+'">已长成 · '+esc(grow.title)+' →</a>':'')
         +'</span>'
-        +'<a class="fup" href="write.html#grow='+f.t+'" title="把这条随记写成文章">升格 ✎</a>'
-        +'<button class="fdel" data-id="'+f.t+'" type="button">移除</button></div>';
+        /* 升格/移除是作者操作：无 Token 且无本地随记的访客不渲染 */
+        +(canEdit?'<a class="fup" href="write.html#grow='+f.t+'" title="把这条随记写成文章">升格 ✎</a>'
+        +'<button class="fdel" data-id="'+f.t+'" type="button">移除</button>':'')+'</div>';
     });
     list.innerHTML=html;
     if(window.MD&&MD.linkWl)MD.linkWl(list);
@@ -623,10 +630,19 @@ footer{border-top:1px solid var(--line);margin-top:60px}
       return qEsc(s).replace(new RegExp('('+alt+')','gi'),'<mark>$1</mark>');
     }
     function qSnippet(body,kws){
+      /* 摘要先去 Markdown 标记再取窗口：访客不该在摘要里看到 ##、**、[]() */
+      body=qPlain(body);
       var low=body.toLowerCase(),pos=-1,klen=0;
       kws.forEach(function(k){var p=low.indexOf(k);if(p>=0&&(pos<0||p<pos)){pos=p;klen=k.length;}});
       var st=Math.max(0,pos-42),en=Math.min(body.length,pos+klen+48);
       return (st>0?'……':'')+qMark(body.slice(st,en),kws)+(en<body.length?'……':'');
+    }
+    function qPlain(s){
+      return String(s)
+        .replace(/```[\s\S]*?```/g,' ').replace(/`([^`]*)`/g,'$1')
+        .replace(/!\[[^\]]*\]\([^)]*\)/g,' ').replace(/\[([^\]]*)\]\([^)]*\)/g,'$1')
+        .replace(/^#{1,6}\s+/gm,' ').replace(/^>\s?/gm,' ')
+        .replace(/[*_~]{1,3}/g,' ').replace(/\s+/g,' ');
     }
     function qRun(qRaw){
       var kws=qRaw.toLowerCase().split(/\s+/).filter(Boolean);

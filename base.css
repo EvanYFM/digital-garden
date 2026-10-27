@@ -6,7 +6,8 @@
    ============================================================ */
 :root{
   --paper:#f6f4ee; --paper-soft:#efece4; --ink:#1c1c1a; --charcoal:#2b2b28;
-  --gray:#8a877d; --line:rgba(28,28,26,.16); --line-strong:rgba(28,28,26,.4);
+  /* --gray 8a877d→6e6b62：功能小字对比度 3.27→4.84（WCAG AA），色相不变 */
+  --gray:#6e6b62; --line:rgba(28,28,26,.16); --line-strong:rgba(28,28,26,.4);
   --cinnabar:#b3402a;
   --serif:"Noto Serif SC","Songti SC","SimSun",serif;
   --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
@@ -14,7 +15,8 @@
 }
 html[data-theme="dark"]{
   --paper:#141412; --paper-soft:#1b1b18; --ink:#e9e6de; --charcoal:#d6d3ca;
-  --gray:#7d7a71; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
+  /* 7d7a71→85827a：4.30→4.81（WCAG AA） */
+  --gray:#85827a; --line:rgba(233,230,222,.16); --line-strong:rgba(233,230,222,.42);
   --cinnabar:#c8503a;
 }
 *{margin:0;padding:0;box-sizing:border-box}
