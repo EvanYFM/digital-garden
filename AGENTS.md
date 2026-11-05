@@ -18,8 +18,8 @@
 
 ## 技术栈与结构
 
-- HTML + 内联 CSS/JS，无构建步骤。共享层：`garden-data.js`（数据）、`base.css`（色彩 tokens/页头导航/太极钮，七页引入）、`base.js`（日夜切换 + 入场动效，`body data-rv` 可扩展观察选择器）
-- 页头样式有页面差异的 index/jing/write 未抽取，仍为内联——改全站页头/太极时这三页需手动同步
+- HTML + 内联 CSS/JS，无构建步骤。共享层：`garden-data.js`（数据）、`base.css`（色彩 tokens/页头导航/太极钮，全站引入）、`base.js`（日夜切换 + 入场动效，`body data-rv` 可扩展观察选择器）、`bgm.js`（背景音乐）
+- index/jing/write 另有内联页头样式覆盖 base.css——改全站页头/太极时这三页需手动同步
 - 语法守门：`node scripts/syntax-check.js`（推送后 CI 自动跑，见 .github/workflows/check.yml）
 - 全文检索：notes.html 检索框；索引 `search-index.json` 由 `node scripts/build-search-index.js` 从 article.html 的 ARTICLES 生成（确定性输出）。**改了 article.html 文章必须重跑索引**，否则 CI 新鲜度检查会挂红；用户文章不入索引（运行时从 user-articles.json 实时并入）；file:// 下自动退化为标题检索+本地草稿全文
 - 仓库：`EvanYFM/digital-garden`（公开，站点）、`EvanYFM/digital-garden-data`（私有，此刻/随记数据）
@@ -33,11 +33,13 @@
 - **文章数据**：集中在 `article.html` 顶部 `ARTICLES` 对象与 `ORDER` 数组，改文章只动这两处
 - **数据同步**：本地 localStorage 优先，无 Token 时纯本地不报错；`now.json`（按日期）/ `fragments.json`（按时间戳）
 - **私密边界**：此刻页有 6 位密码门（前端锁，可被绕过）；真正的安全由私有仓库 + Token 保证；复盘页「每日此刻」区块仅在有 Token 的设备显示
+- **BGM**：全站（含观 jing.html）统一引 `bgm.js`，同一首 `assets/bgm.mp3`、同一播放状态；进站静音、点 ♪ 才播、站内换页接续；不设任何页面专属音乐或独立控件
+- **观页语录**：`jing.html` 的 `QUOTES` 现 84 条（2026-11-05 增道教四经 27 句）；四经注本未入 classics/，故其条目不设 `lk`；增删语录后必须同步文件头中文计数注释（`scripts/syntax-check.js` 会校验）
 - 中文内容一律 UTF-8；改完用 `node -e` 或浏览器核对脚本语法
 
 ## 当前状态与下一步
 
 v1 已上线（2026-08-24），数据层与私密锁已生效（2026-08-27 / 08-30）。
-待办：Token 需用户手动创建并在各设备粘贴一次；`.tmp-data` 等会话残留待用户确认后清理。
+待办：Token 需用户手动创建并在各设备粘贴一次（`.tmp-data` 等会话残留已于 2026-08-30 清理完毕）。
 已具备全文检索与随记升格；后续可选双链。安全与同步回归：`node --test scripts/security-sync.test.js`。
 部署检查与权限待办见 `docs/operations.md`。
