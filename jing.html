@@ -51,6 +51,14 @@ header{
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
 .seal{width:24px;height:24px;background:var(--cinnabar);display:flex;align-items:center;
   justify-content:center;color:#f6f4ee;font-family:var(--serif);font-size:12px;font-weight:600}
+.header-start{display:flex;align-items:center;min-width:0}
+.classics-entry{
+  display:inline-flex;align-items:center;min-height:44px;margin-left:22px;padding:0 10px;
+  color:var(--ink);border-left:1px solid var(--line);text-decoration:none;
+  font:13px var(--sans);white-space:nowrap;
+}
+.classics-entry:hover,.classics-entry:focus-visible{text-decoration:underline;text-underline-offset:5px}
+@media(max-width:760px){.classics-entry{margin-left:8px;padding:0 7px}}
 .brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.12em}
 nav{margin-left:auto;display:flex;align-items:center;gap:34px}
 nav a{color:var(--ink);text-decoration:none;font-size:14px;letter-spacing:.14em;
@@ -181,10 +189,13 @@ body.moving .cosmos{opacity:.45}
 <body>
 
 <header>
-  <a class="brand" href="index.html">
-    <span class="seal">马</span>
-    <span class="brand-name">小马</span>
-  </a>
+  <div class="header-start">
+    <a class="brand" href="index.html">
+      <span class="seal">马</span>
+      <span class="brand-name">小马</span>
+    </a>
+    <a class="classics-entry" href="classics/index.html">典籍汇总</a>
+  </div>
   <nav>
     <a href="notes.html">思考<span class="en">NOTES</span></a>
     <a href="research.html">研究<span class="en">RESEARCH</span></a>
@@ -239,70 +250,70 @@ body.moving .cosmos{opacity:.45}
    2026-11-05：道教四经入观——太上清静经 / 太上感应篇 / 黄庭内景经 / 度人经，共 27 句
      · 原文用字依用户全本注解本（如「真静应物」「积精所致为专年」），不套通行本异文
      · 27 句文字均与原文连续一致（已逐句校验）；仅引文末句读按排版收为句号，字不改
-     · 四经注本未入 classics/，故不设 lk；来源行只标书名，不显示「可入」圆点
+     · 四经语录已接入篇章解读；两句外景出处依本库底本标注
    lk 字段：跳转 classics/ 经注对应章——悬停可留，点击可入 */
 var QUOTES=[
 /* —— 道德经 —— */
-{q:"道可道，非常道。",src:"道德经 · 第一章",lk:"classics/daodejing.html#1",
+{q:"道可道，非常道。",src:"道德经 · 第一章",lk:"classics/daodejing.html?view=interpretation#1",
  a:"能被说出来的道，就不是那个恒常的道。<b>语言指向真理，但语言不是真理本身</b>——所以经典只肯指月，不肯给你月亮。"},
-{q:"上善若水。水善利万物而不争。",src:"道德经 · 第八章",lk:"classics/daodejing.html#8",
+{q:"上善若水。水善利万物而不争。",src:"道德经 · 第八章",lk:"classics/daodejing.html?view=interpretation#8",
  a:"最高的善像水：滋养万物，却总往低处流。<b>力量在柔处，不在硬处</b>；不争，反而没有任何东西能与你争。"},
-{q:"知人者智，自知者明。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html#33",
+{q:"知人者智，自知者明。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html?view=interpretation#33",
  a:"看懂别人只是聪明，看清自己才是真正的清明。<b>向外的观察可以很多，向内的那一次才是关键</b>。"},
-{q:"大直若屈，大巧若拙，大辩若讷。",src:"道德经 · 第四十五章",lk:"classics/daodejing.html#45",
+{q:"大直若屈，大巧若拙，大辩若讷。",src:"道德经 · 第四十五章",lk:"classics/daodejing.html?view=interpretation#45",
  a:"最直的东西看似弯曲，最高明的手艺看似笨拙，最能言的人看似迟钝。<b>真正的深度不显山露水</b>——展示出来的巧，往往只到巧的表面。"},
-{q:"为学日益，为道日损。",src:"道德经 · 第四十八章",lk:"classics/daodejing.html#48",
+{q:"为学日益，为道日损。",src:"道德经 · 第四十八章",lk:"classics/daodejing.html?view=interpretation#48",
  a:"求知识，靠每天增加；求道，靠每天减少——<b>减去执念、成见与多余的聪明</b>。加法让你更能干，减法让你更自由。"},
-{q:"祸兮福之所倚，福兮祸之所伏。",src:"道德经 · 第五十八章",lk:"classics/daodejing.html#58",
+{q:"祸兮福之所倚，福兮祸之所伏。",src:"道德经 · 第五十八章",lk:"classics/daodejing.html?view=interpretation#58",
  a:"祸与福互相依存、互相转化。<b>顺境不必得意，逆境不必绝望</b>——此刻的结果，不是终点，只是循环中的一个位置。"},
-{q:"天下难事，必作于易；天下大事，必作于细。",src:"道德经 · 第六十三章",lk:"classics/daodejing.html#63",
+{q:"天下难事，必作于易；天下大事，必作于细。",src:"道德经 · 第六十三章",lk:"classics/daodejing.html?view=interpretation#63",
  a:"所有难事都从简单处入手，所有大事都从细微处起步。<b>觉得无从下手，往往只是不肯从最小的地方开始</b>。"},
-{q:"合抱之木，生于毫末；九层之台，起于累土。",src:"道德经 · 第六十四章",lk:"classics/daodejing.html#64",
+{q:"合抱之木，生于毫末；九层之台，起于累土。",src:"道德经 · 第六十四章",lk:"classics/daodejing.html?view=interpretation#64",
  a:"抱不过来的大树，从一粒种子长起；九层高台，是一筐土一筐土堆的。<b>长期主义不是信念，是算术</b>。"},
-{q:"知足者富，强行者有志。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html#33",
+{q:"知足者富，强行者有志。",src:"道德经 · 第三十三章",lk:"classics/daodejing.html?view=interpretation#33",
  a:"知道够在哪里的人，才是真正富有；坚持在正路上走的人，才算真有志气。<b>富不在多，在知止；志不在言，在持续</b>。"},
-{q:"见素抱朴，少私寡欲。",src:"道德经 · 第十九章",lk:"classics/daodejing.html#19",
+{q:"见素抱朴，少私寡欲。",src:"道德经 · 第十九章",lk:"classics/daodejing.html?view=interpretation#19",
  a:"保持素净的面目，抱住朴实的内心，私心少一点，欲望低一点。<b>这不是清苦，是降噪</b>——噪音少了，本来的声音才听得见。"},
-{q:"夫唯不争，故天下莫能与之争。",src:"道德经 · 第二十二章",lk:"classics/daodejing.html#22",
+{q:"夫唯不争，故天下莫能与之争。",src:"道德经 · 第二十二章",lk:"classics/daodejing.html?view=interpretation#22",
  a:"正因为不与人争，天下反而没有人能与他争。<b>不争不是退缩，是换了一个别人进不来的维度</b>。"},
-{q:"知止可以不殆。",src:"道德经 · 第三十二章",lk:"classics/daodejing.html#32",
+{q:"知止可以不殆。",src:"道德经 · 第三十二章",lk:"classics/daodejing.html?view=interpretation#32",
  a:"知道停在哪里，就不会有危险。<b>边界不是限制，是安全带的另一种说法</b>——交易如此，人生也如此。"},
-{q:"大器晚成。",src:"道德经 · 第四十一章",lk:"classics/daodejing.html#41",
+{q:"大器晚成。",src:"道德经 · 第四十一章",lk:"classics/daodejing.html?view=interpretation#41",
  a:"最大的器物，最晚成型。<b>慢不是落后，是大东西的必要工艺</b>——急出来的，都是小件。"},
-{q:"圣人不积，既以为人己愈有。",src:"道德经 · 第八十一章",lk:"classics/daodejing.html#81",
+{q:"圣人不积，既以为人己愈有。",src:"道德经 · 第八十一章",lk:"classics/daodejing.html?view=interpretation#81",
  a:"有道的人不囤积：尽力给予别人，自己反而更充裕。<b>给出去的思考、教学与善意，才是真正留在你身上的</b>。"},
 /* —— 金刚经 —— */
-{q:"凡所有相，皆是虚妄。若见诸相非相，即见如来。",src:"金刚经 · 第五品",lk:"classics/jingangjing.html#5",
+{q:"凡所有相，皆是虚妄。若见诸相非相，即见如来。",src:"金刚经 · 第五品",lk:"classics/jingangjing.html?view=interpretation#5",
  a:"凡是你能看见的相，都不是实相本身。<b>行情是相，身份是相，情绪也是相</b>——看见相不是相的那一刻，才看得见真的。"},
-{q:"应无所住，而生其心。",src:"金刚经 · 第十品",lk:"classics/jingangjing.html#10",
+{q:"应无所住，而生其心。",src:"金刚经 · 第十品",lk:"classics/jingangjing.html?view=interpretation#10",
  a:"心不粘在任何一处，又活泼泼地生着。<b>住是执着，生是应对</b>——事来则应，事去不留，心才能一直清明。"},
-{q:"过去心不可得，现在心不可得，未来心不可得。",src:"金刚经 · 第十八品",lk:"classics/jingangjing.html#18",
+{q:"过去心不可得，现在心不可得，未来心不可得。",src:"金刚经 · 第十八品",lk:"classics/jingangjing.html?view=interpretation#18",
  a:"三心了不可得——过去的已经过去，未来的还没来，所谓的现在正在流逝。<b>后悔与焦虑都是向不可得处伸手</b>。"},
-{q:"若以色见我，以音声求我，是人行邪道，不能见如来。",src:"金刚经 · 第二十六品",lk:"classics/jingangjing.html#26",
+{q:"若以色见我，以音声求我，是人行邪道，不能见如来。",src:"金刚经 · 第二十六品",lk:"classics/jingangjing.html?view=interpretation#26",
  a:"靠表象和声音去求真理，路就走偏了。<b>指标、观点、他人的判断都是音声色相</b>——真相要自己看见，不能听来。"},
-{q:"一切有为法，如梦幻泡影，如露亦如电，应作如是观。",src:"金刚经 · 第三十二品",lk:"classics/jingangjing.html#32",
+{q:"一切有为法，如梦幻泡影，如露亦如电，应作如是观。",src:"金刚经 · 第三十二品",lk:"classics/jingangjing.html?view=interpretation#32",
  a:"一切因缘造作之事，如梦、如幻、如泡、如影，如晨露如闪电。<b>看破不是消极，是不把暂时当永恒</b>——所以仓位的浮盈浮亏，也只是露与电。"},
 /* —— 庄子 —— */
-{q:"吾生也有涯，而知也无涯。",src:"庄子 · 养生主",lk:"classics/zhuangzi.html#3",
+{q:"吾生也有涯，而知也无涯。",src:"庄子 · 养生主",lk:"classics/zhuangzi.html?view=interpretation#3",
  a:"生命有限，知识无限；用有限去追无限，会把自己耗尽。<b>学，但不必穷尽</b>——知道边界在哪里，本身就是一种知。"},
-{q:"至人无己，神人无功，圣人无名。",src:"庄子 · 逍遥游",lk:"classics/zhuangzi.html#1",
+{q:"至人无己，神人无功，圣人无名。",src:"庄子 · 逍遥游",lk:"classics/zhuangzi.html?view=interpretation#1",
  a:"最高境界的人忘掉自我、不求功业、不慕名声。<b>负担最重的三样东西，恰恰是我、功、名</b>。"},
-{q:"相濡以沫，不如相忘于江湖。",src:"庄子 · 大宗师",lk:"classics/zhuangzi.html#6",
+{q:"相濡以沫，不如相忘于江湖。",src:"庄子 · 大宗师",lk:"classics/zhuangzi.html?view=interpretation#6",
  a:"泉水干涸时，鱼用唾沫互相湿润；不如各自回到江湖，彼此相忘。<b>最深的爱不是互相抢救，是让对方回到能畅游的水里</b>。"},
-{q:"人皆知有用之用，而莫知无用之用也。",src:"庄子 · 人间世",lk:"classics/zhuangzi.html#4",
+{q:"人皆知有用之用，而莫知无用之用也。",src:"庄子 · 人间世",lk:"classics/zhuangzi.html?view=interpretation#4",
  a:"人都知道「有用」的用处，却不知道「无用」的用处。<b>留白、发呆、散步、无所事事——那正是系统重写自己的时候</b>。"},
-{q:"夏虫不可以语冰。",src:"庄子 · 秋水",lk:"classics/zhuangzi.html#17",
+{q:"夏虫不可以语冰。",src:"庄子 · 秋水",lk:"classics/zhuangzi.html?view=interpretation#17",
  a:"活不到冬天的虫子，无法理解冰。<b>你没见过的东西，不代表不存在；你笃信的道理，可能只是你的季节</b>。"},
-{q:"井蛙不可以语于海。",src:"庄子 · 秋水",lk:"classics/zhuangzi.html#17",
+{q:"井蛙不可以语于海。",src:"庄子 · 秋水",lk:"classics/zhuangzi.html?view=interpretation#17",
  a:"井底的青蛙无法谈论大海——它不是笨，是它的世界只有井口那么大。<b>每个人都在某口井里，包括正在读这句话的你</b>。"},
-{q:"虚室生白，吉祥止止。",src:"庄子 · 人间世",lk:"classics/zhuangzi.html#4",
+{q:"虚室生白，吉祥止止。",src:"庄子 · 人间世",lk:"classics/zhuangzi.html?view=interpretation#4",
  a:"空出来的房间，才会亮；心空出来，光才进得来。<b>塞得太满的头脑，产生不了真正的洞察</b>。"},
-{q:"水静犹明，而况精神。",src:"庄子 · 天道",lk:"classics/zhuangzi.html#13",
+{q:"水静犹明，而况精神。",src:"庄子 · 天道",lk:"classics/zhuangzi.html?view=interpretation#13",
  a:"静止的水尚且能照见万物，何况人的精神。<b>静不是目的，是照见的前提</b>——水面不平时，看到的都是扭曲的。"},
 /* —— 列子 —— */
-{q:"大道以多歧亡羊，学者以多方丧生。",src:"列子 · 说符",
+{q:"大道以多歧亡羊，学者以多方丧生。",src:"列子 · 说符",lk:"classics/liezi.html?view=interpretation#8",
  a:"岔路太多，羊就丢了；方向太多，人就废了。<b>选择权太多而不行使，等于没有选择</b>。"},
-{q:"天地无全功，圣人无全能，万物无全用。",src:"列子 · 天瑞",
+{q:"天地无全功，圣人无全能，万物无全用。",src:"列子 · 天瑞",lk:"classics/liezi.html?view=interpretation#1",
  a:"天地也有做不到的事，圣人也有不会的事，万物没有全能的。<b>追求完美之前，先接受残缺是万物的默认设置</b>。"},
 /* —— 菜根谭 —— */
 {q:"风来疏竹，风过而竹不留声；雁度寒潭，雁去而潭不留影。",src:"菜根谭",
@@ -316,14 +327,14 @@ var QUOTES=[
 {q:"宠辱不惊，闲看庭前花开花落。",src:"菜根谭",
  a:"受宠受辱都不动心，闲看院里花开花落。<b>情绪的稳定不靠压抑，靠把评价权从别人手里拿回来</b>。"},
 /* —— 坛经 —— */
-{q:"菩提本无树，明镜亦非台。本来无一物，何处惹尘埃。",src:"六祖坛经",
+{q:"菩提本无树，明镜亦非台。本来无一物，何处惹尘埃。",src:"六祖坛经",lk:"classics/liuzutanjing.html?view=interpretation#1",
  a:"觉悟本不是一棵树，心也不是一面镜子——本来什么都没有，尘埃落在哪？<b>很多负担，来自先假设了一个需要打扫的自己</b>。"},
-{q:"不是风动，不是幡动，仁者心动。",src:"六祖坛经",
+{q:"不是风动，不是幡动，仁者心动。",src:"六祖坛经",lk:"classics/liuzutanjing.html?view=interpretation#1",
  a:"不是风在动，不是幡在动，是你的心在动。<b>市场没变、事情没变、世界没变——先动的，常常是解读</b>。"},
-{q:"迷时师度，悟了自度。",src:"六祖坛经",
+{q:"迷时师度，悟了自度。",src:"六祖坛经",lk:"classics/liuzutanjing.html?view=interpretation#1",
  a:"迷惑时需要老师渡你，觉悟之后，自己渡自己。<b>所有外力最终都要换成内在结构，否则一撤走，就退回原样</b>。"},
 /* —— 佛经禅语 —— */
-{q:"色不异空，空不异色。",src:"心经",lk:"classics/xinjing.html#1",
+{q:"色不异空，空不异色。",src:"心经",lk:"classics/xinjing.html?view=interpretation#1",
  a:"看得见摸得着的一切，本性是空的；空，也不在色外。<b>空不是没有，是不粘着</b>——行情如此，得失也如此。"},
 {q:"随其心净，则佛土净。",src:"维摩诘经",
  a:"世界呈现的样子，跟着心的状态走。<b>你与外界的关系，是内心状态的投影</b>——心乱时看到的市场，不是市场。"},
@@ -349,90 +360,90 @@ var QUOTES=[
 {q:"观察者即是被观察者。",src:"克里希那穆提 · 重新认识你自己",
  a:"你用什么样的心去看市场，那颗心本身就是要被看见的东西。<b>看清观察者的成见，观察才刚刚开始</b>——这既是禅，也是交易。"},
 /* —— 周易 —— */
-{q:"天行健，君子以自强不息。",src:"周易 · 乾 · 大象",lk:"classics/zhouyi.html#1",
+{q:"天行健，君子以自强不息。",src:"周易 · 乾 · 大象",lk:"classics/zhouyi.html?view=interpretation#1",
  a:"天道运转永不停歇，君子效法它，自强不息。<b>持续不是拼尽全力，是从不停下</b>——休息是天的一部分，停摆不是。"},
-{q:"地势坤，君子以厚德载物。",src:"周易 · 坤 · 大象",lk:"classics/zhouyi.html#2",
+{q:"地势坤，君子以厚德载物。",src:"周易 · 坤 · 大象",lk:"classics/zhouyi.html?view=interpretation#2",
  a:"大地承载万物，不挑拣也不居功，君子以宽厚容物。<b>能容下多少相反的意见，才配得上多大的局面</b>——承载力就是上限。"},
-{q:"潜龙勿用。",src:"周易 · 乾 · 初九",lk:"classics/zhouyi.html#1",
+{q:"潜龙勿用。",src:"周易 · 乾 · 初九",lk:"classics/zhouyi.html?view=interpretation#1",
  a:"龙还在潜处，不要急着出手。<b>时机未到时，最贵的动作是不动</b>——蛰伏不是浪费，是蓄位；等不起的人，也接不住机会。"},
-{q:"亢龙有悔，盈不可久也。",src:"周易 · 乾 · 上九",lk:"classics/zhouyi.html#1",
+{q:"亢龙有悔，盈不可久也。",src:"周易 · 乾 · 上九",lk:"classics/zhouyi.html?view=interpretation#1",
  a:"飞到极高处的龙，将有悔恨；盈满的状态无法持久。<b>顶点自带回落</b>——懂得在亢之前收手，才留得住成果。"},
-{q:"穷则变，变则通，通则久。",src:"周易 · 系辞下",lk:"classics/zhouyi.html#66",
+{q:"穷则变，变则通，通则久。",src:"周易 · 系辞下",lk:"classics/zhouyi.html?view=interpretation#66",
  a:"路走绝了就变，变了就通，通了才能长久。<b>困境不是信号失灵，是环境换了变量</b>——先变的人吃变化红利，后变的人付变化学费。"},
-{q:"积善之家，必有余庆；积不善之家，必有余殃。",src:"周易 · 坤 · 文言",lk:"classics/zhouyi.html#2",
+{q:"积善之家，必有余庆；积不善之家，必有余殃。",src:"周易 · 坤 · 文言",lk:"classics/zhouyi.html?view=interpretation#2",
  a:"行善积德的家庭，福泽会绵延；作恶的家庭，灾祸也会累积。<b>结果是行为的复利</b>——一时看不出，时间全记着账。"},
-{q:"二人同心，其利断金。",src:"周易 · 系辞上",lk:"classics/zhouyi.html#65",
+{q:"二人同心，其利断金。",src:"周易 · 系辞上",lk:"classics/zhouyi.html?view=interpretation#65",
  a:"两个人心意相通，锋利得足以斩断金属。<b>同心的本质是同一个事实观</b>——共识不在结论上，在怎么判断对错上。"},
-{q:"藏器于身，待时而动。",src:"周易 · 系辞下",lk:"classics/zhouyi.html#66",
+{q:"藏器于身，待时而动。",src:"周易 · 系辞下",lk:"classics/zhouyi.html?view=interpretation#66",
  a:"君子把才能藏在身上，等到时机才出手。<b>准备是暗的，出手是明的</b>——大多数时间你在等，等的质量决定动的质量。"},
 
 /* —— 太上清静经 —— 2026-11-05 入观 · 原文依全本注解本 —— */
-{q:"大道无形，生育天地；大道无情，运行日月；大道无名，长养万物。",src:"太上清静经",
+{q:"大道无形，生育天地；大道无情，运行日月；大道无名，长养万物。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#1",
  a:"道没有形状，却生出天地；没有情绪，却推动日月；没有名字，却养大万物。<b>真正驱动一切的东西，往往不被看见、也不被命名</b>——先承认它，再谈观察。"},
-{q:"吾不知其名，强名曰道。",src:"太上清静经",
+{q:"吾不知其名，强名曰道。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#1",
  a:"我不知道它叫什么，只好勉强叫它「道」。<b>给未知贴标签，是为了能谈论它，不是为了拥有它</b>——模型不等于世界本身。"},
-{q:"人能常清静，天地悉皆归。",src:"太上清静经",
+{q:"人能常清静，天地悉皆归。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#1",
  a:"人若能长久保持清静，天地都会回到他这里。<b>静不是停下来，是让噪音退场</b>——信息越密，越需要一块不被打扰的地方。"},
-{q:"夫人神好清，而心扰之；人心好静，而欲牵之。",src:"太上清静经",
+{q:"夫人神好清，而心扰之；人心好静，而欲牵之。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#2",
  a:"心神本来喜欢清，是念头搅乱了它；人心本来喜欢静，是欲望牵走了它。<b>乱多半不是外面加进来的，是里面自己生出来的</b>。"},
-{q:"常能遣其欲而心自静，澄其心而神自清。",src:"太上清静经",
+{q:"常能遣其欲而心自静，澄其心而神自清。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#2",
  a:"常常放下欲望，心自己就静了；把心澄清，神自己就清了。<b>不必去追静，把扰动减掉，静会自己出现</b>——减法比加法可靠。"},
-{q:"内观其心，心无其心；外观其形，形无其形；远观其物，物无其物。",src:"太上清静经",
+{q:"内观其心，心无其心；外观其形，形无其形；远观其物，物无其物。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#2",
  a:"往内看心，找不到一个固定的心；往外看形，找不到固定的形；往远看物，也找不到固定的物。<b>观到最后，连「在观的我」也松开了</b>。"},
-{q:"观空亦空，空无所空；所空既无，无无亦无；无无既无，湛然常寂。",src:"太上清静经",
+{q:"观空亦空，空无所空；所空既无，无无亦无；无无既无，湛然常寂。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#2",
  a:"连「空」这个念头也空掉，空到没有可空；连「无」也放下，才落到深深的静里。<b>别把「放下」又抓成一件东西</b>——这一层最难，也最松。"},
-{q:"真静应物，真常得性；常应常静，常清静矣。",src:"太上清静经",
+{q:"真静应物，真常得性；常应常静，常清静矣。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#2",
  a:"真正的静，是应对万事时仍静；常在应物中守住本来的性。<b>静不是离开市场，是身在波动里而判断不被波动带走</b>。"},
-{q:"众生所以不得真道者，为有妄心。",src:"太上清静经",
+{q:"众生所以不得真道者，为有妄心。",src:"太上清静经",lk:"classics/qingjingjing.html?view=interpretation#3",
  a:"人之所以到不了真道，只因为有一颗妄动的心。<b>挡在前面的通常不是难度，是自己加的戏</b>。"},
 
 /* —— 太上感应篇 —— */
-{q:"祸福无门，惟人自召；善恶之报，如影随形。",src:"太上感应篇",
+{q:"祸福无门，惟人自召；善恶之报，如影随形。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#1",
  a:"祸福没有定门，都是人自己招来的；善恶的回报，像影子跟着身体。<b>把结果交回给自己的动作，是最省力的归因</b>——不复盘运气，只复盘动作。"},
-{q:"夫心起于善，善虽未为，而吉神已随之。",src:"太上感应篇",
+{q:"夫心起于善，善虽未为，而吉神已随之。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#7",
  a:"善念一起，事还没有做，好的力量已经跟着了。<b>起心动念就是最早的那一笔记录</b>——别等结果才承认方向。"},
-{q:"其有曾行恶事，后自改悔，诸恶莫作，众善奉行。",src:"太上感应篇",
+{q:"其有曾行恶事，后自改悔，诸恶莫作，众善奉行。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#7",
  a:"做过错事，后来真心改悔，诸恶不作、众善奉行，久了必得吉庆——这叫转祸为福。<b>错误不是判决，是可以被后续动作改写的起点</b>。"},
-{q:"故吉人语善、视善、行善，一日有三善，三年天必降之福。",src:"太上感应篇",
+{q:"故吉人语善、视善、行善，一日有三善，三年天必降之福。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#7",
  a:"吉人说话善、看人善、做事善，一天有三件善，三年之后福自会来。<b>复利不只在钱上，也在你每天重复的那几个小动作里</b>。"},
-{q:"是道则进，非道则退。不履邪径，不欺暗室。",src:"太上感应篇",
+{q:"是道则进，非道则退。不履邪径，不欺暗室。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#2",
  a:"合于道就进，不合就退；不走偏路，不在没人看见的地方自欺。<b>真正的纪律长在无人处</b>——没人监督时的那一笔，才定义你是谁。"},
-{q:"积德累功，慈心于物；忠孝友悌，正己化人。",src:"太上感应篇",
+{q:"积德累功，慈心于物；忠孝友悌，正己化人。",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#2",
  a:"一点一点积德累功，对万物存慈心；先端正自己，再影响别人。<b>长期主义不靠一次大动作，靠不中断的小笔</b>。"},
-{q:"胡不勉而行之？",src:"太上感应篇",
+{q:"胡不勉而行之？",src:"太上感应篇",lk:"classics/ganyingpian.html?view=interpretation#7",
  a:"篇末一问：为什么不勉力去实行呢？<b>所有读到的道理，都在等一个最小的动作</b>——想明白不算，做过才算。"},
 
 /* —— 黄庭内景经 —— */
-{q:"仙人道士非有神，积精所致为专年。",src:"黄庭内景经",
+{q:"仙人道士非有神，积精所致为专年。",src:"黄庭外景经 · 下部",lk:"classics/huangtingjing.html?view=interpretation#39",
  a:"仙人道士没有什么神通，不过一点一点积精，才换来长久。<b>没有捷径，只有可重复的积累</b>——这条对修行和交易一样成立。"},
-{q:"至道不烦诀存真。",src:"黄庭内景经",
+{q:"至道不烦诀存真。",src:"黄庭内景经",lk:"classics/huangtingjing.html?view=interpretation#7",
  a:"最高的道不繁琐，要诀只是守住真。<b>复杂常常是不确定的遮羞布</b>——真弄懂了，计划会变短，不会变长。"},
-{q:"寸田尺宅可治生。",src:"黄庭内景经",
+{q:"寸田尺宅可治生。",src:"黄庭内景经",lk:"classics/huangtingjing.html?view=interpretation#21",
  a:"一寸田、一尺屋，就足以安顿这一生。<b>最小可经营的单位，比想象中小得多</b>——先把手边这一小块种好。"},
-{q:"心神丹元字守灵。",src:"黄庭内景经",
+{q:"心神丹元字守灵。",src:"黄庭内景经",lk:"classics/huangtingjing.html?view=interpretation#8",
  a:"心神名丹元，字守灵——它的职分就是「守住」。<b>注意力是唯一需要先安顿的东西</b>；它不守，其余全散。"},
-{q:"呼吸庐间入丹田，玉池清水灌灵根。",src:"黄庭内景经",
+{q:"呼吸庐间入丹田，玉池清水灌灵根。",src:"黄庭外景经 · 上部",lk:"classics/huangtingjing.html?view=interpretation#37",
  a:"上有关窍、下有关元，前后各有门户；一呼一吸之间，清水灌溉根本。<b>把注意力放回呼吸，是最不花钱的复位键</b>。"},
-{q:"琴心三叠舞胎僊，九气映明出霄间。",src:"黄庭内景经",
+{q:"琴心三叠舞胎僊，九气映明出霄间。",src:"黄庭内景经",lk:"classics/huangtingjing.html?view=interpretation#1",
  a:"心像琴音层层叠起，九气映照，明光出于云霄之外。<b>有些境界只能被体会，不能被解释</b>——这一段，读就好，不必译。"},
 
 /* —— 度人经 —— */
-{q:"仙道贵生，无量度人。",src:"度人经",
+{q:"仙道贵生，无量度人。",src:"度人经",lk:"classics/durenjing.html?view=interpretation#6",
  a:"仙道以生命为贵，以无量之心度人。<b>全经宗旨八个字，落点只在「贵生」二字</b>——先看重存在，再谈其他。"},
-{q:"齐同慈爱，异骨成亲。",src:"度人经",
+{q:"齐同慈爱，异骨成亲。",src:"度人经",lk:"classics/durenjing.html?view=interpretation#1",
  a:"齐一视之、同体慈爱，不同血缘的人也能成为亲人。<b>把「和我不同」当成信息，而不是威胁</b>——反例往往来自最不像你的人。"},
-{q:"诸天之上，各有生门。",src:"度人经",
+{q:"诸天之上，各有生门。",src:"度人经",lk:"classics/durenjing.html?view=interpretation#6",
  a:"每一重天之上，都各自有一道生门。<b>看似封死的结构里，总留着出口</b>——先别急着判定无路，先找门在哪里。"},
-{q:"道言：昔于始青天中，碧落空歌，大浮黎土。",src:"度人经",
+{q:"道言：昔于始青天中，碧落空歌，大浮黎土。",src:"度人经",lk:"classics/durenjing.html?view=interpretation#1",
  a:"经的开篇：在始青天中，碧落里有空歌，大浮黎之土。<b>有些文字的作用不是传递信息，是把你带进另一种时间</b>——慢读一遍就好。"},
-{q:"死魂受炼，仙化成人，生身受度，劫劫长存。",src:"度人经",
+{q:"死魂受炼，仙化成人，生身受度，劫劫长存。",src:"度人经",lk:"classics/durenjing.html?view=interpretation#4",
  a:"旧的东西被炼过，才化得出新的形态，一劫一劫地留存下来。<b>能被反复修正的东西，才活得久</b>——包括一套系统，也包括一个人。"},
 ];
 
 /* 经注悬停检测：鼠标在可入语句上时，不退去、不轮转 */
 function qHover(){
   var z=document.getElementById('qLink');
-  return !!(z&&z.matches(':hover'));
+  return !!(z&&z.matches('[href]:hover, [href]:focus'));
 }
 
 /* 静止检测：追逐即退去，静止则显；悬停语句上时留住 */
