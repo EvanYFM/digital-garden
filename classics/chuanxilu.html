@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>传习录 · 选段注解</title><style>
+    :root {
+      --ink: #171512;
+      --muted: #77716a;
+      --paper: #fdfcf9;
+      --teal: #278f83;
+      --vermilion: #d54a42;
+      --ochre: #ad750f;
+      --interpretation-ink: #39342e;
+      --interpretation-heading: #795f43;
+      --interpretation-paper: #eee8dc;
+      --rule: #e6e1d8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1080px; min-width: 1080px; background: var(--paper); }
+    body {
+      color: var(--ink);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    .sheet {
+      width: 1080px;
+      min-height: 100vh;
+      padding: 76px 82px 68px;
+      background: var(--paper);
+    }
+    .book {
+      margin: 0;
+      text-align: center;
+      font-size: 58px;
+      line-height: 1.3;
+      font-weight: 500;
+      letter-spacing: .18em;
+    }
+    .chapter {
+      margin: 13px 0 0;
+      text-align: center;
+      font-size: 52px;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: .08em;
+    }
+    .title-rule {
+      width: 48px;
+      height: 3px;
+      margin: 31px auto 48px;
+      background: var(--vermilion);
+      border-radius: 3px;
+    }
+    .hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      margin: 0 0 66px;
+      overflow: hidden;
+      background: #ebe5da;
+      border-top: 1px solid #e1d9cc;
+      border-bottom: 1px solid #ded5c7;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 18%;
+      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--paper) 54%, transparent));
+      pointer-events: none;
+    }
+    .hero-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.78) contrast(.94) brightness(1.025);
+    }
+    .passage {
+      margin: 0 0 42px;
+      break-inside: avoid;
+    }
+    .annotated-line {
+      font-size: 0;
+      line-height: 1;
+      text-align: left;
+    }
+    .token-unit {
+      display: inline-flex;
+      max-width: 100%;
+      min-width: 2.4em;
+      margin: 0 14px 28px 0;
+      padding: 0 2px 9px;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: top;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+      page-break-inside: avoid;
+    }
+    .classic-run,
+    .classic-text,
+    .punctuation {
+      color: var(--ink);
+      font-size: 46px;
+      line-height: 1.24;
+      font-weight: 550;
+      letter-spacing: .035em;
+      white-space: nowrap;
+    }
+    .classic-run {
+      display: inline-flex;
+      align-items: baseline;
+    }
+    .punctuation {
+      display: inline;
+      margin: 0;
+      vertical-align: baseline;
+    }
+    .pinyin {
+      min-height: 19px;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .annotation {
+      max-width: 9.6em;
+      margin-top: 8px;
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 24px;
+      line-height: 1.48;
+      font-weight: 520;
+      letter-spacing: .015em;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .tone-word { color: var(--teal); }
+    .tone-clause { color: var(--vermilion); }
+    .tone-variant { color: var(--ochre); }
+    .punctuation-break {
+      display: block;
+      width: 100%;
+    }
+    .interpretation {
+      margin: 70px -20px 0;
+      padding: 49px 48px 27px;
+      border-top: 1px solid #ddd3c3;
+      border-bottom: 1px solid #ddd3c3;
+      background: var(--interpretation-paper);
+      color: var(--interpretation-ink);
+    }
+    .interpretation h2 {
+      margin: 0 0 31px;
+      color: var(--interpretation-heading);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 30px;
+      line-height: 1.3;
+      font-weight: 650;
+      letter-spacing: .12em;
+    }
+    .interpretation p {
+      margin: 0 0 20px;
+      font-size: 26px;
+      line-height: 1.96;
+      font-weight: 430;
+      letter-spacing: .018em;
+      text-align: justify;
+      text-justify: inter-ideograph;
+    }
+    .interpretation p:first-of-type {
+      color: #292621;
+      font-size: 28px;
+      line-height: 1.9;
+      font-weight: 500;
+    }
+    .interpretation p + p { text-indent: 2em; }
+    .source {
+      margin-top: 52px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.6;
+      letter-spacing: .02em;
+      overflow-wrap: anywhere;
+    }
+
+html,body{width:100%;min-width:0}body{background:#ded7cc}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;min-height:60px;padding:10px 16px;background:#fdfcf9;border-bottom:1px solid #d8cdbd;font-size:18px}.toolbar button,.toolbar select{font:inherit;color:inherit;background:transparent;border:1px solid #a99c8c;padding:7px;min-height:38px}.toolbar select{flex:1;min-width:0;max-width:520px}.toolbar a{color:inherit;white-space:nowrap}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid #177e73;outline-offset:3px}.sheet{display:none;width:min(1080px,100%);margin:auto;padding:64px 7.6%}.sheet.active{display:block}.hero{height:auto;aspect-ratio:3/2}.book{font-size:34px}.chapter{font-size:48px}.source a{color:inherit}.classic-text,.classic-run,.punctuation{font-size:40px}.page-count{white-space:nowrap;color:#766c60}
+@media(max-width:600px){.toolbar{gap:6px;padding:8px;font-size:16px;flex-wrap:wrap}.toolbar select{order:3;flex-basis:100%;max-width:none}.page-count{margin-left:auto}.sheet{padding:36px 20px}.book{font-size:24px}.chapter{font-size:32px;letter-spacing:0}.hero{margin-top:26px;margin-bottom:30px}.classic-text,.classic-run,.punctuation{font-size:28px;white-space:normal;overflow-wrap:anywhere}.classic-run{display:inline}.token-unit{margin-right:8px;max-width:100%}.annotation{font-size:18px;max-width:100%;text-align:left}.pinyin{font-size:16px}.passage{margin-bottom:24px}.interpretation{margin:36px -6px 0;padding:26px 20px}.interpretation h2{font-size:26px}.interpretation p,.interpretation p:first-of-type{font-size:22px;line-height:1.9}.source{font-size:16px}}
+
+.extent{margin:0;padding:10px 20px;background:#eee8dc;color:#665b4b;text-align:center;font-size:17px;line-height:1.7}
+</style></head>
+<body>
+<nav class="toolbar" aria-label="选段导航">
+  <a href="index.html">典籍汇总</a>
+  <button id="prev">上一组</button><button id="next">下一组</button>
+  <select id="chapters" aria-label="选择阅读单元"><option value="0">卷上徐爱录第1条 · 亲民</option></select>
+  <span class="page-count" id="count" aria-live="polite"></span>
+</nav>
+<p class="extent">当前收录 · 卷上徐爱录第1条</p>
+<main aria-label="传习录 卷上徐爱录第1条 · 亲民" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">传习录</p>
+<h1 class="chapter" data-chapter="">卷上徐爱录第1条 · 亲民</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="树木扎根庭中，枝叶伸向近处的屋舍" class="hero-image" data-image="part-0"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">爱问</span><span class="punctuation" data-token="punctuation">：</span></span>
+<span class="annotation">徐爱发问</span>
+</span><span class="token-unit tone-variant" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">「</span><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">在亲民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">《大学》旧本文字</span>
+</span><span class="token-unit tone-variant" data-token="annotated">
+<span class="classic-run"><span class="classic-text">朱子谓当作『新民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">朱熹主张把亲改读为新</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">后章『作新民』之文</span></span>
+<span class="annotation">后文所说使民自新</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">似亦有据</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">似也能为这种读法作证</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">先生以为宜从旧本作『亲民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">先生认为应保留亲字</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">亦有所据否</span><span class="punctuation" data-token="punctuation">？</span><span class="punctuation" data-token="punctuation">」</span></span>
+<span class="annotation">这种读法也有依据吗</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">先生曰</span><span class="punctuation" data-token="punctuation">：</span></span>
+<span class="annotation">王守仁回答</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">「</span><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">作新民』之『新』是『自新之民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">此处新字指民自身更新</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">与『在新民』之『新』不同</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">与以更新人民为纲领不同</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">此岂足为据</span><span class="punctuation" data-token="punctuation">?</span></span>
+<span class="annotation">两处语法不同，怎能据此改字</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">作』字却与『亲』字相对</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">王氏把作与亲相联系</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">然非『新』字义</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">分开作字所说的作用与新字义</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">下面『治国平天下』处</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">下文从治国说到平天下</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">皆于『新』字无发明</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">都没有阐发新字的意义</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">如云『君子贤其贤而亲其亲</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">尊其所尊，亲爱其亲</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">小人乐其乐而利其利</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">、</span></span>
+<span class="annotation">百姓能享其所乐与所利</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">如保赤子</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">、</span></span>
+<span class="annotation">像照料婴儿一样关心百姓</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">民之所好好之</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">百姓所喜爱的，执政者也喜爱</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">民之所恶恶之</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">百姓所厌恶的，执政者也厌恶</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">此之谓民之父母』之类</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">这样的为政者被称为民之父母</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">皆是『亲』字意</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">这些例子都能说明亲的意思</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">亲民』犹《孟子》『亲亲仁民』之谓</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">由爱亲人推到仁爱百姓</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">亲之』即『仁之』也</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">此处亲民即以仁相待</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">百姓不亲</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">百姓之间失去亲爱</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">舜使契为司徒</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">舜任契掌教化事务</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">敬敷五教</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">谨慎推行五种人伦教导</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">所以亲之也</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">这是使人亲爱的做法</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">《</span><span class="classic-text">尧典》『克明峻德』便是『明明德</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">彰明德行对应《大学》明德</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">以亲九族』至『平章</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">、</span></span>
+<span class="annotation">从亲睦宗族推到辨明政事</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">协和』便是『亲民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">使各方和谐即亲民的表现</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">便是『明明德于天下</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">将修德的作用推及天下</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">又如孔子言『修己以安百姓</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">修养自身以使百姓安定</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">修己』便是『明明德</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">把两部经典的修身相对照</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">『</span><span class="classic-text">安百姓』便是『亲民</span><span class="punctuation" data-token="punctuation">』</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">安民对应亲民的实际成效</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">说『亲民』便是兼教养意</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">亲民包含教导和照顾生计</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">说『新民』便觉偏了</span><span class="punctuation" data-token="punctuation">。</span><span class="punctuation" data-token="punctuation">」</span></span>
+<span class="annotation">王氏认为改读会缩窄含义</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>徐爱问的是一个字，牵动的却是《大学》所说的修身最终要落在哪里。朱熹的读法有后文「作新民」作为线索，徐爱因此追问王守仁，保留旧本的「亲」究竟有何依据。王守仁先区分「自新之民」和把「新民」立为纲领，再转到整篇的治国、平天下去看。这是他提出的一套读法，两家之争仍须连同各自的注解阅读。</p>
+<p>王守仁列的例子都可以追问一件事。受治理的人在过怎样的日子？「如保赤子」要求关心具体的安危，「好其所好，恶其所恶」要能体会百姓所欲所苦。教导也在他的亲民之内，舜任契敷教就是例子。王守仁说亲民兼有教养，因此既关乎伦理教化，也关乎让人能安顿生活。</p>
+<p>「修己以安百姓」把内外接起来。自身德行是事情的起点，别人过得怎样可以反过来检验它有没有落实。譬如管理者想推动学习制度，除了问员工是否完成培训，还要问培训是否解决了工作中的困难。这里借的是修己与安人的关系。原文使用的是父母官式的政治语言，今天要判断人是否得安，还得让受影响的人能自行表达处境。</p>
+</section>
+<footer class="source">底本｜《传习录》卷上，门人徐爱录第1条。采用维基文库电子转录，简体整理，网页脚注标号不入正文。朱熹「新民」说见徐爱提问及王守仁答语。固定修订：https://zh.wikisource.org/w/index.php?title=傳習錄/卷上&amp;oldid=2603592</footer>
+</main>
+<script>const images={"part-0": "assets/qingyan/chuanxilu-01.png"};
+const pages=[...document.querySelectorAll('main.sheet')],pick=document.querySelector('#chapters'),prev=document.querySelector('#prev'),next=document.querySelector('#next'),count=document.querySelector('#count'),png=document.querySelector('#png');
+let current=0;
+function show(value){const n=Number(value);current=Number.isFinite(n)?Math.max(0,Math.min(pages.length-1,Math.trunc(n))):0;pages.forEach((p,i)=>{p.classList.toggle('active',i===current);p.hidden=i!==current});pick.value=String(current);const page=pages[current];page.querySelectorAll('img[data-image]').forEach(img=>{img.src=images[img.dataset.image]});prev.disabled=current===0;next.disabled=current===pages.length-1;count.textContent=`${current+1} / ${pages.length}`;history.replaceState(null,'','#'+(current+1));scrollTo(0,0)}
+pick.addEventListener('change',()=>show(pick.value));prev.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>show(current+1));addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1));addEventListener('keydown',event=>{if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();show(current-1)}if(event.key==='ArrowRight'){event.preventDefault();show(current+1)}});show(Number(location.hash.slice(1))-1);
+</script>
+<script src="open-interpretation.js" defer></script>
+</body></html>

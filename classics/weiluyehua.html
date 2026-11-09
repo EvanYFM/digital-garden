@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>围炉夜话 · 选段注解</title><style>
+    :root {
+      --ink: #171512;
+      --muted: #77716a;
+      --paper: #fdfcf9;
+      --teal: #278f83;
+      --vermilion: #d54a42;
+      --ochre: #ad750f;
+      --interpretation-ink: #39342e;
+      --interpretation-heading: #795f43;
+      --interpretation-paper: #eee8dc;
+      --rule: #e6e1d8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1080px; min-width: 1080px; background: var(--paper); }
+    body {
+      color: var(--ink);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    .sheet {
+      width: 1080px;
+      min-height: 100vh;
+      padding: 76px 82px 68px;
+      background: var(--paper);
+    }
+    .book {
+      margin: 0;
+      text-align: center;
+      font-size: 58px;
+      line-height: 1.3;
+      font-weight: 500;
+      letter-spacing: .18em;
+    }
+    .chapter {
+      margin: 13px 0 0;
+      text-align: center;
+      font-size: 52px;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: .08em;
+    }
+    .title-rule {
+      width: 48px;
+      height: 3px;
+      margin: 31px auto 48px;
+      background: var(--vermilion);
+      border-radius: 3px;
+    }
+    .hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      margin: 0 0 66px;
+      overflow: hidden;
+      background: #ebe5da;
+      border-top: 1px solid #e1d9cc;
+      border-bottom: 1px solid #ded5c7;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 18%;
+      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--paper) 54%, transparent));
+      pointer-events: none;
+    }
+    .hero-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.78) contrast(.94) brightness(1.025);
+    }
+    .passage {
+      margin: 0 0 42px;
+      break-inside: avoid;
+    }
+    .annotated-line {
+      font-size: 0;
+      line-height: 1;
+      text-align: left;
+    }
+    .token-unit {
+      display: inline-flex;
+      max-width: 100%;
+      min-width: 2.4em;
+      margin: 0 14px 28px 0;
+      padding: 0 2px 9px;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: top;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+      page-break-inside: avoid;
+    }
+    .classic-run,
+    .classic-text,
+    .punctuation {
+      color: var(--ink);
+      font-size: 46px;
+      line-height: 1.24;
+      font-weight: 550;
+      letter-spacing: .035em;
+      white-space: nowrap;
+    }
+    .classic-run {
+      display: inline-flex;
+      align-items: baseline;
+    }
+    .punctuation {
+      display: inline;
+      margin: 0;
+      vertical-align: baseline;
+    }
+    .pinyin {
+      min-height: 19px;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .annotation {
+      max-width: 9.6em;
+      margin-top: 8px;
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 24px;
+      line-height: 1.48;
+      font-weight: 520;
+      letter-spacing: .015em;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .tone-word { color: var(--teal); }
+    .tone-clause { color: var(--vermilion); }
+    .tone-variant { color: var(--ochre); }
+    .punctuation-break {
+      display: block;
+      width: 100%;
+    }
+    .interpretation {
+      margin: 70px -20px 0;
+      padding: 49px 48px 27px;
+      border-top: 1px solid #ddd3c3;
+      border-bottom: 1px solid #ddd3c3;
+      background: var(--interpretation-paper);
+      color: var(--interpretation-ink);
+    }
+    .interpretation h2 {
+      margin: 0 0 31px;
+      color: var(--interpretation-heading);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 30px;
+      line-height: 1.3;
+      font-weight: 650;
+      letter-spacing: .12em;
+    }
+    .interpretation p {
+      margin: 0 0 20px;
+      font-size: 26px;
+      line-height: 1.96;
+      font-weight: 430;
+      letter-spacing: .018em;
+      text-align: justify;
+      text-justify: inter-ideograph;
+    }
+    .interpretation p:first-of-type {
+      color: #292621;
+      font-size: 28px;
+      line-height: 1.9;
+      font-weight: 500;
+    }
+    .interpretation p + p { text-indent: 2em; }
+    .source {
+      margin-top: 52px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.6;
+      letter-spacing: .02em;
+      overflow-wrap: anywhere;
+    }
+
+html,body{width:100%;min-width:0}body{background:#ded7cc}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;min-height:60px;padding:10px 16px;background:#fdfcf9;border-bottom:1px solid #d8cdbd;font-size:18px}.toolbar button,.toolbar select{font:inherit;color:inherit;background:transparent;border:1px solid #a99c8c;padding:7px;min-height:38px}.toolbar select{flex:1;min-width:0;max-width:520px}.toolbar a{color:inherit;white-space:nowrap}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid #177e73;outline-offset:3px}.sheet{display:none;width:min(1080px,100%);margin:auto;padding:64px 7.6%}.sheet.active{display:block}.hero{height:auto;aspect-ratio:3/2}.book{font-size:34px}.chapter{font-size:48px}.source a{color:inherit}.classic-text,.classic-run,.punctuation{font-size:40px}.page-count{white-space:nowrap;color:#766c60}
+@media(max-width:600px){.toolbar{gap:6px;padding:8px;font-size:16px;flex-wrap:wrap}.toolbar select{order:3;flex-basis:100%;max-width:none}.page-count{margin-left:auto}.sheet{padding:36px 20px}.book{font-size:24px}.chapter{font-size:32px;letter-spacing:0}.hero{margin-top:26px;margin-bottom:30px}.classic-text,.classic-run,.punctuation{font-size:28px;white-space:normal;overflow-wrap:anywhere}.classic-run{display:inline}.token-unit{margin-right:8px;max-width:100%}.annotation{font-size:18px;max-width:100%;text-align:left}.pinyin{font-size:16px}.passage{margin-bottom:24px}.interpretation{margin:36px -6px 0;padding:26px 20px}.interpretation h2{font-size:26px}.interpretation p,.interpretation p:first-of-type{font-size:22px;line-height:1.9}.source{font-size:16px}}
+
+.extent{margin:0;padding:10px 20px;background:#eee8dc;color:#665b4b;text-align:center;font-size:17px;line-height:1.7}
+</style></head>
+<body>
+<nav class="toolbar" aria-label="选段导航">
+  <a href="index.html">典籍汇总</a>
+  <button id="prev">上一组</button><button id="next">下一组</button>
+  <select id="chapters" aria-label="选择阅读单元"><option value="0">选读 · 亲行与集思</option></select>
+  <span class="page-count" id="count" aria-live="polite"></span>
+</nav>
+<p class="extent">当前收录 · 亲行与集思 · 一则选读</p>
+<main aria-label="围炉夜话 选读 · 亲行与集思" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">围炉夜话</p>
+<h1 class="chapter" data-chapter="">选读 · 亲行与集思</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="小炉的微光照在桌案与两页素纸上" class="hero-image" data-image="part-0"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">凡事勿徒委于人</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">遇事别只交给他人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">必身体力行</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">自己要实际参与</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">方能有济</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">这样才可能把事办成</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">凡事不可执于己</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">遇事别固执己见</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">必广思集益</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">广听意见，吸收有用之处</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">乃罔后艰</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">才可少些日后的难处</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>这则把两种容易混在一起的责任拆开。该出力时，自己得知道事情是怎样做成的。该听意见时，要让知道实情的人有机会说话。第一句防的是把责任随事务一并推走，第二句防的是把担责误解成自己处处都能看准。</p>
+<p>家里要修一段漏水的屋顶，亲自参与可以是查看漏点、确认做法、验收结果。施工由懂行的人来做。若几位师傅意见不同，找出他们各自根据的现象，再决定先检查哪里，比直接选最顺耳的说法更能少留后患。</p>
+<p>「广思集益」也需要落到行动。要是无限征询、迟迟无人决定，意见越多反而越难成事。可以先定好谁负责作决定，再把收集意见的时间和待核对的问题说清。最后仍由负责的人承担选择，接受事情做出来之后的检验。</p>
+</section>
+<footer class="source">底本｜清王永彬《围炉夜话》。据识典古籍电子转录选取「凡事勿徒委于人」起的完整一则。选读题为本次整理所加。底本：https://www.shidianguji.com/book/XYXWLYH/chapter/1ln4d5usgfz7q</footer>
+</main>
+<script>const images={"part-0": "assets/qingyan/weiluyehua-01.png"};
+const pages=[...document.querySelectorAll('main.sheet')],pick=document.querySelector('#chapters'),prev=document.querySelector('#prev'),next=document.querySelector('#next'),count=document.querySelector('#count'),png=document.querySelector('#png');
+let current=0;
+function show(value){const n=Number(value);current=Number.isFinite(n)?Math.max(0,Math.min(pages.length-1,Math.trunc(n))):0;pages.forEach((p,i)=>{p.classList.toggle('active',i===current);p.hidden=i!==current});pick.value=String(current);const page=pages[current];page.querySelectorAll('img[data-image]').forEach(img=>{img.src=images[img.dataset.image]});prev.disabled=current===0;next.disabled=current===pages.length-1;count.textContent=`${current+1} / ${pages.length}`;history.replaceState(null,'','#'+(current+1));scrollTo(0,0)}
+pick.addEventListener('change',()=>show(pick.value));prev.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>show(current+1));addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1));addEventListener('keydown',event=>{if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();show(current-1)}if(event.key==='ArrowRight'){event.preventDefault();show(current+1)}});show(Number(location.hash.slice(1))-1);
+</script>
+<script src="open-interpretation.js" defer></script>
+</body></html>

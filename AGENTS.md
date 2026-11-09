@@ -34,7 +34,7 @@
 - **数据同步**：本地 localStorage 优先，无 Token 时纯本地不报错；`now.json`（按日期）/ `fragments.json`（按时间戳）
 - **私密边界**：此刻页有 6 位密码门（前端锁，可被绕过）；真正的安全由私有仓库 + Token 保证；复盘页「每日此刻」区块仅在有 Token 的设备显示
 - **BGM**：全站（含观 jing.html）统一引 `bgm.js`，同一首 `assets/bgm.mp3`、同一播放状态；进站静音、点 ♪ 才播、站内换页接续；不设任何页面专属音乐或独立控件
-- **观页语录**：`jing.html` 的 `QUOTES` 现 87 条，68 条带篇章解读链接。左上角「典籍汇总」指向 `classics/index.html`。有对应解读的 `lk` 使用 `?view=interpretation#篇章序号`。增删语录后同步中文计数注释（`scripts/syntax-check.js` 会校验）。
+- **观页语录**：`jing.html` 的 `QUOTES` 现 87 条，70 条带篇章解读链接。左上角「典籍汇总」指向 `classics/index.html`。有对应解读的 `lk` 使用 `?view=interpretation#篇章序号`。增删语录后同步中文计数注释（`scripts/syntax-check.js` 会校验）。新增五套清言与心学内容为已完成选段，书目和阅读页均须注明范围。
 - 中文内容一律 UTF-8；改完用 `node -e` 或浏览器核对脚本语法
 
 ## 当前状态与下一步

@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>菜根谭 · 选段注解</title><style>
+    :root {
+      --ink: #171512;
+      --muted: #77716a;
+      --paper: #fdfcf9;
+      --teal: #278f83;
+      --vermilion: #d54a42;
+      --ochre: #ad750f;
+      --interpretation-ink: #39342e;
+      --interpretation-heading: #795f43;
+      --interpretation-paper: #eee8dc;
+      --rule: #e6e1d8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1080px; min-width: 1080px; background: var(--paper); }
+    body {
+      color: var(--ink);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    .sheet {
+      width: 1080px;
+      min-height: 100vh;
+      padding: 76px 82px 68px;
+      background: var(--paper);
+    }
+    .book {
+      margin: 0;
+      text-align: center;
+      font-size: 58px;
+      line-height: 1.3;
+      font-weight: 500;
+      letter-spacing: .18em;
+    }
+    .chapter {
+      margin: 13px 0 0;
+      text-align: center;
+      font-size: 52px;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: .08em;
+    }
+    .title-rule {
+      width: 48px;
+      height: 3px;
+      margin: 31px auto 48px;
+      background: var(--vermilion);
+      border-radius: 3px;
+    }
+    .hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      margin: 0 0 66px;
+      overflow: hidden;
+      background: #ebe5da;
+      border-top: 1px solid #e1d9cc;
+      border-bottom: 1px solid #ded5c7;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 18%;
+      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--paper) 54%, transparent));
+      pointer-events: none;
+    }
+    .hero-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.78) contrast(.94) brightness(1.025);
+    }
+    .passage {
+      margin: 0 0 42px;
+      break-inside: avoid;
+    }
+    .annotated-line {
+      font-size: 0;
+      line-height: 1;
+      text-align: left;
+    }
+    .token-unit {
+      display: inline-flex;
+      max-width: 100%;
+      min-width: 2.4em;
+      margin: 0 14px 28px 0;
+      padding: 0 2px 9px;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: top;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+      page-break-inside: avoid;
+    }
+    .classic-run,
+    .classic-text,
+    .punctuation {
+      color: var(--ink);
+      font-size: 46px;
+      line-height: 1.24;
+      font-weight: 550;
+      letter-spacing: .035em;
+      white-space: nowrap;
+    }
+    .classic-run {
+      display: inline-flex;
+      align-items: baseline;
+    }
+    .punctuation {
+      display: inline;
+      margin: 0;
+      vertical-align: baseline;
+    }
+    .pinyin {
+      min-height: 19px;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .annotation {
+      max-width: 9.6em;
+      margin-top: 8px;
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 24px;
+      line-height: 1.48;
+      font-weight: 520;
+      letter-spacing: .015em;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .tone-word { color: var(--teal); }
+    .tone-clause { color: var(--vermilion); }
+    .tone-variant { color: var(--ochre); }
+    .punctuation-break {
+      display: block;
+      width: 100%;
+    }
+    .interpretation {
+      margin: 70px -20px 0;
+      padding: 49px 48px 27px;
+      border-top: 1px solid #ddd3c3;
+      border-bottom: 1px solid #ddd3c3;
+      background: var(--interpretation-paper);
+      color: var(--interpretation-ink);
+    }
+    .interpretation h2 {
+      margin: 0 0 31px;
+      color: var(--interpretation-heading);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 30px;
+      line-height: 1.3;
+      font-weight: 650;
+      letter-spacing: .12em;
+    }
+    .interpretation p {
+      margin: 0 0 20px;
+      font-size: 26px;
+      line-height: 1.96;
+      font-weight: 430;
+      letter-spacing: .018em;
+      text-align: justify;
+      text-justify: inter-ideograph;
+    }
+    .interpretation p:first-of-type {
+      color: #292621;
+      font-size: 28px;
+      line-height: 1.9;
+      font-weight: 500;
+    }
+    .interpretation p + p { text-indent: 2em; }
+    .source {
+      margin-top: 52px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.6;
+      letter-spacing: .02em;
+      overflow-wrap: anywhere;
+    }
+
+html,body{width:100%;min-width:0}body{background:#ded7cc}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;min-height:60px;padding:10px 16px;background:#fdfcf9;border-bottom:1px solid #d8cdbd;font-size:18px}.toolbar button,.toolbar select{font:inherit;color:inherit;background:transparent;border:1px solid #a99c8c;padding:7px;min-height:38px}.toolbar select{flex:1;min-width:0;max-width:520px}.toolbar a{color:inherit;white-space:nowrap}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid #177e73;outline-offset:3px}.sheet{display:none;width:min(1080px,100%);margin:auto;padding:64px 7.6%}.sheet.active{display:block}.hero{height:auto;aspect-ratio:3/2}.book{font-size:34px}.chapter{font-size:48px}.source a{color:inherit}.classic-text,.classic-run,.punctuation{font-size:40px}.page-count{white-space:nowrap;color:#766c60}
+@media(max-width:600px){.toolbar{gap:6px;padding:8px;font-size:16px;flex-wrap:wrap}.toolbar select{order:3;flex-basis:100%;max-width:none}.page-count{margin-left:auto}.sheet{padding:36px 20px}.book{font-size:24px}.chapter{font-size:32px;letter-spacing:0}.hero{margin-top:26px;margin-bottom:30px}.classic-text,.classic-run,.punctuation{font-size:28px;white-space:normal;overflow-wrap:anywhere}.classic-run{display:inline}.token-unit{margin-right:8px;max-width:100%}.annotation{font-size:18px;max-width:100%;text-align:left}.pinyin{font-size:16px}.passage{margin-bottom:24px}.interpretation{margin:36px -6px 0;padding:26px 20px}.interpretation h2{font-size:26px}.interpretation p,.interpretation p:first-of-type{font-size:22px;line-height:1.9}.source{font-size:16px}}
+
+.extent{margin:0;padding:10px 20px;background:#eee8dc;color:#665b4b;text-align:center;font-size:17px;line-height:1.7}
+</style></head>
+<body>
+<nav class="toolbar" aria-label="选段导航">
+  <a href="index.html">典籍汇总</a>
+  <button id="prev">上一组</button><button id="next">下一组</button>
+  <select id="chapters" aria-label="选择阅读单元"><option value="0">前集第1–5则 · 守正与处世</option><option value="1">前集第6–10则 · 动静之间</option><option value="2">前集第11–15则 · 给人留步</option><option value="3">前集第16–20则 · 功过与留余</option><option value="4">前集第21–25则 · 日用里的修养</option></select>
+  <span class="page-count" id="count" aria-live="polite"></span>
+</nav>
+<p class="extent">当前收录 · 前集第1–25则 · 五组</p>
+<main aria-label="菜根谭 前集第1–5则 · 守正与处世" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">菜根谭</p>
+<h1 class="chapter" data-chapter="">前集第1–5则 · 守正与处世</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="一棵松树扎根山石，溪水绕石而流" class="hero-image" data-image="part-0"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">栖守</span></span>
+<span class="annotation">安于此而持守</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">道德者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">以道义自守的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">寂寞一时</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">眼下少人响应</span>
+</span><span class="token-unit tone-variant" data-token="annotated">
+<span class="classic-run"><span class="classic-text">依附</span></span>
+<span class="annotation">清本相应条作依阿</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">权势者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">凭权位势力求取支持的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">凄凉万古</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">以夸张说久留坏名</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">故达人</span></span>
+<span class="annotation">所以通达事理的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">观物外之物</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">看见眼前利害之外的价值</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">思身后之身</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">想到身后留下的行迹</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">宁受</span></span>
+<span class="annotation">宁愿承受</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">一时之寂寞</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">眼前的冷落</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">毋取</span></span>
+<span class="annotation">不要招致</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">万古之凄凉</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">长久的坏名与后果</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">涉世浅</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">与世事接触尚少</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">点染亦浅</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">习气沾染也较少</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">历事深</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">经手的世事较多</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">机械亦深</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">机心巧诈也易加深</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">故君子</span></span>
+<span class="annotation">所以有操守的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">与其练达</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">与其练得圆熟通达</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不若朴鲁</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">不如保留质朴少巧</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">与其曲谨</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">与其委曲周旋过分拘谨</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不若疏狂</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">不如疏放些、少受拘束</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">君子之心事</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">正直之人的内心用意</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">天青日白</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">比喻清楚坦荡</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不可使人不知</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">用意应能见诸公开</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">君子之才华</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">正直之人的才识本领</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="pinyin">yùn（韫）</span>
+<span class="classic-run"><span class="classic-text">玉韫珠藏</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">珠玉藏起，比喻敛才</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不可使人易知</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">不轻易向人炫示</span>
+</span></div>
+</section>
+<section class="passage" data-passage="4">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">势利纷华</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">权势利禄与繁华诱惑</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不近者为洁</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">能远离它，算得清白</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">近之而不染者</span></span>
+<span class="annotation">身处其中仍不沾坏习气</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">为尤洁</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">更见操守</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">智械机巧</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">算计人的手段和巧术</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不知者为高</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">未习此术，已可称高</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">知之而不用者</span></span>
+<span class="annotation">识得手段却不施用</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">为尤高</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">更见自持</span>
+</span></div>
+</section>
+<section class="passage" data-passage="5">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">耳中常闻</span></span>
+<span class="annotation">耳边常能听到</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">逆耳之言</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">听来不中意的话</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">心中常有</span></span>
+<span class="annotation">心头常遇到</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">拂心之事</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">不合心愿的事</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">才是</span></span>
+<span class="annotation">这才可成为</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="pinyin">dǐ（砥）</span>
+<span class="classic-run"><span class="classic-text">进德修行的砥石</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">磨炼德行的磨刀石</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">若言言悦耳</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">假使听到的句句称心</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">事事快心</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">经历的件件顺意</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">便把此生埋在</span></span>
+<span class="annotation">遂使一生陷入</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="pinyin">zhèn（鸩）</span>
+<span class="classic-run"><span class="classic-text">鸩毒中矣</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">如被毒酒暗害</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>前五则可以连着读。一个人进到人情与利害之中，怎样识得规则，还能自己决定什么该做？第一则先拉长看结果的时间。依附权势能马上换来照应，代价可能要等靠山变动、承诺落空，或旧账被翻出才看得见。所谓「物外之物」，可以从这里读出一层实意。除了眼前得到什么，还要看这笔所得会让自己欠下什么、养成什么习惯。古人用「万古」加重这层对比，其中并没有保证正直的人终会获得公正评价。</p>
+<p>第二则担心的正是习惯。周旋熟了，人会知道哪句话能安抚对方，哪件事装作没看见便少一场麻烦。偶尔一次看似省事，次数多了，便容易先想怎样把事摆平，再想这事该不该办。「机械」在这里指机心，练达本身仍有价值。第四则进一步说，已经见识过的人，也能认出诱惑并决定不用那些手段。两则合起来看，阅历既会教人趋利，也会给人辨别的能力，取决于每次遇事时拿它来做什么。</p>
+<p>第三则把该说的和该收的分开。心事能见光，涉及他人的用意和承诺便经得起追问。才华像藏着的珠玉，到了能办事的时候再用，少了靠卖弄来占据谈话的冲动。这里的分寸也会随责任改变。合作者需要知道你能不能承担一项工作，清楚展示能力有助于分工。把所有本领藏起来，反会让别人无法判断能否把事情交给你。</p>
+<p>最后一则把前面的要求放到一次具体检验里。听到同事说方案有缺口，先问他指哪一步，再核对证据。能说出缺口，逆耳的话就有机会磨出改动。对方若只是挖苦，或者靠身份让人忍受羞辱，这些不快本身并不带来长进。长期只听到赞同也有代价，尤其当别人觉得提出异议会吃亏。想守住自己的判断，除了抵抗眼前的好处，也要给能纠正自己的话留一条进来的路。</p>
+</section>
+<footer class="source">底本｜洪应明《菜根谭》。采用维基文库标作明刻本的电子转录前集第1–5则，作简体整理。网页另录清刻本，第1则的「依附」在该本相应条作「依阿」，本组依明刻本文字。组题为本次阅读所加。固定修订：https://zh.wikisource.org/w/index.php?title=菜根譚&amp;oldid=2561729</footer>
+</main><main aria-label="菜根谭 前集第6–10则 · 动静之间" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">菜根谭</p>
+<h1 class="chapter" data-chapter="">前集第6–10则 · 动静之间</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="浅月之下湖面平静，一道细流从近岸绕石而过" class="hero-image" data-image="part-1"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">疾风怒雨</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">急风暴雨</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">禽鸟戚戚</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">禽鸟受惊不安</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">霁日光风</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">雨后晴日和风</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">草木欣欣</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">草木舒展茂盛</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">可见天地不可一日无和气</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">天地生养需有和顺之气</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">人心不可一日无喜神</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">人心需要欢畅生意</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">醲肥辛甘非真味</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">醲指浓醇，浓厚未必尽本味</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">真味只是淡</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">平淡才是本味</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">神奇卓异非至人</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">外显奇异未必是修养之至</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">至人只是常</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">修养深者在平常中见功夫</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">天地寂然不动</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">天地看似安静不移</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">而气机无一息少停</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">运化片刻不停</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">日月昼夜奔驰</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">日月昼夜运行</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">而贞明则万古不易</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">恒常明照始终不变</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">故君子闲时要有吃紧的心思</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">闲时仍关心眼下要务</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">忙处要有悠闲的趣味</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">忙中也存从容兴味</span>
+</span></div>
+</section>
+<section class="passage" data-passage="4">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">夜深人静</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">夜深而人声已息</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">独坐观心</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">独坐察看心念</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">始觉妄穷而真独露</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">杂念暂退，真情显出</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">每于此中得大机趣</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">在这时体会内在生趣</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">既觉真现而妄难逃</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">见真之后，仍发现妄念难除</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">又于此中得大惭忸</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">于是觉察自己的缺失而惭愧</span>
+</span></div>
+</section>
+<section class="passage" data-passage="5">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">恩里由来生害</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">受恩之中往往也会生出祸患</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">故快意时</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">趁顺遂时早一点反省</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">须早回头</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">及早回省</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">败后或反成功</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">失败后也可能转而成事</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">故拂心处</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">遭遇不如意之时</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">莫便放手</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">别就此轻率放弃</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>第六则先把心境放进可见的天气。暴雨中鸟兽不安，雨后草木舒展。这里的「喜神」可以读成心里还有一点生意，遇事能舒展开来。第七则随即从强烈滋味转到平淡，从奇异表现转到平常。慢慢喝一杯不加料的茶，才可能辨出细微的苦和回甘。若每次都靠更浓的味道提神，味觉反会少一层分辨。文本重视的平常，也可以这样理解。</p>
+<p>第八则提醒读者，安静与运动可以同时发生。天地外观不动，运化仍一刻不停。日月一直在走，照临却有常度。闲时的「吃紧」是把值得准备的事记在心上，忙处的「悠闲」是行动中留出判断的余地。两种要求落在不同层面。事情急，手上仍须按次序去做，心里可以少一点被催促推着走的慌乱。</p>
+<p>第九则把目光转回独坐的人。静下来时看见一个念头，并不保证往后都能不受它牵引。今天发现自己爱辩，明天遇到反对意见仍可能抢着解释。能看见这一反复，说明对自己的观察变细了。原文写惭愧，读时不必把它延伸成反复责问自己。找出是哪一句话、哪一刻的急切让旧习接管，往往已经足够开始改动。</p>
+<p>第十则给了观察之后的用法。顺利时重看它靠什么条件维持，失利时查清是判断错了，还是办法尚可修正。有人帮忙，得看其中附着什么责任。做过一次失败的尝试，也得看它是否留下能用的经验。古文只说败后「或」能成功，留下的正是检验条件的空间。</p>
+</section>
+<footer class="source">底本｜洪应明《菜根谭》，据维基文库标作明刻本的电子转录前集第6–10则。原序保留，组题为本次整理所加。简体排印。原字「醲」保留。固定修订：https://zh.wikisource.org/w/index.php?title=菜根譚&amp;oldid=2561729</footer>
+</main><main aria-label="菜根谭 前集第11–15则 · 给人留步" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">菜根谭</p>
+<h1 class="chapter" data-chapter="">前集第11–15则 · 给人留步</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="窄山径边留出一段可以让行的石台" class="hero-image" data-image="part-2"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">藜口苋肠者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">吃野蔬粗食的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">多冰清玉洁</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">常能守住清白</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">衮衣玉食者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">服贵衣、食珍馔的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">甘婢膝奴颜</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">也可能甘于卑躬取悦</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">盖志以澹泊明</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">清淡生活使志向较易保持明晰</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">而节从肥甘丧也</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">厚享也可能让操守受损</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">面前的田地要放得宽</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">眼前的空间宜给人留足</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">使人无不平之叹</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">使旁人少生不平</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">身后的惠泽要流得长</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">留给后人的好处应能延续</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">使人有不匮之思</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">使人长久记得这份惠泽</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">径路窄处</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">道路狭窄之处</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">留一步与人行</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">给别人留一步通行的余地</span>
+</span><span class="token-unit tone-variant" data-token="annotated">
+<span class="classic-run"><span class="classic-text">滋味浓的</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">「观」页引作「滋味浓时」</span>
+</span><span class="token-unit tone-variant" data-token="annotated">
+<span class="classic-run"><span class="classic-text">减三分让人嗜</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">「观」页作「让人尝」。嗜指品尝</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">此是涉世一极安乐法</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">这是处世中一种使彼此安适的做法</span>
+</span></div>
+</section>
+<section class="passage" data-passage="4">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">作人无甚高远事业</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">做人无需先求高远事业</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">摆脱得俗情</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">能放下世俗攀比之情</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">便入名流</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">便可列入有品行的人中</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">为学无甚增益工夫</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">学问也有靠减省而长进的工夫</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">减除得物累</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">去掉外物牵累</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">便超圣境</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">便可进到更高的心境</span>
+</span></div>
+</section>
+<section class="passage" data-passage="5">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">交友须带三分侠气</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">待朋友要有几分仗义担当</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">做人要存一点素心</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">做人还须存质朴真诚的心</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>第十一则把生活条件和操守放在一起看。一个人越依赖某种待遇，就越可能在失去它的压力下改口。粗衣粗食本身不会造出好品行，富足也不必然让人低头。原文的对照仍提出了一个可以检验的问题。要维持眼下的生活，自己是否已经答应了原来不会答应的事？</p>
+<p>从第十二则到第十三则，重点转到共享的空间。路窄时两个人各要先过，争出来的往往是一起卡住。留一步，通常只付出一点等待，却能让双方继续走。滋味浓时让别人尝，是把同一关系移到好处的分配上。第十二则再把时间拉长，留给后来人的最好能反复使用，诸如清楚的交接记录、能接手的工序，价值会比一次热情帮忙留得久。</p>
+<p>第十四则问人能减去什么，第十五则问应保留什么。少一点借身份证明自己的心思，人更能看见朋友究竟需要哪种帮助。「侠气」可以表现为该出声时愿意出声，「素心」则使这种帮助不必附带讨好或交换。若朋友做了伤害别人的事，仗义也包括当面指出来。给对方留空间之后，事情的事实和各自的责任仍要说清。</p>
+</section>
+<footer class="source">底本｜洪应明《菜根谭》，据维基文库标作明刻本的电子转录前集第11–15则。原序保留，组题为本次整理所加。简体排印。固定修订：https://zh.wikisource.org/w/index.php?title=菜根譚&amp;oldid=2561729</footer>
+</main><main aria-label="菜根谭 前集第16–20则 · 功过与留余" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">菜根谭</p>
+<h1 class="chapter" data-chapter="">前集第16–20则 · 功过与留余</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="一只陶杯水止于杯缘之下，桌旁窗扇略开" class="hero-image" data-image="part-3"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">宠利毋居人前</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">争宠取利不宜抢在人前</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">德业毋落人后</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">修德做事不应落在人后</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">受享毋逾分外</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">享受不该越出应得的份额</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">修为毋减分中</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">应尽的修养和责任不能减省</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">处世让一步为高</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">在人情冲突中能让一步可贵</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">退步即进步的张本</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">退一步可为以后推进作准备</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">待人宽一分是福</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">待人稍留宽容是福</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">利人实利己的根基</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">使别人受益也能改善自己的处境</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">盖世功劳</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">极大的功劳</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">当不得一个矜字</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">也经不起一个自夸之念</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">弥天罪过</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">极大的过错</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">当不得一个悔字</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">也可从真正悔过处着手转变</span>
+</span></div>
+</section>
+<section class="passage" data-passage="4">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">完名美节</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">完整的声名与美好节操</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不宜独任</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">不宜独自占有</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">分些与人</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">功劳声誉应归于有份的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">可以远害全身</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">可减少争夺，保全自己</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">辱行污名</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">受辱的事与不好的名声</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不宜全推</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">不可把责任全推给别人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">引些归己</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">应认下自己有份的一部分</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">可以韬光养德</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">可收敛锋芒，养成德行</span>
+</span></div>
+</section>
+<section class="passage" data-passage="5">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">事事留个有余不尽的意思</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">做事留一点余地</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">便造物不能忌我</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">借造物拟人说少招忌</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">鬼神不能损我</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">借鬼神说较少受损</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">若业必求满</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">若凡事都要把成就做满</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">功必求盈者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">功劳好处全要到顶</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">不生内变</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">即使内部未起变故</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">必召外忧</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">也易招来外部忧患</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>第十六则把两个排序分开。分好处时可以靠后，担该担的责任时要往前。到了第十九则，原文把这两种排序放在一件已办成的事里。成果常由几个人共同完成，若只让最显眼的人得到承认，下一次别人就不易放心出力。过失也一样，先认清自己哪一段有责任，才知道该改的是哪一处。</p>
+<p>第十八则用两个极重的说法谈功过。自夸会让人把合作的结果全算成自己的本领，过去的功劳于是变成了今天妨碍判断的材料。悔过可以让人承认损害，开始补偿、调整做法。造成的损害有时不可恢复，原文的「悔」可以理解为改变从这里起步，不能拿它代替补救。</p>
+<p>第十七则的「退步」和第二十则的「有余」都在为以后留条件。协作遇到争执时，稍退一步可以先听清分歧。安排一项工作时，留出能处理意外的时间，才有机会在出错后调整。文本借造物和鬼神写后果，实际读起来可以追问余地在哪里，能否抵御一个具体的意外。若牵涉公正归责或人身安全，向压力退让可能扩大损害，此时该保留的是证据和处理问题的空间。</p>
+</section>
+<footer class="source">底本｜洪应明《菜根谭》，据维基文库标作明刻本的电子转录前集第16–20则。原序保留，组题为本次整理所加。简体排印。固定修订：https://zh.wikisource.org/w/index.php?title=菜根譚&amp;oldid=2561729</footer>
+</main><main aria-label="菜根谭 前集第21–25则 · 日用里的修养" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">菜根谭</p>
+<h1 class="chapter" data-chapter="">前集第21–25则 · 日用里的修养</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="疏林与小院临水而立，一尾小鱼在静水边跃起" class="hero-image" data-image="part-4"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">家庭有个真佛</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">借佛说家中就有可修行之处</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">日用有种真道</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">日常往来也能实践所信的道</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">人能诚心和气</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">用真诚平和的心相处</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">愉色婉言</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">脸色和悦，话说得柔婉</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">使父母兄弟间</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">使父母兄弟彼此之间</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">形骸两释</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">形体拘束与心中隔阂都能放下</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">意气交流</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">彼此的意思与情感得以交接</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">胜于调息观心万倍矣</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">作者把日常实践置于独自调息反省之上</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">好动者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">一味求动的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">云电风灯</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">像云中电光、风中灯火</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">嗜寂者</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">偏爱一味静止的人</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">死灰槁木</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">如死灰枯木般少了生意</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">须定云止水中</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">在如定云止水的安静里</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">有鱼跃鸢飞气象</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">仍有鱼跃鸟飞般的活力</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">才是有道的心体</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">才是作者赞许的心境</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">攻人之恶</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">指出别人的过失</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">毋太严</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">责备不要太严</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">要思其堪受</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">先想对方能否承受</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">教人之善</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">教人如何行善</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">毋过高</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">要求不要高不可及</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">当使其可从</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">要让对方能照着去做</span>
+</span></div>
+</section>
+<section class="passage" data-passage="4">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">粪虫至秽</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">古人以粪中虫为至污之物</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">变为蝉而饮露于秋风</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">用旧说写虫化蝉、秋风饮露</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">腐草无光</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">腐草本身并不发光</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">化为萤而耀采于夏月</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">用旧说写腐草化萤</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">固知洁常自污出</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">借物象说清洁也可从污浊中生出</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">明每从晦生也</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">光明也可在幽暗中显现</span>
+</span></div>
+</section>
+<section class="passage" data-passage="5">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">矜高倨傲</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">自夸高明、待人傲慢</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">无非客气</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">古人称由外激起的浮躁之气</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">降伏得客气下</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">能收住一时的傲气</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">而后正气伸</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">稳正的气度才得伸展</span>
+</span><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="classic-text">情欲意识</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">各种欲念和盘算</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">尽属妄心</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">作者归作蒙蔽判断的妄念</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">消杀得妄心尽</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">等这些蒙蔽逐渐消退</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">而后真心现</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">较清明真诚的心才显露</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>第二十一则把修养放在每天说话的地方。与家人意见不同，脸色和话语会改变对方是否愿意把事说完。表面客气只是一层，能不能听进对方处境，还要看接下来怎样回应。原文把这件事看得比独处调息更重，因为这里能看见修养有没有落到关系中。</p>
+<p>第二十二则写一种能安静、也能应事的状态。云电风灯太动，一点声响就跟着晃。死灰槁木太静，遇到该回应的事也难以起身。鱼跃鸟飞放在止水定云之中，给「静」补上了生意。第二十三则把它落实在劝人上。先说清一次可以改的动作，给人一个做得成的起点。遇到迫切伤害仍须先制止，事后再辨哪种劝说能被听见。</p>
+<p>第二十四则用虫化蝉、腐草化萤的古代物候说法做比喻。这些变化不能作今天的生物学说明，诗意在于提醒人不要只凭当前外观预断后来的可能。第二十五则转向自己的起心动念。被质疑后猛然想压过对方，可以先缓一缓，再看哪一句反对意见有事实根据。把容易蒙蔽判断的冲动看清，也就有了选择回应方式的机会。</p>
+</section>
+<footer class="source">底本｜洪应明《菜根谭》，据维基文库标作明刻本的电子转录前集第21–25则。原序保留，组题为本次整理所加。简体排印。固定修订：https://zh.wikisource.org/w/index.php?title=菜根譚&amp;oldid=2561729</footer>
+</main>
+<script>const images={"part-0": "assets/qingyan/caigentan-01.png", "part-1": "assets/qingyan/caigentan-02.png", "part-2": "assets/qingyan/caigentan-03.png", "part-3": "assets/qingyan/caigentan-04.png", "part-4": "assets/qingyan/caigentan-05.png"};
+const pages=[...document.querySelectorAll('main.sheet')],pick=document.querySelector('#chapters'),prev=document.querySelector('#prev'),next=document.querySelector('#next'),count=document.querySelector('#count'),png=document.querySelector('#png');
+let current=0;
+function show(value){const n=Number(value);current=Number.isFinite(n)?Math.max(0,Math.min(pages.length-1,Math.trunc(n))):0;pages.forEach((p,i)=>{p.classList.toggle('active',i===current);p.hidden=i!==current});pick.value=String(current);const page=pages[current];page.querySelectorAll('img[data-image]').forEach(img=>{img.src=images[img.dataset.image]});prev.disabled=current===0;next.disabled=current===pages.length-1;count.textContent=`${current+1} / ${pages.length}`;history.replaceState(null,'','#'+(current+1));scrollTo(0,0)}
+pick.addEventListener('change',()=>show(pick.value));prev.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>show(current+1));addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1));addEventListener('keydown',event=>{if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();show(current-1)}if(event.key==='ArrowRight'){event.preventDefault();show(current+1)}});show(Number(location.hash.slice(1))-1);
+</script>
+<script src="open-interpretation.js" defer></script>
+</body></html>

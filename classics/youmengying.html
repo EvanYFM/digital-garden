@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>幽梦影 · 选段注解</title><style>
+    :root {
+      --ink: #171512;
+      --muted: #77716a;
+      --paper: #fdfcf9;
+      --teal: #278f83;
+      --vermilion: #d54a42;
+      --ochre: #ad750f;
+      --interpretation-ink: #39342e;
+      --interpretation-heading: #795f43;
+      --interpretation-paper: #eee8dc;
+      --rule: #e6e1d8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1080px; min-width: 1080px; background: var(--paper); }
+    body {
+      color: var(--ink);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    .sheet {
+      width: 1080px;
+      min-height: 100vh;
+      padding: 76px 82px 68px;
+      background: var(--paper);
+    }
+    .book {
+      margin: 0;
+      text-align: center;
+      font-size: 58px;
+      line-height: 1.3;
+      font-weight: 500;
+      letter-spacing: .18em;
+    }
+    .chapter {
+      margin: 13px 0 0;
+      text-align: center;
+      font-size: 52px;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: .08em;
+    }
+    .title-rule {
+      width: 48px;
+      height: 3px;
+      margin: 31px auto 48px;
+      background: var(--vermilion);
+      border-radius: 3px;
+    }
+    .hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      margin: 0 0 66px;
+      overflow: hidden;
+      background: #ebe5da;
+      border-top: 1px solid #e1d9cc;
+      border-bottom: 1px solid #ded5c7;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 18%;
+      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--paper) 54%, transparent));
+      pointer-events: none;
+    }
+    .hero-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.78) contrast(.94) brightness(1.025);
+    }
+    .passage {
+      margin: 0 0 42px;
+      break-inside: avoid;
+    }
+    .annotated-line {
+      font-size: 0;
+      line-height: 1;
+      text-align: left;
+    }
+    .token-unit {
+      display: inline-flex;
+      max-width: 100%;
+      min-width: 2.4em;
+      margin: 0 14px 28px 0;
+      padding: 0 2px 9px;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: top;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+      page-break-inside: avoid;
+    }
+    .classic-run,
+    .classic-text,
+    .punctuation {
+      color: var(--ink);
+      font-size: 46px;
+      line-height: 1.24;
+      font-weight: 550;
+      letter-spacing: .035em;
+      white-space: nowrap;
+    }
+    .classic-run {
+      display: inline-flex;
+      align-items: baseline;
+    }
+    .punctuation {
+      display: inline;
+      margin: 0;
+      vertical-align: baseline;
+    }
+    .pinyin {
+      min-height: 19px;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .annotation {
+      max-width: 9.6em;
+      margin-top: 8px;
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 24px;
+      line-height: 1.48;
+      font-weight: 520;
+      letter-spacing: .015em;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .tone-word { color: var(--teal); }
+    .tone-clause { color: var(--vermilion); }
+    .tone-variant { color: var(--ochre); }
+    .punctuation-break {
+      display: block;
+      width: 100%;
+    }
+    .interpretation {
+      margin: 70px -20px 0;
+      padding: 49px 48px 27px;
+      border-top: 1px solid #ddd3c3;
+      border-bottom: 1px solid #ddd3c3;
+      background: var(--interpretation-paper);
+      color: var(--interpretation-ink);
+    }
+    .interpretation h2 {
+      margin: 0 0 31px;
+      color: var(--interpretation-heading);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 30px;
+      line-height: 1.3;
+      font-weight: 650;
+      letter-spacing: .12em;
+    }
+    .interpretation p {
+      margin: 0 0 20px;
+      font-size: 26px;
+      line-height: 1.96;
+      font-weight: 430;
+      letter-spacing: .018em;
+      text-align: justify;
+      text-justify: inter-ideograph;
+    }
+    .interpretation p:first-of-type {
+      color: #292621;
+      font-size: 28px;
+      line-height: 1.9;
+      font-weight: 500;
+    }
+    .interpretation p + p { text-indent: 2em; }
+    .source {
+      margin-top: 52px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+      font-size: 20px;
+      line-height: 1.6;
+      letter-spacing: .02em;
+      overflow-wrap: anywhere;
+    }
+
+html,body{width:100%;min-width:0}body{background:#ded7cc}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;min-height:60px;padding:10px 16px;background:#fdfcf9;border-bottom:1px solid #d8cdbd;font-size:18px}.toolbar button,.toolbar select{font:inherit;color:inherit;background:transparent;border:1px solid #a99c8c;padding:7px;min-height:38px}.toolbar select{flex:1;min-width:0;max-width:520px}.toolbar a{color:inherit;white-space:nowrap}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid #177e73;outline-offset:3px}.sheet{display:none;width:min(1080px,100%);margin:auto;padding:64px 7.6%}.sheet.active{display:block}.hero{height:auto;aspect-ratio:3/2}.book{font-size:34px}.chapter{font-size:48px}.source a{color:inherit}.classic-text,.classic-run,.punctuation{font-size:40px}.page-count{white-space:nowrap;color:#766c60}
+@media(max-width:600px){.toolbar{gap:6px;padding:8px;font-size:16px;flex-wrap:wrap}.toolbar select{order:3;flex-basis:100%;max-width:none}.page-count{margin-left:auto}.sheet{padding:36px 20px}.book{font-size:24px}.chapter{font-size:32px;letter-spacing:0}.hero{margin-top:26px;margin-bottom:30px}.classic-text,.classic-run,.punctuation{font-size:28px;white-space:normal;overflow-wrap:anywhere}.classic-run{display:inline}.token-unit{margin-right:8px;max-width:100%}.annotation{font-size:18px;max-width:100%;text-align:left}.pinyin{font-size:16px}.passage{margin-bottom:24px}.interpretation{margin:36px -6px 0;padding:26px 20px}.interpretation h2{font-size:26px}.interpretation p,.interpretation p:first-of-type{font-size:22px;line-height:1.9}.source{font-size:16px}}
+
+.extent{margin:0;padding:10px 20px;background:#eee8dc;color:#665b4b;text-align:center;font-size:17px;line-height:1.7}
+</style></head>
+<body>
+<nav class="toolbar" aria-label="选段导航">
+  <a href="index.html">典籍汇总</a>
+  <button id="prev">上一组</button><button id="next">下一组</button>
+  <select id="chapters" aria-label="选择阅读单元"><option value="0">卷上开篇 · 读书宜分四时</option></select>
+  <span class="page-count" id="count" aria-live="polite"></span>
+</nav>
+<p class="extent">当前收录 · 卷上首条及原书评语</p>
+<main aria-label="幽梦影 卷上开篇 · 读书宜分四时" class="sheet" hidden="">
+<header>
+<p class="book" data-book="">幽梦影</p>
+<h1 class="chapter" data-chapter="">卷上开篇 · 读书宜分四时</h1>
+<div aria-hidden="true" class="title-rule"></div>
+</header>
+<figure class="hero" data-hero="">
+<img alt="窗边半掩的一册书与疏竹上的薄雪" class="hero-image" data-image="part-0"/>
+</figure>
+<article aria-label="原文与注解" class="classic">
+<section class="passage" data-passage="1">
+<div class="annotated-line"><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">读经宜冬</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">冬天适宜读儒家经书</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">其神专也</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">冬日易于精神专注</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">读史宜夏</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">夏日宜读史书</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">其时久也</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">昼长可留较久的阅读时间</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">读诸子宜秋</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">秋日宜读诸子著作</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">其致别也</span><span class="punctuation" data-token="punctuation">；</span></span>
+<span class="annotation">秋意有别样的意趣</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">读诸集宜春</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">春日宜读诗文别集</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">其机畅也</span><span class="punctuation" data-token="punctuation">。</span></span>
+<span class="annotation">情思与兴致较易舒展</span>
+</span></div>
+</section>
+<section class="passage" data-passage="2">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">〈</span><span class="classic-text">曹秋岳曰</span><span class="punctuation" data-token="punctuation">：</span></span>
+<span class="annotation">曹秋岳的评语</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">「</span><span class="classic-text">可想见其南面百城时</span><span class="punctuation" data-token="punctuation">。</span><span class="punctuation" data-token="punctuation">」</span><span class="punctuation" data-token="punctuation">〉</span></span>
+<span class="annotation">藏书读书之乐好比坐拥百城</span>
+</span></div>
+</section>
+<section class="passage" data-passage="3">
+<div class="annotated-line"><span class="token-unit tone-word" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">〈</span><span class="classic-text">庞笔奴曰</span><span class="punctuation" data-token="punctuation">：</span></span>
+<span class="annotation">庞笔奴的评语</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="punctuation" data-token="punctuation">「</span><span class="classic-text">读《幽梦影》则春、夏、秋、冬</span><span class="punctuation" data-token="punctuation">，</span></span>
+<span class="annotation">玩笑说本书四季皆可读</span>
+</span><span class="token-unit tone-clause" data-token="annotated">
+<span class="classic-run"><span class="classic-text">无时不宜</span><span class="punctuation" data-token="punctuation">。</span><span class="punctuation" data-token="punctuation">」</span><span class="punctuation" data-token="punctuation">〉</span></span>
+<span class="annotation">任何时候都适合</span>
+</span></div>
+</section>
+</article>
+<section class="interpretation" data-interpretation="">
+<h2>章节解读</h2>
+<p>张潮按四时分配四类书，最可读的地方在他为每一种安排说出的理由。冬天容易收心，适合慢慢辨经义。夏日白昼长，读史可以把一件事的前后接上。秋天的别样意趣配诸子各有立场，春日舒展的兴致配诗文。前两项偏重阅读条件，后两项更多是心境和文体的联想。</p>
+<p>把这条拿到日常，可以先问这次阅读需要哪一种状态。想看清一段艰深的论证，就给它一段没有打断的时间。想读懂一次事件的前因后果，尽量连着读相关的几节。现实中的冬夜可能忙乱，夏天也未必闲长，换到你能获得相同阅读条件的时候，原来的安排仍有可借之处。</p>
+<p>曹秋岳想到藏书读书的富足，庞笔奴顺势替这本书讨了四季通行的方便。两条评语让读者听到旁人怎样接话，也为开头的安排留下一点松动。一部书若由能独立阅读的短条组成，时间零碎时也可读进一则。至于把一则读深，仍要看能否在读完后停下来想一想。</p>
+</section>
+<footer class="source">底本｜清张潮《幽梦影》，采用维基文库卷上电子转录首条。尖括号内为原书友人评语，另段保留，作简体整理。固定修订：https://zh.wikisource.org/w/index.php?title=幽夢影&amp;oldid=2013195</footer>
+</main>
+<script>const images={"part-0": "assets/qingyan/youmengying-01.png"};
+const pages=[...document.querySelectorAll('main.sheet')],pick=document.querySelector('#chapters'),prev=document.querySelector('#prev'),next=document.querySelector('#next'),count=document.querySelector('#count'),png=document.querySelector('#png');
+let current=0;
+function show(value){const n=Number(value);current=Number.isFinite(n)?Math.max(0,Math.min(pages.length-1,Math.trunc(n))):0;pages.forEach((p,i)=>{p.classList.toggle('active',i===current);p.hidden=i!==current});pick.value=String(current);const page=pages[current];page.querySelectorAll('img[data-image]').forEach(img=>{img.src=images[img.dataset.image]});prev.disabled=current===0;next.disabled=current===pages.length-1;count.textContent=`${current+1} / ${pages.length}`;history.replaceState(null,'','#'+(current+1));scrollTo(0,0)}
+pick.addEventListener('change',()=>show(pick.value));prev.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>show(current+1));addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1));addEventListener('keydown',event=>{if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();show(current-1)}if(event.key==='ArrowRight'){event.preventDefault();show(current+1)}});show(Number(location.hash.slice(1))-1);
+</script>
+<script src="open-interpretation.js" defer></script>
+</body></html>
