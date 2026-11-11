@@ -37,10 +37,12 @@ var GD=(function(){
     });
   }
   function sanitizeFileName(n){
-    var s=String(n||'').replace(/\.(png|jpe?g|webp)$/i,'').replace(/[\\/:*?"<>|\s]+/g,'-')
+    /* 扩展名白名单：图片（插图内联）+ 文档（链接附件卡） */
+    var mExt=(String(n||'').match(/\.(png|jpe?g|webp|docx?|xlsx?|pdf)$/i)||[])[0];
+    var s=String(n||'').replace(/\.(png|jpe?g|webp|docx?|xlsx?|pdf)$/i,'').replace(/[\\/:*?"<>|\s]+/g,'-')
       .replace(/[^\u4e00-\u9fff\w.-]/g,'').replace(/^-+|-+$/g,'').slice(0,40);
-    var ext=(String(n||'').match(/\.(png|jpe?g|webp)$/i)||[])[0]||'.png';
-    return (s||'图')+ext.toLowerCase();
+    var ext=(mExt||'.bin').toLowerCase();
+    return (s||'附件')+ext;
   }
 
   function api(method,path,body){

@@ -32,6 +32,16 @@ var MD=(function(){
       })
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,function(m,t,u){
         if(!safeUrl(u))return t;
+        /* 附件卡：指向 ./attachments/ 的文档链接 → 文件类型徽标 + 下载卡
+           （图片走 ![]() 分支；safeUrl 已放行 ./ 前缀，此处只做呈现升级） */
+        var am=u.match(/^\.\/attachments\/[^?#]*\.(docx?|xlsx?|pdf)$/i);
+        if(am){
+          var ext=am[1].toLowerCase(),lab={doc:'DOC',docx:'DOC',xls:'XLS',xlsx:'XLS',pdf:'PDF'}[ext];
+          return '<a class="md-attach" href="'+u+'" download>'
+            +'<span class="md-attach-badge md-attach-'+ext+'">'+lab+'</span>'
+            +'<span class="md-attach-name">'+t+'</span>'
+            +'<span class="md-attach-dl">下载 ↧</span></a>';
+        }
         return '<a href="'+u+'">'+t+'</a>';
       })
       .replace(/&lt;(https?:\/\/[^&\s]+)&gt;/g,'<a href="$1">$1</a>')

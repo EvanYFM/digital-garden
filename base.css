@@ -83,6 +83,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
 .md-twrap th{background:var(--paper-soft);font-weight:600;white-space:nowrap}
 .md-twrap tr:nth-child(even) td{background:color-mix(in srgb,var(--paper-soft) 45%,transparent)}
 .md-img{max-width:100%;height:auto;border-radius:4px;margin:6px 0;display:block}
+/* ---------- 附件卡：指向 attachments/ 的 Word/Excel/PDF 文档链接 ---------- */
+.md-attach{display:flex;align-items:center;gap:14px;margin:8px 0 22px;padding:13px 18px;
+  border:1px solid var(--line);border-radius:4px;background:var(--paper-soft);
+  text-decoration:none;max-width:480px;transition:border-color .4s var(--ease)}
+.md-attach:hover{border-color:var(--ink)}
+.md-attach-badge{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.14em;
+  color:#fff;background:var(--charcoal);border-radius:3px;padding:4px 8px;flex:none}
+.md-attach-pdf{background:#b3402a}
+.md-attach-doc,.md-attach-docx{background:#2b579a}
+.md-attach-xls,.md-attach-xlsx{background:#217346}
+.md-attach-name{font-size:13.5px;color:var(--ink);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.md-attach-dl{font-size:11px;letter-spacing:.2em;color:var(--gray);flex:none}
 .md-task{list-style:none;margin-left:-20px}
 .md-task input[type=checkbox]{margin-right:9px;accent-color:var(--cinnabar);vertical-align:middle}
 .md-sub{margin:8px 0 2px;padding-left:24px}
