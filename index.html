@@ -126,13 +126,18 @@ html[data-theme="dark"] .taiji .disc{transform:rotate(180deg)}
 .mark .m-still{fill:var(--cinnabar)}
 .mark .breath{transform-origin:48px 48px;animation:breath 9s ease-in-out infinite}
 @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+/* 朱雀仿宋子集：仅含本页 hero 文字（58 字形/16KB，无拉丁——英文自动落回 Noto Serif） */
+@font-face{
+  font-family:'Zhuque Hero';src:url('fonts/zhuque-hero.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
 .hero h1{
-  font-family:var(--serif);font-weight:600;
+  font-family:'Zhuque Hero',var(--serif);font-weight:400;
   font-size:40px;letter-spacing:.18em;text-indent:.18em;
   margin-bottom:24px;
 }
 .hero .statement{
-  font-family:var(--serif);font-size:17px;line-height:2;
+  font-family:'Zhuque Hero',var(--serif);font-size:17px;line-height:2;
   color:var(--charcoal);letter-spacing:.05em;max-width:34em;text-wrap:pretty;
 }
 .hero .statement em{font-style:normal;color:var(--cinnabar)}
