@@ -193,7 +193,8 @@ html.imm #immBtn .i-com{display:block}
   letter-spacing:.3em;margin-bottom:10px}
 .sidenote.open .sn-body{display:block;animation:snIn .7s var(--ease)}
 @keyframes snIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (min-width:1200px){
+/* 旁注悬浮断点 1400：右侧需 ≥264px 余量（34 间距+230 宽+安全边），1200–1399 回落为内联点击展开，避免 .layout 横向溢出 */
+@media (min-width:1400px){
   .sidenote{min-height:9px}
   .sidenote .sn-body{display:block;position:absolute;left:calc(100% + 34px);top:-14px;
     width:230px;margin-top:0;opacity:0;transform:translateX(14px);pointer-events:none;
