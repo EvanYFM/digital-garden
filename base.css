@@ -43,6 +43,22 @@ nav a .en{font-size:10px;letter-spacing:.18em;color:var(--gray);margin-left:6px}
 nav a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
   background:var(--ink);transition:width .5s var(--ease)}
 nav a:hover::after,nav a.cur::after{width:100%}
+/* 思考 · 下拉「此刻」入口：桌面 hover 悬浮；触屏不弹（点「思考」仍直达笔记页） */
+.nav-sec{position:relative}
+.nav-drop{position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,4px);
+  background:var(--paper);border:1px solid var(--line);padding:10px 0;min-width:9em;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .3s var(--ease),transform .3s var(--ease),visibility .3s;
+  box-shadow:0 14px 34px rgba(28,28,26,.10)}
+/* 透明桥：消除链接与下拉之间的悬停空隙 */
+.nav-drop::before{content:"";position:absolute;top:-8px;left:0;right:0;height:8px}
+.nav-sec:hover .nav-drop,.nav-sec:focus-within .nav-drop{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
+.nav-drop a{display:block;padding:8px 22px;font-size:13px;letter-spacing:.16em;opacity:.85}
+.nav-drop a .en{font-size:9px;margin-left:8px}
+/* 朱砂呼吸点：呼应笔记页 now-strip 的入口语言 */
+.nav-drop .np{display:inline-block;width:6px;height:6px;border:1px solid var(--cinnabar);
+  border-radius:50%;margin-right:9px;vertical-align:1px;transition:background .4s}
+.nav-drop a:hover .np{background:var(--cinnabar)}
 
 /* 太极日夜钮（与首页同一组件） */
 .taiji{width:24px;height:24px;border:none;background:transparent;cursor:pointer;
@@ -72,6 +88,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
   body>header nav{grid-row:2;grid-column:1/-1;margin:0;min-width:0;justify-content:space-between;gap:12px}
   body>header nav a{font-size:14px;letter-spacing:.04em;padding:10px 0}
   body>header nav a .en{display:none}
+  body>header nav .nav-drop{display:none}
   body>header .taiji{grid-column:3;grid-row:1;margin:0}
   body>header .bgm-btn{grid-column:2;grid-row:1;margin:0}
 }
